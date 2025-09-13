@@ -13,6 +13,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '.onrender.com',
+     '.railway.app',
     'gobnimo-marketplace.onrender.com',
 ]
 
@@ -151,6 +152,7 @@ if not DEBUG:
     CSRF_TRUSTED_ORIGINS = [
         'https://*.onrender.com',
         'https://gobnimo-marketplace.onrender.com',
+        'https://*.railway.com',
     ]
 else:
     # Development settings
@@ -160,6 +162,7 @@ else:
     CSRF_TRUSTED_ORIGINS = [
         'http://localhost:8000',
         'http://127.0.0.1:8000',
+        'https://*.railway.com',
     ]
 
 # WhiteNoise configuration
