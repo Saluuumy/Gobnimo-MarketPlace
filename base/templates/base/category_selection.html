@@ -1,0 +1,162 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<!-- product_form.html -->
+
+<div class="form-container">
+    <h1>Post Your Ad With Us</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+       
+
+        <div class="form-field" id="categoryFieldsContainer">
+            <!-- Category-specific fields will be dynamically added here -->
+        </div>
+
+        <div class="form-field">
+            <label for="{{ form.name.id_for_label }}">Brand Name:</label>
+            {{ form.name }}
+        </div>
+
+    
+
+        <div class="form-field">
+            <label for="{{ form.price.id_for_label }}">Set Price:</label>
+            {{ form.price }}
+        </div>
+
+        <div class="form-field">
+            <label for="{{ form.location.id_for_label }}">Location:</label>
+            {{ form.location }}
+        </div>
+        
+        <div class="form-field">
+            <label for="{{ form.condition.id_for_label }}">Condition:</label>
+            {{ form.condition }}
+        </div>
+        <div class="form-field">
+            <label for="{{ form.description.id_for_label }}">Tell us about your product:</label>
+            {{ form.description }}
+        </div>
+        
+        <!-- Additional form fields for product information based on category -->
+        {% if category.name == 'Cars' %}
+            <div class="form-field">
+                <label for="{{ form.motortype.id_for_label }}">Motor Type</label>
+                {{ form.motortype }}
+            </div>
+            <div class="form-field">
+                <label for="{{ form.geartype.id_for_label }}">Gear Type:</label>
+                {{ form.geartype }}
+            </div>
+            <div class="form-field">
+                <label for="{{ form.year.id_for_label }}">Car Year:</label>
+                {{ form.year }}
+            </div>
+            <div class="form-field">
+                <label for="{{ form.color.id_for_label }}">Car Color:</label>
+                {{ form.color }}
+            </div>
+        {% elif category.name == 'Home' %}
+            <div class="form-field">
+                <label for="{{ form.num_rooms.id_for_label }}">Number of Rooms:</label>
+                {{ form.num_rooms }}
+            </div>
+            <div class="form-field">
+                <label for="{{ form.num_baths.id_for_label }}">Number of Baths:</label>
+                {{ form.num_baths }}
+            </div>
+        {% endif %}
+    
+        <div class="form-field">
+            <div class="image-drop" id="imageDrop">
+                <p>Drag & drop images here or click to select</p>
+                <input type="file" name="images" id="images" multiple>
+            </div>
+            <div id="imagePreview" class="image-preview">
+                <!-- Selected image thumbnails will be displayed here -->
+            </div>
+        </div>
+        
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+
+<a href="{% url 'index' %}">Back to Categories</a>
+
+
+<script>
+ const categoryFieldsContainer = document.getElementById('categoryFieldsContainer');
+        const categoryFields = {
+            home: ['rooms', 'toilets'],
+            vehicles: ['year','motortype','geartype'],
+            dress: []
+        };
+    
+        function showCategoryFields(category) {
+            categoryFieldsContainer.innerHTML = '';
+    
+            if (category !== 'default' && categoryFields[category]) {
+                categoryFields[category].forEach(fieldName => {
+                    const fieldLabel = document.createElement('label');
+                    fieldLabel.textContent = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+                    const fieldInput = document.createElement('input');
+                    fieldInput.type = (fieldName === 'rooms' || fieldName === 'toilets') ? 'number' : 'text';
+                    fieldInput.name = fieldName;
+                    fieldInput.placeholder = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+                    const fieldDiv = document.createElement('div');
+                    fieldDiv.classList.add('form-field');
+                    fieldDiv.appendChild(fieldLabel);
+                    fieldDiv.appendChild(fieldInput);
+                    categoryFieldsContainer.appendChild(fieldDiv);
+                });
+            }
+        }
+    
+        const imageDrop = document.getElementById('imageDrop');
+        const imagePreview = document.getElementById('imagePreview');
+    
+        imageDrop.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            imageDrop.classList.add('drag-over');
+        });
+    
+        imageDrop.addEventListener('dragleave', () => {
+            imageDrop.classList.remove('drag-over');
+        });
+    
+        imageDrop.addEventListener('drop', (e) => {
+            e.preventDefault();
+            imageDrop.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            handleImageFiles(files);
+        });
+    
+        imageDrop.addEventListener('click', () => {
+            document.getElementById('images').click();
+        });
+    
+        const imageInput = document.getElementById('images');
+        imageInput.addEventListener('change', (e) => {
+            const files = e.target.files;
+            handleImageFiles(files);
+        });
+    
+        function handleImageFiles(files) {
+            imagePreview.innerHTML = '';
+    
+            for (const file of files) {
+                const imageThumbnail = document.createElement('div');
+                imageThumbnail.classList.add('image-thumbnail');
+                const image = document.createElement('img');
+                image.src = URL.createObjectURL(file);
+                image.alt = 'Image Preview';
+                imageThumbnail.appendChild(image);
+                imagePreview.appendChild(imageThumbnail);
+            }
+        }
+</script>
+
+{% endblock %}

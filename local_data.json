@@ -1,0 +1,37 @@
+[
+  {
+    "model": "base.category",
+    "pk": 3,
+    "fields": {
+      "name": "Vehicles",
+      "parent_category": null,
+      "image": "images/…png"
+    }
+  },
+  {
+    "model": "base.category",
+    "pk": 4,
+    "fields": {
+      "name": "Cars",
+      "parent_category": 3,
+      "image": "images/…png"
+    }
+  },
+  {
+    "model": "base.user",
+    "pk": 1,
+    "fields": {
+      "email": "salmamacash@gmail.com",
+      "password": "...",
+      "is_superuser": true,
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2025-07-05T17:32:23.991Z",
+      "email_verified": false,
+      "bio": null,
+      "phone_number": null,
+      "avatar": "avatar.svg",
+      "location": ""
+    }
+  }
+]

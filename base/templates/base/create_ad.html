@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Post Featured Ad</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        nav { background-color: #333; padding: 10px; }
+        nav a { color: white; margin: 0 15px; text-decoration: none; }
+        nav a:hover { text-decoration: underline; }
+        .container { max-width: 600px; margin: 20px auto; padding: 0 20px; }
+        label { display: block; margin: 10px 0 5px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav>
+        <a href="{% url 'index' %}">Home</a>
+        <a href="{% url 'create_ad' %}">Post Featured Ad</a>
+    </nav>
+
+    <!-- Ad Creation Form -->
+    <div class="container">
+        <h1>Post a Featured Ad</h1>
+        <form method="post" enctype="multipart/form-data" id="adForm">
+            {% csrf_token %}
+            <!-- Core Fields -->
+            <div>
+                <label for="id_title">Title:</label>
+                {{ form.title }}
+            </div>
+            <div>
+                <label for="id_description">Description:</label>
+                {{ form.description }}
+            </div>
+            <div>
+                <label for="id_category">Category:</label>
+                {{ form.category }}
+            </div>
+            <div>
+                <label for="id_subcategory">Subcategory:</label>
+                {{ form.subcategory }}
+            </div>
+            <!-- Hidden Ad Type (Forced to Featured) -->
+            {{ form.ad_type.as_hidden }}
+            <!-- Featured Fields -->
+            <div>
+                <label for="id_payment_screenshot">Payment Screenshot:</label>
+                {{ form.payment_screenshot }}
+            </div>
+            <div>
+                <label for="id_amount_paid">Amount Paid:</label>
+                {{ form.amount_paid }}
+            </div>
+            <div>
+                <label for="id_featured_date">Featured Date & Time:</label>
+                {{ form.featured_date }}
+            </div>
+            <!-- Dynamic Fields Placeholder -->
+            <div id="dynamicFields"></div>
+            <button type="submit">Submit Featured Ad</button>
+        </form>
+    </div>
+
+    <script>
+        // Category change: Fetch subcategories
+        document.getElementById('id_category').addEventListener('change', function() {
+            let categoryId = this.value;
+            if (categoryId) {
+                fetch(`/get_subcategories/${categoryId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let subcategorySelect = document.getElementById('id_subcategory');
+                        subcategorySelect.innerHTML = '<option value="">Select a subcategory</option>';
+                        data.subcategories.forEach(sub => {
+                            subcategorySelect.innerHTML += `<option value="${sub.id}">${sub.name}</option>`;
+                        });
+                        document.getElementById('dynamicFields').innerHTML = '';
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        });
+
+        // Subcategory change: Fetch dynamic fields
+        document.getElementById('id_subcategory').addEventListener('change', function() {
+            let subcategoryId = this.value;
+            if (subcategoryId) {
+                fetch(`/get_dynamic_fields/${subcategoryId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('dynamicFields').innerHTML = data.form_html;
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        });
+    </script>
+</body>
+</html>

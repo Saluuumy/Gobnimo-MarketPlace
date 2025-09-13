@@ -1,0 +1,189 @@
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+<form method="POST" enctype="multipart/form-data" class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg space-y-6">
+    {% csrf_token %}
+    
+    <h2 class="text-2xl font-bold text-center text-gray-800">Submit Your Product for Featured Ad</h2>
+
+    <div class="form-group space-y-4">
+        <div class="space-y-2">
+            <label for="product_name" class="text-lg font-semibold text-gray-700">Product Name:</label>
+            {{ feature_form.product_name }}
+        </div>
+
+        <div class="space-y-2">
+            <label for="product_description" class="text-lg font-semibold text-gray-700">Description:</label>
+            {{ feature_form.product_description }}
+        </div>
+
+       <!-- Tailwind Link (already included) -->
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+<div class="max-w-6xl mx-auto mt-10 p-6 bg-gray-100 rounded-lg shadow-lg">
+    <h2 class="text-xl font-bold text-center text-gray-800 mb-4">Dooro Qaybta (Choose Category)</h2>
+
+    <div class="bg-white rounded shadow p-4">
+        <ul class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-center">
+            {% for category in categories %}
+                {% if not category.parent_category %}
+                    <li class="border rounded p-4 bg-gray-50">
+                        <img class="w-10 h-10 mx-auto mb-2" src="{{ category.image.url }}" alt="">
+                        {% if category.subcategories.all %}
+                            <p class="font-semibold text-gray-800">{{ category.name }}</p>
+                            <ul class="mt-2 space-y-1">
+                                {% for subcategory in category.subcategories.all %}
+                                    <li>
+                                        <a href="{% url 'submit_feature_request' subcategory.id %}" class="text-indigo-600 hover:underline text-sm">
+                                            <img class="inline-block w-5 h-5 mr-1" src="{{ subcategory.image.url }}" alt="">
+                                            {{ subcategory.name }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                        <a href="{% url 'submit_feature_request_with_category' category.id %}" class="text-indigo-600 hover:underline text-sm block mt-2">{{ category.name }}</a>
+                        {% endif %}
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+
+        <!-- Dynamically Show Fields Based on Category -->
+        <div id="car-fields" class="category-specific-fields" style="display: none;">
+            <div class="space-y-2">
+                <label for="motortype" class="text-lg font-semibold text-gray-700">Motor Type:</label>
+                <input type="text" name="motortype" class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+            </div>
+
+            <div class="space-y-2">
+                <label for="geartype" class="text-lg font-semibold text-gray-700">Gear Type:</label>
+                <input type="text" name="geartype" class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+            </div>
+
+            <div class="space-y-2">
+                <label for="year" class="text-lg font-semibold text-gray-700">Year:</label>
+                <input type="text" name="year" class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+            </div>
+
+            <div class="space-y-2">
+                <label for="color" class="text-lg font-semibold text-gray-700">Color:</label>
+                <input type="text" name="color" class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+            </div>
+        </div>
+
+        <div id="home-fields" class="category-specific-fields" style="display: none;">
+            <div class="space-y-2">
+                <label for="num_rooms" class="text-lg font-semibold text-gray-700">Number of Rooms:</label>
+                <input type="text" name="num_rooms" class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+            </div>
+
+            <div class="space-y-2">
+                <label for="num_baths" class="text-lg font-semibold text-gray-700">Number of Baths:</label>
+                <input type="text" name="num_baths" class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+            </div>
+        </div>
+
+        <div class="space-y-2">
+            <label for="product_price" class="text-lg font-semibold text-gray-700">Price:</label>
+            {{ feature_form.product_price }}
+        </div>
+
+        <div class="space-y-2">
+            <label for="payment_proof" class="text-lg font-semibold text-gray-700">Upload Payment Proof (Screenshot):</label>
+            {{ feature_form.payment_proof }}
+        </div>
+    </div>
+
+    <div id="image-fields" class="space-y-4">
+        <div class="space-y-2">
+            <label for="image1" class="text-lg font-semibold text-gray-700">Image 1 *</label>
+            <input type="file" name="images" accept="image/*" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+    </div>
+
+    <button type="button" id="add-image-btn" class="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        Add Another Image
+    </button>
+
+    <div id="imagePreview" class="mt-4 flex gap-4 flex-wrap">
+        <!-- Selected image thumbnails will be displayed here -->
+    </div>
+
+    <button type="submit" class="w-full py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+        Submit for Review
+    </button>
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const categoryField = document.querySelector('select[name="product_category"]');
+        const carFields = document.getElementById('car-fields');
+        const homeFields = document.getElementById('home-fields');
+
+        // Function to toggle fields based on category selection
+        function toggleCategoryFields() {
+            const selectedCategory = categoryField.value;
+
+            // Hide both sections initially
+            carFields.style.display = 'none';
+            homeFields.style.display = 'none';
+
+            // Show the relevant category fields
+            if (selectedCategory === 'Cars') {
+                carFields.style.display = 'block';
+            } else if (selectedCategory === 'Homes') {
+                homeFields.style.display = 'block';
+            }
+        }
+
+        // Initial call to set fields based on current selection
+        toggleCategoryFields();
+
+        // Run when category changes
+        categoryField.addEventListener('change', toggleCategoryFields);
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const categoryField = document.querySelector('#id_product_category');
+        const motortypeField = document.querySelector('.field-motortype');
+        const geartypeField = document.querySelector('.field-geartype');
+        const yearField = document.querySelector('.field-year');
+        const colorField = document.querySelector('.field-color');
+        const numRoomsField = document.querySelector('.field-num_rooms');
+        const numBathsField = document.querySelector('.field-num_baths');
+    
+        function updateFields() {
+            const selectedText = categoryField.options[categoryField.selectedIndex].text;
+    
+            if (selectedText === 'Cars') {
+                motortypeField.style.display = '';
+                geartypeField.style.display = '';
+                yearField.style.display = '';
+                colorField.style.display = '';
+                numRoomsField.style.display = 'none';
+                numBathsField.style.display = 'none';
+            } else if (selectedText === 'Home') {
+                motortypeField.style.display = 'none';
+                geartypeField.style.display = 'none';
+                yearField.style.display = 'none';
+                colorField.style.display = 'none';
+                numRoomsField.style.display = '';
+                numBathsField.style.display = '';
+            } else {
+                motortypeField.style.display = 'none';
+                geartypeField.style.display = 'none';
+                yearField.style.display = 'none';
+                colorField.style.display = 'none';
+                numRoomsField.style.display = 'none';
+                numBathsField.style.display = 'none';
+            }
+        }
+    
+        categoryField.addEventListener('change', updateFields);
+        updateFields(); // initial on load
+    });
+    </script>

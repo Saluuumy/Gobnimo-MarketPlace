@@ -1,0 +1,10 @@
+<h1>{{ category.name }} Products</h1>
+{% if products %}
+    <ul>
+        {% for product in products %}
+            <li>{{ product.name }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No products available in this category.</p>
+{% endif %}

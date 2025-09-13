@@ -1,0 +1,19 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+    <h3 class="text-xl font-semibold text-gray-800 mb-6">Reply to Comment</h3>
+    <!-- Debug Output -->
+    <p>Comment ID: {{ comment.id }}</p>
+    <p>Comment Object: {{ comment }}</p>
+    <p>URL Comment ID: {{ comment_id }}</p>
+    <form method="post" action="{% url 'reply_to_comment' comment_id %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            Submit Reply
+        </button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+<!-- Footer -->
+<footer class="footer py-12 px-4 bg-gradient-to-r from-purple-800 to-pink-600">
+    <div class="container mx-auto max-w-6xl">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+                <a href="/" class="logo text-2xl font-bold mb-4 text-white">Gobonimo Market</a>
+                <p class="text-white/80 mb-4">The best marketplace for buying and selling new and used products.</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-white/80 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-white/80 hover:text-white"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-white/80 hover:text-white"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-white/80 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold mb-4 text-white">Quick Links</h3>
+                <ul class="space-y-2">
+                    <li><a href="{% url 'index' %}" class="text-white/80 hover:text-white transition">Home</a></li>
+                    <li><a href="{% url 'about_us' %}" class="text-white/80 hover:text-white transition">About Us</a></li>
+                    <li><a href="{% url 'menu' %}" class="text-white/80 hover:text-white transition">Categories</a></li>
+                    <li><a href="{% url 'about_us' %}" class="text-white/80 hover:text-white transition">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold mb-4 text-white">Customer Service</h3>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-white/80 hover:text-white transition">FAQs</a></li>
+                    <li><a href="#" class="text-white/80 hover:text-white transition">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold mb-4 text-white">Newsletter</h3>
+                <p class="text-white/80 mb-4">Subscribe to get special offers and updates</p>
+                <form method="post" action="#">
+                    {% csrf_token %}
+                    <div class="flex">
+                        <input type="email" name="email" placeholder="Your email" class="px-4 py-3 w-full rounded-l bg-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white border border-white/20">
+                        <button type="submit" class="bg-white/20 hover:bg-white/30 px-4 rounded-r border border-white/20">
+                            <i class="fas fa-paper-plane text-white"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="border-t border-white/20 mt-12 pt-8 text-center text-white/70">
+            <p>© {% now "Y" %} Gobonimo Market Place. All rights reserved.</p>
+        </div>
+    </div>
+</footer>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Category - {% if form_type == 'free' %}Free{% else %}Paid{% endif %} Ad</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; display: flex; }
+        nav { background-color: #333; padding: 10px; }
+        nav a { color: white; margin: 0 15px; text-decoration: none; }
+        nav a:hover { text-decoration: underline; }
+        .sidebar { width: 200px; background: #f4f4f4; padding: 10px; height: 100vh; }
+        .category { margin: 10px 0; position: relative; }
+        .category:hover .subcategories { display: block; }
+        .subcategories { display: none; position: absolute; left: 100%; top: 0; background: #fff; border: 1px solid #ddd; padding: 10px; }
+        .subcategories a { display: block; color: #333; text-decoration: none; }
+        .subcategories a:hover { text-decoration: underline; }
+        .container { flex: 1; padding: 20px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'index' %}">Home</a>
+        <a href="{% url 'select_paid_ad' %}">Post Paid Ad</a>
+        <a href="{% url 'select_free_ad' %}">Post Free Ad</a>
+        <a href="{% url 'login' %}">Login</a>
+        <a href="">Sign Up</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </nav>
+    <div class="sidebar">
+        {% for category in categories %}
+            <div class="category">
+                <strong>{{ category.name }}</strong>
+                <div class="subcategories">
+                    {% for subcategory in category.subcategories.all %}
+                        {% if form_type == 'free' %}
+                            <a href="{% url 'create_free_ad_with_subcategory' subcategory.id %}">{{ subcategory.name }}</a>
+                        {% else %}
+                            <a href="{% url 'create_paid_ad_with_subcategory' subcategory.id %}">{{ subcategory.name }}</a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="container">
+        <h1>Select a Category for Your {% if form_type == 'free' %}Free{% else %}Paid{% endif %} Ad</h1>
+        <p>Hover over a category on the left to see subcategories, then click to proceed.</p>
+    </div>
+</body>
+</html>

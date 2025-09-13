@@ -1,0 +1,133 @@
+
+{% block content %}
+<div class="product-form-container">
+    <div class="custom-form-container">
+        <div class="form-header">
+            <h2 style="color: #c70039;">eegggdgfddgdggdg</h2>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="custom-form-field">
+                <div class="label-field">
+                    <label for="{{ form.category.id_for_label }}">Category</label>
+                </div>
+                <div class="input-field">
+                    {{ form.category }}
+                </div>
+            </div>
+            
+            <div class="custom-form-field">
+                <div class="label-field">
+                    <label for="{{ form.subcategory.id_for_label }}">Subcategory</label>
+                </div>
+                <div class="input-field">
+                    {{ form.subcategory }}
+                </div>
+            </div>
+            
+            <div class="custom-form-field">
+                <div class="label-field">
+                    <label for="{{ form.title.id_for_label }}">Title</label>
+                </div>
+                <div class="input-field">
+                    {{ form.title }}
+                </div>
+            </div>
+            
+            <div class="custom-form-field">
+                <div class="label-field">
+                    <label for="{{ form.description.id_for_label }}">Description</label>
+                </div>
+                <div class="input-field">
+                    {{ form.description }}
+                </div>
+            </div>
+
+            <div class="custom-form-field">
+                <div class="label-field">
+                    <label for="{{ form.images.id_for_label }}">Images (Optional)</label>
+                </div>
+                <div class="input-field">
+                    {{ form.images }}
+                </div>
+            </div>
+            
+            <div class="button-field">
+                <button type="submit">Post Free Ad</button>
+            </div>
+        </form>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const addButton = document.getElementById("add-image-btn");
+                const imageFields = document.getElementById("image-fields");
+                const imagePreview = document.getElementById("imagePreview");
+                let imageCount = 1;
+                
+                addButton.addEventListener("click", function() {
+                    imageCount++;
+                    const newImageField = document.createElement("div");
+                    newImageField.classList.add("custom-form-field");
+                    newImageField.innerHTML = `
+                        <div class="label-field">
+                            <label>Image ${imageCount} (Optional)</label>
+                        </div>
+                        <div class="input-field">
+                            <input type="file" name="images" accept="image/*">
+                        </div>
+                    `;
+                    imageFields.appendChild(newImageField);
+                    newImageField.querySelector('input[type=file]').addEventListener('change', previewImages);
+                });
+
+                function previewImages() {
+                    imagePreview.innerHTML = '';
+                    const files = document.querySelectorAll('input[type=file][name="images"]');
+                    files.forEach(function(fileInput) {
+                        const file = fileInput.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.style.maxWidth = "100px";
+                                imagePreview.appendChild(img);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                }
+
+                document.querySelectorAll('input[type=file][name="images"]').forEach(function(fileInput) {
+                    fileInput.addEventListener('change', previewImages);
+                });
+
+                // Dynamic fields based on subcategory change
+                const dynamicFieldsContainer = document.getElementById("dynamic-fields-container");
+                const subcategorySelect = document.querySelector('select[name="subcategory"]');
+                
+                subcategorySelect.addEventListener('change', function() {
+                    const subcategoryId = this.value;
+                    if (subcategoryId) {
+                        fetch(`/get_dynamic_fields/${subcategoryId}/`)
+                            .then(response => response.json())
+                            .then(data => {
+                                dynamicFieldsContainer.innerHTML = data.form_html;
+                            })
+                            .catch(error => console.error("Error fetching dynamic fields:", error));
+                    } else {
+                        dynamicFieldsContainer.innerHTML = '';
+                    }
+                });
+
+                // Trigger change on page load if subcategory is pre-selected
+                if (subcategorySelect.value) {
+                    subcategorySelect.dispatchEvent(new Event('change'));
+                }
+            });
+        </script>
+    </div>
+</div>
+{% endblock %}

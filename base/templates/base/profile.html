@@ -1,0 +1,64 @@
+{% extends 'main.html' %}
+
+    
+    {% load static %}
+
+  
+    {% block content %}
+
+    
+        <div class="dashboard-container">
+            <div class="profile-section">
+                <div class="profile-details">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}" class="avatar"> 
+                    {% else %}
+                        <img src="{% static 'images/avatar.svg' %}" alt="Default Avatar">
+                    {% endif %}     
+                    <div class="profile-info">
+                        <h2 style="  color: #c70039;">Your Profile</h2>
+                        <p><strong>Name:</strong> {{ user.name }}</p>
+                        <p><strong>Email:</strong> {{ user.email }}</p>
+                        <p><strong>Bio:</strong> {{ user.bio }}</p>
+                        <!-- Add more profile information as needed -->
+                    </div>
+                </div>
+                <button class="edit-profile-button"><a href="{% url 'update_profile' user.username %}">Edit Profile</a></button>
+            </div>
+
+            <h2 style="color: #aa104d;margin-left: 93px;font-size: 19px;">Your Posted Items</h2>
+            <div class="product-list">
+                {% if products %}
+                    <ul>
+                        <!-- Sample product item, repeat this block for each product -->
+                        {% for product in products %}
+                            {% if request.user == product.advertiser %}
+                                <li class="product-item">
+                                    <div class="product-dashboard-details">
+                                        {% if product.image_set.all %}
+                                            <img class="product-dashboard-img" src="{{ product.image_set.first.image.url }}" alt="{{ product.name }}">
+                                        {% endif %}
+                                        <div>
+                                            <p><strong>Name:</strong> {{ product.name }}</p>
+                                            <p style="color: #c70039;"><strong>Price:</strong> {{ product.price }}</p>
+                                            <p><strong>Category:</strong> {{ product.category }}</p>
+                                        </div>
+                                    </div>
+                                    <form method="post" action="{% url 'delete_product' product.id %}" id="delete-form-{{ product.id }}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="delete-button" onclick="confirmDelete('{{ product.id }}')">Delete</button>
+                                    </form>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        {% else %}
+                        <div class="paragraph">
+                        <p>No products posted by you.</p></div>
+                    {% endif %}
+                    </ul>
+               
+            </div>
+        </div>
+  
+    {% endblock %}
+

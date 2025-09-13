@@ -1,0 +1,24 @@
+[
+{
+  "model": "base.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$q5Sn09eRfGM3LY6Q59LIe7$WwwG/Dl6QCeqU+lyrrbfxEvtxKoCwxMC6eXrshZZlSg=",
+    "last_login": null,
+    "is_superuser": true,
+ 
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-07-08T23:40:49.899Z",
+    "full_name": null,
+    "email": "salmamacash@gmail.com",
+    "bio": null,
+    "phone_number": null,
+    "avatar": "avatar.svg",
+    "location": "",
+    "email_verified": false,
+    "groups": [],
+    "user_permissions": []
+  }
+}
+]
