@@ -1,0 +1,9 @@
+{% for field in dynamic_form %}
+    <div>
+        <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+        {{ field }}
+        {% if field.errors %}
+            <span style="color: red;">{{ field.errors }}</span>
+        {% endif %}
+    </div>
+{% endfor %}

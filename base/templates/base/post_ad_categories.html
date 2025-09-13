@@ -1,0 +1,350 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<body class="bg-gradient-to-br from-slate-50 to-indigo-50 min-h-screen">
+<div class="flex flex-col md:flex-row min-h-screen">
+    <!-- Sidebar -->
+    <div class="sidebar w-full md:w-64 lg:w-72 md:h-screen overflow-y-auto py-6 z-50 bg-gradient-to-b from-purple-900 to-indigo-900">
+        <!-- Logo -->
+        <div class="px-5 flex items-center justify-between mb-10">
+            <div class="flex items-center">
+                <div class="bg-gradient-to-br from-purple-600 to-pink-500 w-12 h-12 rounded-xl flex items-center justify-center shadow-lg">
+                    <i class="fas fa-shopping-bag text-white text-xl"></i>
+                </div>
+                <span class="text-white text-xl ml-3 font-bold">Gobonimo<span class="text-pink-400"></span></span>
+            </div>
+            <div class="md:hidden cursor-pointer text-white" id="mobile-menu-toggle">
+                <i class="fas fa-bars text-2xl"></i>
+            </div>
+        </div>
+        
+        <!-- Main Menu -->
+        <div class="mb-10">
+            <ul class="space-y-2 px-3">
+                <!-- All Categories Link -->
+                <li>
+                    <a href="" class="menu-item flex items-center p-4 rounded-xl text-white hover:bg-purple-700/30">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-purple-600 to-pink-500">
+                            <i class="fas fa-home text-lg"></i>
+                        </div>
+                        <span class="ml-4 font-medium">All Categories</span>
+                    </a>
+                </li>
+                
+                <!-- Categories List -->
+                {% for category in categories %}
+                <li>
+                    <a href="{% url 'handle_ad_redirect' category.id %}" 
+                       class="menu-item flex items-center p-4 rounded-xl text-white hover:bg-purple-700/30">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-purple-600/30">
+                                {% if category.image %}
+                                <img src="{{ category.image.url }}" 
+                                     alt="{{ category.name }}" 
+                                     class="h-7 w-7 object-contain">
+                                {% else %}
+                                <i class="fas fa-tag text-lg text-white"></i>
+                                {% endif %}
+                            </div>
+                            <span class="ml-3 font-medium">{{ category.name }}</span>
+                        </div>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="px-5 py-6">
+            <div class="bg-gradient-to-r from-purple-700/30 to-pink-600/30 backdrop-blur-sm rounded-2xl p-4 border border-purple-500/20">
+                <div class="text-white font-medium mb-2 flex items-center">
+                    <i class="fas fa-gift mr-2 text-pink-300"></i>
+                    Special Offers
+                </div>
+                <p class="text-xs text-purple-200 mb-3">Get up to 50% off</p>
+                <button class="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white py-2 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center">
+                    <i class="fas fa-eye mr-2"></i> View Deals
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Main Content Area -->
+    <div class="flex-1 min-h-screen">
+        <div class="p-4 md:p-6">
+            <!-- Enhanced Gallery Container -->
+            <div class="gallery-container relative mb-8 md:mb-12 h-[400px] sm:h-[350px] md:h-[400px] lg:h-[450px] rounded-xl overflow-hidden shadow-lg">
+                <div class="gallery-track h-full w-full flex" id="gallery-track">
+                    {% with products=featured_products|slice:":9" %}
+                    {% for product in products %}
+                        <div class="gallery-item h-full w-full flex-shrink-0 flex flex-col md:flex-row">
+                            <!-- Text Content -->
+                            <div class="md:w-1/2 p-4 md:p-8 flex flex-col justify-center bg-gradient-to-br from-purple-700/90 to-indigo-800/90">
+                                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 leading-tight tracking-tight">
+                                    {{ product.name }}
+                                </h2>
+                                <p class="text-white/90 mb-5 text-sm sm:text-base md:text-lg max-w-md">
+                                    Discover premium quality with our featured products
+                                </p>
+                                <div class="flex flex-col sm:flex-row gap-3">
+                                    <a href="{% url 'menu' %}?is_paid=true" 
+                                       class="bg-white text-purple-700 px-5 py-2.5 rounded-lg font-bold hover:bg-purple-50 transition-all text-sm md:text-base text-center shadow-md hover:shadow-lg">
+                                        Advertise Here
+                                    </a>
+                                    <a href="{% url 'product_detail' product.id %}" 
+                                       class="bg-transparent border-2 border-white text-white px-5 py-2.5 rounded-lg font-bold hover:bg-white/10 transition-all text-sm md:text-base text-center">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <!-- Image Content -->
+<div class="md:w-1/2 h-[140px] max-sm:h-[400px] sm:h-[200px] md:h-full w-full relative">                                <img src="{% if product.images.first %}{{ product.images.first.image.url }}{% else %}{% static 'placeholder.jpg' %}{% endif %}" 
+                                     alt="{{ product.name }}"
+                                     class="w-full h-full object-cover object-center">
+                                <!-- Price Tag -->
+                                <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-md">
+                                    <span class="font-bold text-purple-700 text-sm md:text-base">
+                                        ${{ product.price|floatformat:2 }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    {% endwith %}
+                </div>
+                
+                <!-- Gallery Navigation -->
+                <button class="gallery-nav gallery-prev" id="gallery-prev" aria-label="Previous slide">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <button class="gallery-nav gallery-next" id="gallery-next" aria-label="Next slide">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+                
+                <!-- Gallery Indicators -->
+                <div class="gallery-indicators" id="gallery-indicators">
+                    {% with products=featured_products|slice:":5" %}
+                    {% for _ in products %}
+                        <button class="indicator {% if forloop.first %}active{% endif %}" 
+                                data-index="{{ forloop.counter0 }}"
+                                aria-label="Go to slide {{ forloop.counter }}">
+                            <span class="indicator-progress"></span>
+                        </button>
+                    {% endfor %}
+                    {% endwith %}
+                </div>
+            </div>
+            
+            <!-- Featured Products -->
+            <div class="container mx-auto px-4 py-8">
+                {% for parent in parent_categories %}
+                    {% for subcategory in parent.subcategories_list %}
+                        {% if subcategory.approved_ads %}
+                            <!-- Subcategory Heading -->
+                            <h2 class="text-2xl font-bold text-gray-900 mb-5 pb-2 border-b border-gray-200">{{ subcategory.name }}</h2>
+                            
+                            <!-- Product Grid -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+                                {% for product in subcategory.approved_ads %}
+                                    <!-- Professional Product Card -->
+                                    <div class="bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-md transition-all duration-300">
+                                        <div class="relative">
+                                            <a href="{% url 'product_detail' product.id %}">
+                                                <img src="{% if product.images.first %}{{ product.images.first.image.url }}{% else %}{% static 'placeholder.jpg' %}{% endif %}" 
+                                                     class="w-full h-48 object-cover" 
+                                                     alt="{{ product.name }}">
+                                            </a>
+                                            
+                                            <!-- Badge -->
+                                            {% if product.is_featured %}
+                                            <span class="absolute top-3 left-3 bg-gradient-to-r from-purple-600 to-pink-500 text-white text-xs font-bold px-2 py-1 rounded">
+                                                <i class="fas fa-star mr-1"></i> Featured
+                                            </span>
+                                            {% endif %}
+                                            
+                                            <!-- Price -->
+                                            <span class="absolute top-3 right-3 bg-gray-900/90 text-white text-sm font-bold px-3 py-1 rounded">
+                                                ${{ product.price }}
+                                            </span>
+                                        </div>
+                                        
+                                        <div class="p-4">
+                                            <!-- Product Name -->
+                                            <h3 class="font-bold text-gray-900 mb-2 truncate">{{ product.name }}</h3>
+                                            
+                                            <!-- Location -->
+                                            <div class="flex items-center text-gray-600 text-sm mb-2">
+                                                <i class="fas fa-map-marker-alt mr-2 text-purple-600"></i>
+                                                <span class="truncate">{{ product.location }}</span>
+                                            </div>
+                                            
+                                            <!-- Time -->
+                                            <div class="flex items-center text-gray-500 text-xs mb-3">
+                                                <i class="far fa-clock mr-1"></i>
+                                                <span>{{ product.created_at|timesince }} ago</span>
+                                            </div>
+                                            
+                                            <div class="flex justify-between items-center mt-3">
+                                                <!-- Category Tag -->
+                                                <span class="text-xs bg-gray-100 px-2 py-1 rounded">
+                                                    {{ product.category.name }}
+                                                </span>
+                                                
+                                                <!-- View Details Button -->
+                                                <a href="{% url 'product_detail' product.id %}" 
+                                                   class="text-sm font-medium bg-purple-700 hover:bg-purple-800 text-white px-3 py-1.5 rounded-lg transition">
+                                                    Details
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% empty %}
+                                    <!-- Empty State -->
+                                    <div class="col-span-4 text-center py-8">
+                                        <div class="bg-gray-50 rounded-xl py-10 border-2 border-dashed border-gray-200">
+                                            <i class="fas fa-box-open text-gray-300 text-4xl mb-3"></i>
+                                            <p class="text-gray-500">No approved ads in this category</p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // Enhanced Gallery Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-toggle').addEventListener('click', function() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('md:block');
+        });
+        
+        // Gallery functionality with touch support
+        const galleryTrack = document.getElementById('gallery-track');
+        const indicators = document.querySelectorAll('.indicator');
+        const totalItems = document.querySelectorAll('.gallery-item').length;
+        let currentIndex = 0;
+        let autoSlideInterval;
+        let startX, moveX;
+        let isDragging = false;
+        
+        // Touch event handlers for mobile swipe
+        galleryTrack.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            isDragging = true;
+            stopAutoSlide();
+        });
+        
+        galleryTrack.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            moveX = e.touches[0].clientX;
+            const diff = moveX - startX;
+            galleryTrack.style.transform = `translateX(calc(-${currentIndex * 100}% + ${diff}px)`;
+            galleryTrack.style.transition = 'none';
+        });
+        
+        galleryTrack.addEventListener('touchend', () => {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            const threshold = 50;
+            const diff = moveX - startX;
+            
+            if (diff > threshold) {
+                prevSlide();
+            } else if (diff < -threshold) {
+                nextSlide();
+            } else {
+                updateGallery();
+            }
+            
+            startAutoSlide();
+        });
+        
+        function updateGallery() {
+            galleryTrack.style.transform = `translateX(-${currentIndex * 100}%)`;
+            galleryTrack.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+            
+            // Update indicators
+            indicators.forEach((indicator, index) => {
+                if (index === currentIndex) {
+                    indicator.classList.add('active');
+                    indicator.querySelector('.indicator-progress').style.animation = 'progress 5s linear';
+                } else {
+                    indicator.classList.remove('active');
+                    indicator.querySelector('.indicator-progress').style.animation = 'none';
+                }
+            });
+        }
+        
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % totalItems;
+            updateGallery();
+        }
+        
+        function prevSlide() {
+            currentIndex = (currentIndex - 1 + totalItems) % totalItems;
+            updateGallery();
+        }
+        
+        function goToSlide(index) {
+            currentIndex = index;
+            updateGallery();
+        }
+        
+        // Navigation
+        document.getElementById('gallery-next').addEventListener('click', nextSlide);
+        document.getElementById('gallery-prev').addEventListener('click', prevSlide);
+        
+        // Indicator clicks
+        indicators.forEach(indicator => {
+            indicator.addEventListener('click', function() {
+                const index = parseInt(this.getAttribute('data-index'));
+                goToSlide(index);
+            });
+        });
+        
+        // Auto slide with progress indicator
+        function startAutoSlide() {
+            // Reset all indicator animations
+            indicators.forEach(indicator => {
+                indicator.querySelector('.indicator-progress').style.animation = 'none';
+            });
+            
+            // Start new animation
+            if (indicators[currentIndex]) {
+                indicators[currentIndex].querySelector('.indicator-progress').style.animation = 'progress 5s linear';
+            }
+            
+            autoSlideInterval = setInterval(nextSlide, 5000);
+        }
+        
+        function stopAutoSlide() {
+            clearInterval(autoSlideInterval);
+        }
+        
+        // Start auto slide
+        startAutoSlide();
+        
+        // Pause auto slide on hover
+        const galleryContainer = document.querySelector('.gallery-container');
+        galleryContainer.addEventListener('mouseenter', stopAutoSlide);
+        galleryContainer.addEventListener('mouseleave', startAutoSlide);
+    });
+</script>
+
+
+{% endblock %}

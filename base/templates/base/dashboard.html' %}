@@ -1,0 +1,133 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<body class="bg-gray-900 text-white min-h-screen">
+    <main class="pt-32 sm:pt-32">
+        <!-- Dashboard Header -->
+        <section class="bg-gradient-to-b from-gray-950 to-gray-900 py-8 sm:py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl sm:text-4xl font-bold text-center mb-6 sm:mb-8">User Dashboard</h2>
+
+                <!-- Messages -->
+                {% if messages %}
+                    <div class="mb-6">
+                        {% for message in messages %}
+                            <div class="bg-green-600 text-white p-3 sm:p-4 rounded-lg text-center mx-4 sm:mx-0">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Profile Section -->
+                <div class="bg-gray-800 rounded-xl p-4 sm:p-6 lg:p-8 mb-12 max-w-2xl mx-auto">
+                    <h3 class="text-2xl sm:text-3xl font-bold mb-6">Update Your Profile</h3>
+                    <form method="POST" enctype="multipart/form-data" class="space-y-4">
+                        {% csrf_token %}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Full Name -->
+                            <div>
+                                <label for="id_full_name" class="block text-sm font-medium text-gray-300 mb-1">Full Name</label>
+                                <input type="text" name="full_name" id="id_full_name" value="{{ form.full_name.value|default_if_none:'' }}" class="w-full bg-gray-700 text-white px-3 sm:px-4 py-2 sm:py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm sm:text-base">
+                                {% if form.full_name.errors %}
+                                    <p class="text-red-500 text-xs sm:text-sm mt-1">{{ form.full_name.errors }}</p>
+                                {% endif %}
+                            </div>
+                            <!-- Email -->
+                            <div>
+                                <label for="id_email" class="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                                <input type="email" name="email" id="id_email" value="{{ form.email.value|default_if_none:'' }}" class="w-full bg-gray-700 text-white px-3 sm:px-4 py-2 sm:py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm sm:text-base">
+                                {% if form.email.errors %}
+                                    <p class="text-red-500 text-xs sm:text-sm mt-1">{{ form.email.errors }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Bio -->
+                        <div>
+                            <label for="id_bio" class="block text-sm font-medium text-gray-300 mb-1">Bio</label>
+                            <textarea name="bio" id="id_bio" class="w-full bg-gray-700 text-white px-3 sm:px-4 py-2 sm:py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm sm:text-base">{{ form.bio.value|default_if_none:'' }}</textarea>
+                            {% if form.bio.errors %}
+                                <p class="text-red-500 text-xs sm:text-sm mt-1">{{ form.bio.errors }}</p>
+                            {% endif %}
+                        </div>
+                        <!-- Phone Number -->
+                        <div>
+                            <label for="id_phone_number" class="block text-sm font-medium text-gray-300 mb-1">Phone Number</label>
+                            <input type="text" name="phone_number" id="id_phone_number" value="{{ form.phone_number.value|default_if_none:'' }}" class="w-full bg-gray-700 text-white px-3 sm:px-4 py-2 sm:py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm sm:text-base">
+                            {% if form.phone_number.errors %}
+                                <p class="text-red-500 text-xs sm:text-sm mt-1">{{ form.phone_number.errors }}</p>
+                            {% endif %}
+                        </div>
+                        <!-- Location -->
+                        <div>
+                            <label for="id_location" class="block text-sm font-medium text-gray-300 mb-1">Location</label>
+                            <input type="text" name="location" id="id_location" value="{{ form.location.value|default_if_none:'' }}" class="w-full bg-gray-700 text-white px-3 sm:px-4 py-2 sm:py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm sm:text-base">
+                            {% if form.location.errors %}
+                                <p class="text-red-500 text-xs sm:text-sm mt-1">{{ form.location.errors }}</p>
+                            {% endif %}
+                        </div>
+                        <!-- Avatar -->
+                        <div>
+                            <label for="id_avatar" class="block text-sm font-medium text-gray-300 mb-1">Profile Picture</label>
+                            <input type="file" name="avatar" id="id_avatar" class="w-full bg-gray-700 text-white px-3 sm:px-4 py-2 sm:py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm sm:text-base">
+                            {% if form.avatar.errors %}
+                                <p class="text-red-500 text-xs sm:text-sm mt-1">{{ form.avatar.errors }}</p>
+                            {% endif %}
+                            {% if user.avatar %}
+                                <img src="{{ user.avatar.url }}" alt="Current Avatar" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full mt-2 mx-auto">
+                            {% endif %}
+                        </div>
+                        <button type="submit" class="bg-red-500 text-white px-4 sm:px-6 py-2 sm:py-2 rounded-lg hover:bg-red-600 transition-colors duration-200 w-full sm:w-auto mx-auto block">Update Profile</button>
+                    </form>
+                </div>
+
+                <!-- User's Ads Section -->
+                <div class="mb-16">
+                    <h3 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 relative inline-block">
+                        Your Posted Ads
+                        <span class="absolute bottom-0 left-0 w-16 h-1 bg-red-600"></span>
+                    </h3>
+                    {% if ads.exists %}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 px-4 sm:px-0">
+                            {% for ad in ads %}
+                                <div class="product-card w-64 sm:w-72 mx-auto">
+                                    <a href="{% url 'product_detail' ad.id %}">
+                                        <div class="relative">
+                                            <img src="{% if ad.images.first %}{{ ad.images.first.image.url }}{% else %}https://via.placeholder.com/300x400{% endif %}" alt="{{ ad.name }}" class="w-full h-48 sm:h-56 object-cover rounded-lg">
+                                            <div class="gradient-overlay"></div>
+                                        </div>
+                                    </a>
+                                    <div class="p-3 sm:p-4">
+                                        <h5 class="font-bold text-lg sm:text-xl">{{ ad.name }}</h5>
+                                        <p class="text-red-500 font-bold text-base sm:text-lg">${{ ad.price|default:"N/A" }}</p>
+                                        <div class="flex justify-between mt-2 text-xs sm:text-sm text-gray-400">
+                                            <p>{{ ad.views|default:0 }} Views</p>
+                                            <p>Posted: {{ ad.created_at|date:"M d, Y" }}</p>
+                                        </div>
+                                        <!-- Delete Button -->
+                                        <form method="POST" action="{% url 'delete_ad' ad.id %}" class="mt-2" onsubmit="return confirm('Are you sure you want to delete this ad?');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="bg-red-600 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-lg hover:bg-red-700 transition-colors duration-200 w-full text-sm sm:text-base">Delete Ad</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-12 px-4 sm:px-0">
+                            <p class="text-gray-400 text-lg sm:text-xl">You haven't posted any ads yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 py-4 sm:py-6 mt-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-sm text-gray-400">© 2025 AdFlix. All rights reserved.</p>
+        </div>
+    </footer>
+{% endblock %}

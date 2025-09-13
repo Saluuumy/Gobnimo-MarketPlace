@@ -1,0 +1,385 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<div id="overlay" class="overlay fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+
+<!-- Hero Section - Gallery for Featured Ads -->
+<!-- Premium Advertisement Section -->
+<section class="bg-gradient-to-r from-purple-600/10 to-pink-500/10 border-b border-purple-600/30 py-6 px-4">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center">
+                <span class="premium-badge bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2">
+                    <i class="fas fa-crown text-xs"></i>
+                </span>
+                <h2 class="font-bold text-purple-800">Sponsored Products</h2>
+            </div>
+         <div class="flex items-center text-sm text-purple-800 font-medium">
+    <button class="ml-2 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-pink-500 hover:to-purple-700 text-white px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300">
+        <a href="{% url 'menu' %}?is_paid=true" class="flex items-center">
+            <i class="fas fa-info-circle mr-2"></i> Advertise Here
+        </a>
+    </button>
+
+            </div>
+        </div>
+
+        <!-- Horizontal Scrolling Ad Container -->
+        <div class="ad-container flex overflow-x-auto pb-6 -mx-2 px-2">
+            {% with products=featured_products|slice:":9" %}
+                {% for product in products %}
+                    <div class="ad-card flex-shrink-0 w-64 bg-white rounded-xl shadow-sm border border-purple-600/20 mx-2 overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1">
+                        <div class="relative">
+                            <a href="{% url 'product_detail' product.id %}">
+                                <img src="{% if product.images.first %}{{ product.images.first.image.url }}{% else %}/static/placeholder.jpg{% endif %}" 
+                                     alt="{{ product.name }}" 
+                                     class="w-full h-40 object-cover">
+                                <span class="absolute top-2 right-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white text-xs px-2 py-1 rounded">Sponsored</span>
+                            </a>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-purple-800 truncate">{{ product.name }}</h3>
+                            <div class="flex items-center mt-2">
+                                <span class="text-lg font-bold text-pink-500">${{ product.price }}</span>
+                                <span class="ml-auto text-xs text-gray-500">
+                                    <i class="fas fa-eye mr-1"></i> {{ product.views }} views
+                                </span>
+                            </div>
+                            <div class="flex items-center mt-3">
+                                <div class="flex items-center">
+                                   <img src="{% if product.advertiser.avatar %}{{ product.advertiser.avatar.url }}{% else %}https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100&q=80{% endif %}" 
+     class="w-6 h-6 rounded-full border border-purple-600/20"
+     alt="{{ product.advertiser.get_full_name|default:product.advertiser.email }}">
+                                    <span class="ml-2 text-xs text-purple-800/80">{{ product.created_at|timesince }} ago</span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endwith %}
+        </div>
+    </div>
+</section>
+
+<!-- Subcategories with Swipeable Products - Compact -->
+<!-- Subcategories with Swipeable Products - Compact -->
+<section class="categories-section py-6 px-4 bg-gradient-to-b from-purple-50 to-white">
+    <div class="container mx-auto max-w-6xl">
+        <div class="text-center mb-5">
+            <h2 class="text-xl font-bold text-gray-900 mb-1">Browse by Category</h2>
+            <p class="text-gray-600 text-sm max-w-2xl mx-auto">Explore products in our categories</p>
+        </div>
+        
+        {% for category in categories %}
+            {% if category.approved_ads %}
+            <div class="mb-5">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-lg font-bold text-gray-900">{{ category.name }}</h3>
+                    <div class="flex space-x-1">
+                        <button class="scroll-btn prev-btn p-1.5 rounded-full shadow-sm bg-white text-purple-800 hover:bg-purple-100 border border-gray-200" data-category="{{ category.id }}">
+                            <i class="fas fa-chevron-left text-xs"></i>
+                        </button>
+                        <button class="scroll-btn next-btn p-1.5 rounded-full shadow-sm bg-white text-purple-800 hover:bg-purple-100 border border-gray-200" data-category="{{ category.id }}">
+                            <i class="fas fa-chevron-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="relative -mt-1">
+                    <div class="product-container flex overflow-x-auto pb-3 space-x-3 scroll-container" data-category="{{ category.id }}">
+                        {% for product in category.approved_ads %}
+                        <!-- Compact Product Card -->
+                        <div class="bg-white rounded-lg shadow overflow-hidden border border-gray-200 hover:shadow-md transition flex-shrink-0 w-56">
+                            <div class="relative">
+                                {% if product.images.first %}
+                                 <a href="{% url 'product_detail' product.id %}">
+                                    <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="w-full h-40 object-cover"></a>
+                                {% else %}
+                                <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-40 flex items-center justify-center">
+                                    <i class="fas fa-image text-gray-400 text-3xl"></i>
+                                </div>
+                                {% endif %}
+                                
+                                {% if product.is_featured %}
+                                <span class="absolute top-1 left-1 bg-pink-500 text-white text-xs font-bold px-1.5 py-0.5 rounded">
+                                    Featured
+                                </span>
+                                {% endif %}
+                                
+                                <span class="absolute top-1 right-1 bg-black bg-opacity-70 text-white text-xs font-bold px-1.5 py-0.5 rounded">
+                                    ${{ product.price }}
+                                </span>
+                            </div>
+                            
+                            <div class="p-3">
+                                <h3 class="font-bold text-sm mb-1 truncate">{{ product.name }}</h3>
+                                
+                                <div class="flex items-center text-gray-600 text-xs mb-1">
+                                    <i class="fas fa-map-marker-alt mr-1 text-xs"></i>
+                                    <span class="truncate">{{ product.location }}</span>
+                                </div>
+                                
+                                <div class="flex items-center text-gray-600 text-xs">
+                                    <i class="far fa-clock mr-1 text-xs"></i>
+                                    <span>{{ product.created_at|timesince }} ago</span>
+                                </div>
+                                
+                                <div class="flex justify-between items-center mt-2">
+                                    <span class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">
+                                        {{ product.category.name }}
+                                    </span>
+                                    <a href="{% url 'product_detail' product.id %}" 
+                                       class="text-pink-600 hover:text-pink-800 font-medium text-xs">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-gray-600 text-xs italic py-2">No approved ads in this category.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</section>
+
+
+
+{% include 'footer.html' %}
+
+<script>
+// Gallery Slideshow
+  // Simple auto-scroll for ad container
+        const adContainer = document.querySelector('.ad-container');
+        let scrollAmount = 0;
+        let scrollMax = adContainer.scrollWidth - adContainer.clientWidth;
+        
+        function autoScrollAds() {
+            if (scrollAmount < scrollMax) {
+                scrollAmount += 1;
+                adContainer.scrollLeft = scrollAmount;
+            } else {
+                scrollAmount = 0;
+                adContainer.scrollLeft = 0;
+            }
+            setTimeout(autoScrollAds, 30);
+        }
+        
+        // Start auto-scroll only if there's overflow
+        if (scrollMax > 0) {
+            setTimeout(autoScrollAds, 3000);
+        }
+const gallerySlides = document.querySelector('.gallery-slides');
+const gallerySlidesItems = document.querySelectorAll('.gallery-slide');
+const totalSlides = gallerySlidesItems.length;
+const slideCounter = document.querySelector('.slide-counter');
+const prevButton = document.querySelector('.gallery-nav.prev');
+const nextButton = document.querySelector('.gallery-nav.next');
+let currentSlide = 0;
+let autoSlideInterval;
+
+function updateSlideCounter() {
+    slideCounter.textContent = `${currentSlide + 1}/${totalSlides || 1}`;
+}
+
+function goToSlide(index) {
+    currentSlide = (index + totalSlides) % totalSlides;
+    gallerySlides.style.transform = `translateX(-${currentSlide * 100}%)`;
+    updateSlideCounter();
+}
+
+function nextSlide() {
+    goToSlide(currentSlide + 1);
+}
+
+function prevSlide() {
+    goToSlide(currentSlide - 1);
+}
+
+function startAutoSlide() {
+    autoSlideInterval = setInterval(nextSlide, 5000);
+}
+
+function stopAutoSlide() {
+    clearInterval(autoSlideInterval);
+}
+
+if (totalSlides > 1) {
+    prevButton.addEventListener('click', () => {
+        stopAutoSlide();
+        prevSlide();
+        startAutoSlide();
+    });
+
+    nextButton.addEventListener('click', () => {
+        stopAutoSlide();
+        nextSlide();
+        startAutoSlide();
+    });
+
+    document.querySelector('.gallery-container').addEventListener('mouseenter', stopAutoSlide);
+    document.querySelector('.gallery-container').addEventListener('mouseleave', startAutoSlide);
+
+    startAutoSlide();
+}
+updateSlideCounter();
+
+// Advertise Button
+document.querySelector('.advertise-btn').addEventListener('click', () => {
+    alert('Interested in advertising? Our team will contact you soon!');
+});
+
+document.querySelectorAll('.product-container').forEach(container => {
+    const cards = container.querySelectorAll('.product-card');
+    const totalCards = cards.length;
+    let isDragging = false;
+    let startX;
+    let scrollLeft;
+    let animationFrame;
+
+    // Clone cards for infinite looping (if more than one card)
+    if (totalCards > 1) {
+        Array.from(cards).forEach(card => {
+            const clone = card.cloneNode(true);
+            container.appendChild(clone);
+        });
+        container.scrollLeft = 0; // Start at real cards
+    }
+
+    // Mouse Events
+    container.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.pageX - container.offsetLeft;
+        scrollLeft = container.scrollLeft;
+        container.style.cursor = 'grabbing';
+        e.preventDefault();
+    });
+
+    container.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const x = e.pageX - container.offsetLeft;
+        const walk = (x - startX) * 2; // Adjust sensitivity
+        container.scrollLeft = scrollLeft - walk;
+        animationFrame = requestAnimationFrame(() => {
+            // Handle looping
+            if (container.scrollLeft <= 0) {
+                container.scrollLeft += totalCards * 288; // 272px width + 16px gap
+            } else if (container.scrollLeft >= totalCards * 288) {
+                container.scrollLeft -= totalCards * 288;
+            }
+        });
+    });
+
+    container.addEventListener('mouseup', () => {
+        isDragging = false;
+        container.style.cursor = 'grab';
+        cancelAnimationFrame(animationFrame);
+    });
+
+    container.addEventListener('mouseleave', () => {
+        isDragging = false;
+        container.style.cursor = 'grab';
+        cancelAnimationFrame(animationFrame);
+    });
+
+    // Touch Events
+    container.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        startX = e.touches[0].pageX - container.offsetLeft;
+        scrollLeft = container.scrollLeft;
+        e.preventDefault();
+    });
+
+    container.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        const x = e.touches[0].pageX - container.offsetLeft;
+        const walk = (x - startX) * 2;
+        container.scrollLeft = scrollLeft - walk;
+        animationFrame = requestAnimationFrame(() => {
+            if (container.scrollLeft <= 0) {
+                container.scrollLeft += totalCards * 288;
+            } else if (container.scrollLeft >= totalCards * 288) {
+                container.scrollLeft -= totalCards * 288;
+            }
+        });
+    });
+
+    container.addEventListener('touchend', () => {
+        isDragging = false;
+        cancelAnimationFrame(animationFrame);
+    });
+});
+
+// Navigation Buttons for Subcategories
+document.querySelectorAll('.scroll-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        const subcategoryId = button.getAttribute('data-subcategory');
+        const container = document.querySelector(`.product-container[data-subcategory="${subcategoryId}"]`);
+        const totalCards = container.querySelectorAll('.product-card').length / 2; // Account for clones
+        const isPrev = button.classList.contains('prev-btn');
+        const scrollAmount = isPrev ? -288 : 288;
+        container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+
+        // Handle looping after scroll
+        setTimeout(() => {
+            if (container.scrollLeft <= 0) {
+                container.scrollLeft += totalCards * 288;
+            } else if (container.scrollLeft >= totalCards * 288) {
+                container.scrollLeft -= totalCards * 288;
+            }
+        }, 300); // Match scroll animation duration
+    });
+});
+</script>
+   <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        purple: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        },
+                        pink: {
+                            50: '#fdf2f8',
+                            100: '#fce7f3',
+                            200: '#fbcfe8',
+                            300: '#f9a8d4',
+                            400: '#f472b6',
+                            500: '#ec4899',
+                            600: '#db2777',
+                            700: '#be185d',
+                            800: '#9d174d',
+                            900: '#831843',
+                        },
+                        premium: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        },
+                        gold: {
+                            500: '#ffd33d',
+                            600: '#f9c513',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,107 @@
+   {% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <!-- Header with Mark All Read button -->
+        <div class="bg-gradient-to-r from-purple-600 to-pink-600 p-6 text-white">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold">Notification Center</h1>
+                    <p>Your ad status updates and notifications</p>
+                </div>
+                <form method="post" action="{% url 'mark_all_read' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-md text-sm transition-colors">
+                        Mark All as Read
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="p-6">
+            {% if page_obj.object_list %}
+            <div class="space-y-4">
+                {% for notification in page_obj %}
+                <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors 
+                            {% if notification.was_unread %}bg-blue-50 border-blue-200{% endif %}">
+                    <div class="flex items-start">
+                        <div class="mr-4">
+                            {% if notification.notification_type == 'approval' %}
+                            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                                <i class="fas fa-check text-green-600"></i>
+                            </div>
+                            {% elif notification.notification_type == 'rejection' %}
+                            <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                                <i class="fas fa-times text-red-600"></i>
+                            </div>
+                            {% elif notification.notification_type == 'featured' %}
+                            <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                                <i class="fas fa-star text-purple-600"></i>
+                            </div>
+                            {% else %}
+                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                <i class="fas fa-info-circle text-blue-600"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex-1">
+                            <h3 class="font-medium text-gray-800">{{ notification.message }}</h3>
+                            <p class="text-sm text-gray-500 mt-1">
+                                {{ notification.created_at|timesince }} ago
+                                {% if notification.ad %}
+                                · <a href="{% url 'product_detail' notification.ad.id %}" class="text-indigo-600 hover:underline">View Ad</a>
+                                {% endif %}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <a href="{% url 'delete_notification' notification.id %}" class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-12">
+                <i class="fas fa-bell-slash text-4xl text-gray-300 mb-4"></i>
+                <p class="text-gray-500">No notifications yet</p>
+            </div>
+            {% endif %}
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <div class="mt-8 flex justify-center">
+                <div class="flex space-x-1">
+                    {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 bg-gray-200 rounded-md hover:bg-purple-600 hover:text-white">
+                        &laquo;
+                    </a>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <span class="px-3 py-1 bg-purple-600 text-white rounded-md">{{ num }}</span>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?page={{ num }}" class="px-3 py-1 bg-gray-200 rounded-md hover:bg-purple-600 hover:text-white">
+                        {{ num }}
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 bg-gray-200 rounded-md hover:bg-purple-600 hover:text-white">
+                        &raquo;
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

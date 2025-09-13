@@ -1,0 +1,246 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Search Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Search Results</h1>
+        
+        <div class="bg-white rounded-lg shadow p-4 mb-6">
+            <p class="text-gray-700 mb-3">
+                {% if keyword or location or category_name %}
+                    Showing results for:
+                    {% if keyword %}<span class="font-semibold">"{{ keyword }}"</span>{% endif %}
+                    {% if location %}in <span class="font-semibold">{{ location }}</span>{% endif %}
+                    {% if category_name %}in category: <span class="font-semibold">{{ category_name }}</span>{% endif %}
+                {% else %}
+                    Showing all listings
+                {% endif %}
+            </p>
+            
+            <!-- Mini search form -->
+            <form method="GET" action="{% url 'search_ads' %}" class="flex gap-2">
+                <input name="q" type="text" placeholder="Keywords" 
+                       class="flex-1 px-4 py-2 border rounded-lg" 
+                       value="{{ request.GET.q }}">
+                <button type="submit" class="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- No Results Section -->
+    {% if not has_results %}
+    <div class="text-center py-16 bg-white rounded-xl shadow-lg">
+        <div class="mb-6 text-pink-500">
+            <i class="fas fa-search fa-4x"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">No Matching Results Found</h2>
+        <p class="text-gray-600 mb-8 max-w-xl mx-auto">
+            We couldn't find any listings matching your search criteria. Try adjusting your filters.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a href="{% url 'index' %}" class="px-6 py-3 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition text-center">
+                <i class="fas fa-home mr-2"></i> Go to Homepage
+            </a>
+            <a href="{% url 'search_ads' %}" class="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition text-center">
+                <i class="fas fa-redo mr-2"></i> Try New Search
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Similar Ads Notice -->
+    {% if has_similar %}
+    <div class="{% if has_exact %}bg-blue-50 border-l-4 border-blue-400{% else %}bg-yellow-50 border-l-4 border-yellow-400{% endif %} p-4 mb-6 rounded">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-info-circle {% if has_exact %}text-blue-400{% else %}text-yellow-400{% endif %} text-xl"></i>
+            </div>
+            <div class="ml-3">
+                <p class="{% if has_exact %}text-blue-700{% else %}text-yellow-700{% endif %}">
+                    {% if has_exact %}
+                    <strong>Showing exact matches first</strong>, with similar listings below
+                    {% else %}
+                    <strong>No exact matches found</strong>, but here are similar listings you might like
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Exact Matches -->
+    {% if has_exact %}
+    <section class="mb-12">
+        <h2 class="text-xl font-bold text-gray-900 mb-6">Exact Matches</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for ad in ads %}
+            <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition">
+                <div class="relative">
+                    {% if ad.images.first %}
+                    <img src="{{ ad.images.first.image.url }}" alt="{{ ad.name }}" 
+                         class="w-full h-56 object-cover">
+                    {% else %}
+                    <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-56 flex items-center justify-center">
+                        <i class="fas fa-image text-gray-400 text-4xl"></i>
+                    </div>
+                    {% endif %}
+                    
+                    {% if ad.is_featured %}
+                    <span class="absolute top-2 left-2 bg-pink-500 text-white text-xs font-bold px-2 py-1 rounded">
+                        Featured
+                    </span>
+                    {% endif %}
+                    
+                    <span class="absolute top-2 right-2 bg-black bg-opacity-70 text-white text-xs font-bold px-2 py-1 rounded">
+                        {{ ad.price }} USD
+                    </span>
+                </div>
+                
+                <div class="p-4">
+                    <h3 class="font-bold text-lg mb-1 truncate">{{ ad.name }}</h3>
+                    
+                    <div class="flex items-center text-gray-600 text-sm mb-2">
+                        <i class="fas fa-map-marker-alt mr-1"></i>
+                        <span class="truncate">{{ ad.location }}</span>
+                        {% if location and location|lower in ad.location|lower %}
+                        <span class="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded">
+                            Exact Location
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="flex items-center text-gray-600 text-sm mb-3">
+                        <i class="far fa-clock mr-1"></i>
+                        <span>{{ ad.created_at}}</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mt-4">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">
+                            {{ ad.category.name }}
+                        </span>
+                         <a href="{% url 'product_detail' ad.id %}"
+                           class="text-pink-600 hover:text-pink-800 font-medium text-sm">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Similar Listings (Cars Only) -->
+    {% if has_similar %}
+    <section class="mb-12">
+        <h2 class="text-xl font-bold text-gray-900 mb-6">
+            {% if has_exact %}More Similar Listings{% else %}Similar Listings{% endif %}
+        </h2>
+        
+        {% if not has_exact %}
+        <div class="mb-6">
+            <p class="text-gray-600">
+                <i class="fas fa-info-circle text-blue-500 mr-1"></i>
+                Showing similar vehicles in other locations
+            </p>
+        </div>
+        {% endif %}
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for ad in similar_ads %}
+            <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition">
+                <div class="relative">
+                    {% if ad.images.first %}
+                    <img src="{{ ad.images.first.image.url }}" alt="{{ ad.name }}" 
+                         class="w-full h-56 object-cover">
+                    {% else %}
+                    <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-56 flex items-center justify-center">
+                        <i class="fas fa-image text-gray-400 text-4xl"></i>
+                    </div>
+                    {% endif %}
+                    
+                    {% if ad.is_featured %}
+                    <span class="absolute top-2 left-2 bg-pink-500 text-white text-xs font-bold px-2 py-1 rounded">
+                        Featured
+                    </span>
+                    {% endif %}
+                    
+                    <span class="absolute top-2 right-2 bg-black bg-opacity-70 text-white text-xs font-bold px-2 py-1 rounded">
+                        {{ ad.price }} USD
+                    </span>
+                </div>
+                
+                <div class="p-4">
+                    <h3 class="font-bold text-lg mb-1 truncate">{{ ad.name }}</h3>
+                    
+                    <div class="flex items-center text-gray-600 text-sm mb-2">
+                        <i class="fas fa-map-marker-alt mr-1"></i>
+                        <span class="truncate">{{ ad.location }}</span>
+                    </div>
+                    
+                    <div class="flex items-center text-gray-600 text-sm mb-3">
+                        <i class="far fa-clock mr-1"></i>
+                        <span>{{ ad.created_at }}</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mt-4">
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">
+                            {{ ad.category.name }}
+                        </span>
+                        <a href="{% url 'product_detail' ad.id %}" class="text-pink-600 hover:text-pink-800 font-medium text-sm">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Pagination -->
+    {% if ads.paginator.num_pages > 1 %}
+    <div class="flex justify-center mt-8">
+        <nav class="inline-flex rounded-md shadow">
+            {% if ads.has_previous %}
+            <a href="?page={{ ads.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-l-md">
+                Previous
+            </a>
+            {% endif %}
+            
+            <span class="inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                Page {{ ads.number }} of {{ ads.paginator.num_pages }}
+            </span>
+            
+            {% if ads.has_next %}
+            <a href="?page={{ ads.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-r-md">
+                Next
+            </a>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+
+    <!-- Search Tips -->
+    {% if has_results %}
+    <div class="mt-12 bg-gray-50 rounded-xl p-6 border border-gray-200">
+        <h3 class="font-bold text-lg text-gray-900 mb-3 flex items-center">
+            <i class="fas fa-lightbulb text-yellow-500 mr-2"></i> Search Tips
+        </h3>
+        <ul class="list-disc pl-5 space-y-2 text-gray-600">
+            <li>Try <strong>different keywords</strong> or more general terms (e.g., "sedan" instead of "Toyota Camry")</li>
+            <li>Check your spelling or try <strong>variations of model names</strong></li>
+            <li>Remove location filters to <strong>expand your search area</strong></li>
+            <li>Use <strong>state abbreviations</strong> (e.g., "CA") for broader location matching</li>
+            <li>Browse by category using the main navigation menu</li>
+        </ul>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

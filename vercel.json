@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "Ecommerce/wsgi.py",
+      "use": "@vercel/python",
+      "config": {
+        "runtime": "python3.11",
+        "buildCommand": "python manage.py collectstatic --noinput", 
+        "installCommand": "pip install --upgrade pip && pip install -r requirements.txt",
+        "includeFiles": [
+          "Ecommerce/**",
+          "requirements.txt",
+          "staticfiles/**"  
+        ]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",  
+      "dest": "Ecommerce/wsgi.py" 
+    },
+    {
+      "src": "/(.*)",
+      "dest": "Ecommerce/wsgi.py"
+    }
+  ]
+}

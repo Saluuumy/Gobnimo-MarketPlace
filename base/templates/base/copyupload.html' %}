@@ -1,0 +1,1488 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Ads</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Font import */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        /* General styles */
+        * {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f3ff 0%, #fdf2f8 100%);
+            min-height: 100vh;
+          
+        }
+
+        /* Container styles */
+        .container {
+            max-width: 896px;
+            margin: 0 auto;
+        }
+
+        /* Navigation styles */
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            color: #7c3aed;
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #6d28d9;
+        }
+
+        .nav-link i {
+            margin-right: 8px;
+        }
+
+        /* Gradient background */
+        .gradient-bg {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            padding: 32px;
+            color: white;
+        }
+
+        /* Border gradient container */
+        .border-gradient {
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .border-gradient::before {
+            content: "";
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            border-radius: 12px;
+            z-index: -1;
+        }
+
+        /* Form header */
+        .form-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        @media (min-width: 768px) {
+            .form-header {
+                flex-direction: row;
+            }
+        }
+
+        .form-header-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .form-header-icon {
+                margin-right: 24px;
+                margin-bottom: 0;
+            }
+        }
+
+        .form-header-text {
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            .form-header-text {
+                text-align: left;
+            }
+        }
+
+        .form-header-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .form-header-text p {
+            opacity: 0.9;
+            margin-top: 8px;
+        }
+
+        .form-header-badge {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 9999px;
+            padding: 8px 16px;
+            margin-left: auto;
+        }
+
+        @media (min-width: 768px) {
+            .form-header-badge {
+                display: block;
+            }
+        }
+
+        .form-header-badge i {
+            margin-right: 8px;
+        }
+
+        /* Form section */
+        .form-section {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .form-section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .form-section-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ede9fe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+        .form-section-icon i {
+            color: #8b5cf6;
+        }
+
+        .form-section h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        /* Input fields */
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+            outline: none;
+        }
+
+        /* Labels */
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        /* Grid layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .grid-3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .grid-4 {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Price input */
+        .price-container {
+            position: relative;
+        }
+
+        .price-container span {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+
+        .price-container input {
+            padding-left: 40px;
+        }
+
+        /* Toggle buttons */
+        .toggle-btn {
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .toggle-btn input {
+            display: none;
+        }
+
+        .toggle-btn div {
+            padding: 12px 24px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-btn input:checked + div {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            color: white;
+            border-color: transparent;
+        }
+
+        /* File input */
+        .file-input::-webkit-file-upload-button {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .file-input::-webkit-file-upload-button:hover {
+            opacity: 0.9;
+        }
+
+        /* Gradient button */
+        .gradient-btn {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .gradient-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Preview card */
+        .preview-card {
+            position: relative;
+            transition: all 0.3s ease;
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            height: 192px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #f9fafb;
+            overflow: hidden;
+        }
+
+        .preview-card:hover {
+            transform: scale(1.03);
+        }
+
+        .preview-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Review process */
+        .review-process {
+            padding: 16px;
+            background: linear-gradient(to right, #f5f3ff, #fdf2f8);
+            border: 1px solid #ede9fe;
+            border-radius: 8px;
+        }
+
+        .review-status {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .review-status span {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .review-status.yellow span {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .review-status.green span {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .review-status.red span {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .review-status i {
+            margin-right: 8px;
+        }
+
+        .review-status div {
+            margin-left: 16px;
+        }
+
+        .review-status h4 {
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .review-status p {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* Features section */
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        @media (min-width: 768px) {
+            .features-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .feature-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .feature-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .feature-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* Success modal */
+        .success-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            overflow: auto;
+            padding: 20px;
+        }
+
+        .success-modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 448px;
+            width: 100%;
+            margin: auto;
+            position: relative;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: confetti-fall 5s ease-in-out infinite;
+        }
+
+        .confetti.primary-500 { background: #8b5cf6; }
+        .confetti.amber-400 { background: #f59e0b; }
+        .confetti.green-400 { background: #10b981; }
+        .confetti.pink-400 { background: #ec4899; }
+        .confetti.purple-400 { background: #a855f7; }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .success-modal-content .success-icon {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            background: linear-gradient(to right, #8b5cf6, #ec4899);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .success-modal-content h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .success-modal-content p {
+            color: #6b7280;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .success-modal-content a {
+            display: inline-block;
+            background: linear-gradient(to right, #8b5cf6, #ec4899);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s ease;
+        }
+
+        .success-modal-content a:hover {
+            opacity: 0.9;
+        }
+
+        /* Submit button */
+        .submit-section {
+            padding-top: 24px;
+            border-top: 1px solid #f3f4f6;
+            text-align: center;
+        }
+
+        .submit-section p {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 16px;
+        }
+
+        .submit-section p i {
+            margin-right: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .from-violet-50 {
+                --tw-gradient-from: #fff var(--tw-gradient-from-position);
+                --tw-gradient-to: rgb(245 243 255 / 0) var(--tw-gradient-to-position);
+                --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+                width: 298px;
+                margin-left: -17px;
+                font-size: 11px !important;
+            }
+            #addImageBtn {
+               width: 127px;
+               font-size: 11px;
+            }
+            .gradient-btn {
+                background: linear-gradient(135deg, #8b5cf6, #ec4899);
+                transition: all 0.3s ease;
+                width: 211px;
+                font-size: 12px !important;
+            }
+            .image-input-group {
+                width: 140px;
+                font-size: 12px !important;
+            }
+            .form-section h3.font-medium {
+                font-size: 12px;
+            }
+            .form-section p.text-sm {
+                font-size: 11px;
+            }
+            .review-step h3 {
+                font-size: 11px !important;
+                line-height: 1.3;
+            }
+            .review-step p {
+                font-size: 10px !important;
+                line-height: 1.3;
+            }
+            .status-badge {
+                padding: 0.25rem 0.5rem !important;
+                font-size: 12px !important;
+            }
+            .step-content {
+                margin-left: 0.75rem !important;
+            }
+            .info-container {
+                padding: 0.75rem !important;
+            }
+            .max-w-2xl {
+           width: 325px;
+    position: relative;
+    right: 0px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <div style="margin-bottom: 32px;">
+            <a href="{% url 'index' %}" class="nav-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Categories
+            </a>
+        </div>
+
+        <!-- Form Container -->
+        <div class="border-gradient">
+            <!-- Form Header -->
+            <div class="gradient-bg">
+                <div class="form-header">
+                    <div class="form-header-icon">
+                        <i class="fas fa-crown" style="font-size: 24px;"></i>
+                    </div>
+                    <div class="form-header-text">
+                        <h1>Post Free Ad</h1>
+                        <p>Showcase your product</p>
+                    </div>
+                    <div class="form-header-badge">
+                        <i class="fas fa-bolt"></i>
+                        <span>Free Post</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Content -->
+            <form id="productForm" method="post" enctype="multipart/form-data" style="padding: 24px; background: white;">
+                {% csrf_token %}
+                
+                <!-- Hidden Fields for Database -->
+                <input type="hidden" name="advertiser" value="{{ request.user.id }}">
+                <input type="hidden" name="category" value="{{ category.id }}">
+                <input type="hidden" name="status" value="pending">
+                <input type="hidden" name="is_featured" value="true">
+                
+                <!-- Product Details -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <div class="form-section-icon">
+                            <i class="fas fa-tag"></i>
+                        </div>
+                        <h2>Product Details</h2>
+                    </div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <!-- Ad Type -->
+                        <div style="margin-bottom: 24px;">
+                            <label class="form-label">Ad Type</label>
+                            <select name="ad_type" class="input-field">
+                                <option value="sell" {% if form.ad_type.value == "sell" %}selected{% endif %}>For Sale</option>
+                                <option value="rent" {% if form.ad_type.value == "rent" %}selected{% endif %}>For Rent</option>
+                                <option value="exchange" {% if form.ad_type.value == "exchange" %}selected{% endif %}>For Exchange</option>
+                                <option value="service" {% if form.ad_type.value == "service" %}selected{% endif %}>Service</option>
+                                <option value="job" {% if form.ad_type.value == "job" %}selected{% endif %}>Job</option>
+                                <option value="other" {% if form.ad_type.value == "other" %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+
+                        <div style="margin-bottom: 24px;">
+                            <label class="form-label">Product Name</label>
+                            <input type="text" name="name" value="{{ form.name.value|default_if_none:'' }}" 
+                                   class="input-field" required>
+                        </div>
+                        <div class="grid-2">
+                            <div>
+                                <label class="form-label">Price</label>
+                                <div class="price-container">
+                                    <span>$</span>
+                                    <input type="number" name="price" step="0.01" 
+                                           value="{{ form.price.value|default_if_none:'' }}"
+                                           class="input-field" required>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="form-label">Location</label>
+                                <input type="text" name="location" 
+                                       value="{{ form.location.value|default_if_none:'' }}"
+                                       class="input-field" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category Specific Sections -->
+                {% if category.name == 'Vehicles' %}
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <div class="form-section-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <h2>Car Details</h2>
+                    </div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <div class="grid-3">
+                            <div>
+                                <label class="form-label"><i class="fas fa-cog" style="margin-right: 8px; color: #8b5cf6;"></i>Motor Type</label>
+                                <input type="text" name="motortype" 
+                                       value="{{ form.motortype.value|default_if_none:'' }}"
+                                       class="input-field">
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-calendar-alt" style="margin-right: 8px; color: #8b5cf6;"></i>Year</label>
+                                <input type="number" name="year" 
+                                       value="{{ form.year.value|default_if_none:'' }}"
+                                       class="input-field">
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-cogs" style="margin-right: 8px; color: #8b5cf6;"></i>Transmission</label>
+                                <select name="geartype" class="input-field">
+                                    <option value="">Select Transmission</option>
+                                    <option value="Automatic" {% if form.geartype.value == "Automatic" %}selected{% endif %}>Automatic</option>
+                                    <option value="Manual" {% if form.geartype.value == "Manual" %}selected{% endif %}>Manual</option>
+                                    <option value="Semi-Automatic" {% if form.geartype.value == "Semi-Automatic" %}selected{% endif %}>Semi-Automatic</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-palette" style="margin-right: 8px; color: #8b5cf6;"></i>Color</label>
+                                <input type="text" name="color" 
+                                       value="{{ form.color.value|default_if_none:'' }}"
+                                       class="input-field">
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-car" style="margin-right: 8px; color: #8b5cf6;"></i>Vehicle Type</label>
+                                <select name="vehicle_type" class="input-field">
+                                    <option value="">Select Type</option>
+                                    <option value="car" {% if form.vehicle_type.value == "car" %}selected{% endif %}>Car</option>
+                                    <option value="motorcycle" {% if form.vehicle_type.value == "motorcycle" %}selected{% endif %}>Motorcycle</option>
+                                    <option value="bus" {% if form.vehicle_type.value == "bus" %}selected{% endif %}>Bus</option>
+                                    <option value="truck" {% if form.vehicle_type.value == "truck" %}selected{% endif %}>Truck</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-exchange-alt" style="margin-right: 8px; color: #8b5cf6;"></i>Automatic?</label>
+                                <div style="display: flex; align-items: center;">
+                                    <input type="checkbox" name="is_automatic" id="is_automatic"
+                                           style="height: 20px; width: 20px; color: #8b5cf6; border: 1px solid #d1d5db; border-radius: 4px;"
+                                           {% if form.is_automatic.value %}checked{% endif %}>
+                                    <label for="is_automatic" style="margin-left: 8px; color: #374151;">Yes</label>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="form-label">Condition</label>
+                                <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                                    <label class="toggle-btn">
+                                        <input type="radio" name="condition" value="Used" 
+                                               {% if form.condition.value == "Used" %}checked{% endif %} required>
+                                        <div>Used</div>
+                                    </label>
+                                    <label class="toggle-btn">
+                                        <input type="radio" name="condition" value="New" 
+                                               {% if form.condition.value == "New" %}checked{% endif %} required>
+                                        <div>New</div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% elif category.name == 'Property' %}
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <div class="form-section-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <h2>Property Details</h2>
+                    </div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <div class="grid-3">
+                            <div>
+                                <label class="form-label"><i class="fas fa-bed" style="margin-right: 8px; color: #8b5cf6;"></i>Number of Rooms</label>
+                                <input type="number" name="num_rooms" 
+                                       value="{{ form.num_rooms.value|default_if_none:'' }}"
+                                       class="input-field">
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-bath" style="margin-right: 8px; color: #8b5cf6;"></i>Number of Bathrooms</label>
+                                <input type="number" name="num_baths" 
+                                       value="{{ form.num_baths.value|default_if_none:'' }}"
+                                       class="input-field">
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-ruler-combined" style="margin-right: 8px; color: #8b5cf6;"></i>Area Size (sq ft/m)</label>
+                                <input type="text" name="area_size" 
+                                       value="{{ form.area_size.value|default_if_none:'' }}"
+                                       class="input-field">
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-couch" style="margin-right: 8px; color: #8b5cf6;"></i>Furnishing Type</label>
+                                <select name="furnishing_type" class="input-field">
+                                    <option value="">Select Type</option>
+                                    <option value="fully_furnished" {% if form.furnishing_type.value == "fully_furnished" %}selected{% endif %}>Fully Furnished</option>
+                                    <option value="semi_furnished" {% if form.furnishing_type.value == "semi_furnished" %}selected{% endif %}>Semi Furnished</option>
+                                    <option value="unfurnished" {% if form.furnishing_type.value == "unfurnished" %}selected{% endif %}>Unfurnished</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-building" style="margin-right: 8px; color: #8b5cf6;"></i>Property Type</label>
+                                <select name="property_type" class="input-field">
+                                    <option value="">Select Type</option>
+                                    <option value="apartment" {% if form.property_type.value == "apartment" %}selected{% endif %}>Apartment</option>
+                                    <option value="house" {% if form.property_type.value == "house" %}selected{% endif %}>House</option>
+                                    <option value="villa" {% if form.property_type.value == "villa" %}selected{% endif %}>Villa</option>
+                                    <option value="condo" {% if form.property_type.value == "condo" %}selected{% endif %}>Condo</option>
+                                    <option value="commercial" {% if form.property_type.value == "commercial" %}selected{% endif %}>Commercial</option>
+                                    <option value="office" {% if form.property_type.value == "office" %}selected{% endif %}>Office Space</option>
+                                    <option value="warehouse" {% if form.property_type.value == "warehouse" %}selected{% endif %}>Warehouse</option>
+                                    <option value="farmhouse" {% if form.property_type.value == "farmhouse" %}selected{% endif %}>Farm House</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid-4" style="margin-top: 16px;">
+                            <div>
+                                <label class="form-label"><i class="fas fa-parking" style="margin-right: 8px; color: #8b5cf6;"></i>Has Parking?</label>
+                                <div style="display: flex; align-items: center;">
+                                    <input type="checkbox" name="has_parking" id="has_parking"
+                                           style="height: 20px; width: 20px; color: #8b5cf6; border: 1px solid #d1d5db; border-radius: 4px;"
+                                           {% if form.has_parking.value %}checked{% endif %}>
+                                    <label for="has_parking" style="margin-left: 8px; color: #374151;">Yes</label>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-swimming-pool" style="margin-right: 8px; color: #8b5cf6;"></i>Has Pool?</label>
+                                <div style="display: flex; align-items: center;">
+                                    <input type="checkbox" name="has_pool" id="has_pool"
+                                           style="height: 20px; width: 20px; color: #8b5cf6; border: 1px solid #d1d5db; border-radius: 4px;"
+                                           {% if form.has_pool.value %}checked{% endif %}>
+                                    <label for="has_pool" style="margin-left: 8px; color: #374151;">Yes</label>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-tint" style="margin-right: 8px; color: #8b5cf6;"></i>Has Water?</label>
+                                <div style="display: flex; align-items: center;">
+                                    <input type="checkbox" name="has_water" id="has_water"
+                                           style="height: 20px; width: 20px; color: #8b5cf6; border: 1px solid #d1d5db; border-radius: 4px;"
+                                           {% if form.has_water.value %}checked{% endif %}>
+                                    <label for="has_water" style="margin-left: 8px; color: #374151;">Yes</label>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-bolt" style="margin-right: 8px; color: #8b5cf6;"></i>Has Electricity?</label>
+                                <div style="display: flex; align-items: center;">
+                                    <input type="checkbox" name="has_electricity" id="has_electricity"
+                                           style="height: 20px; width: 20px; color: #8b5cf6; border: 1px solid #d1d5db; border-radius: 4px;"
+                                           {% if form.has_electricity.value %}checked{% endif %}>
+                                    <label for="has_electricity" style="margin-left: 8px; color: #374151;">Yes</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% elif category.name == 'Lands' %}
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <div class="form-section-icon">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <h2>Land Details</h2>
+                    </div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <div class="grid-2">
+                            <div>
+                                <label class="form-label"><i class="fas fa-map" style="margin-right: 8px; color: #8b5cf6;"></i>Land Type</label>
+                                <select name="land_type" class="input-field">
+                                    <option value="">Select Type</option>
+                                    <option value="residential" {% if form.land_type.value == "residential" %}selected{% endif %}>Residential</option>
+                                    <option value="agricultural" {% if form.land_type.value == "agricultural" %}selected{% endif %}>Agricultural</option>
+                                    <option value="commercial" {% if form.land_type.value == "commercial" %}selected{% endif %}>Commercial</option>
+                                    <option value="industrial" {% if form.land_type.value == "industrial" %}selected{% endif %}>Industrial</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-ruler-combined" style="margin-right: 8px; color: #8b5cf6;"></i>Land Area (acres/hectares)</label>
+                                <input type="text" name="land_area" 
+                                       value="{{ form.land_area.value|default_if_none:'' }}"
+                                       class="input-field">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% elif category.name == 'Electronics' %}
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <div class="form-section-icon">
+                            <i class="fas fa-laptop"></i>
+                        </div>
+                        <h2>Electronics Details</h2>
+                    </div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <div class="grid-3">
+                            <div>
+                                <label class="form-label"><i class="fas fa-mobile-alt" style="margin-right: 8px; color: #8b5cf6;"></i>Electronics Type</label>
+                                <select name="electronics_type" class="input-field">
+                                    <option value="">Select Type</option>
+                                    <option value="phone" {% if form.electronics_type.value == "phone" %}selected{% endif %}>Mobile Phone</option>
+                                    <option value="laptop" {% if form.electronics_type.value == "laptop" %}selected{% endif %}>Laptop</option>
+                                    <option value="tablet" {% if form.electronics_type.value == "tablet" %}selected{% endif %}>Tablet</option>
+                                    <option value="camera" {% if form.electronics_type.value == "camera" %}selected{% endif %}>Camera</option>
+                                    <option value="tv" {% if form.electronics_type.value == "tv" %}selected{% endif %}>TV</option>
+                                    <option value="audio" {% if form.electronics_type.value == "audio" %}selected{% endif %}>Audio Equipment</option>
+                                    <option value="gaming" {% if form.electronics_type.value == "gaming" %}selected{% endif %}>Gaming Console</option>
+                                    <option value="smart_home" {% if form.electronics_type.value == "smart_home" %}selected{% endif %}>Smart Home Devices</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-code" style="margin-right: 8px; color: #8b5cf6;"></i>Operating System</label>
+                                <select name="operating_system" class="input-field">
+                                    <option value="">Select OS</option>
+                                    <option value="android" {% if form.operating_system.value == "android" %}selected{% endif %}>Android</option>
+                                    <option value="ios" {% if form.operating_system.value == "ios" %}selected{% endif %}>iOS</option>
+                                    <option value="windows" {% if form.operating_system.value == "windows" %}selected{% endif %}>Windows</option>
+                                    <option value="other" {% if form.operating_system.value == "other" %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-hdd" style="margin-right: 8px; color: #8b5cf6;"></i>Storage Capacity</label>
+                                <input type="text" name="storage_capacity" 
+                                       value="{{ form.storage_capacity.value|default_if_none:'' }}"
+                                       class="input-field">
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-tablet-alt" style="margin-right: 8px; color: #8b5cf6;"></i>Screen Size (inches)</label>
+                                <input type="number" name="screen_size" step="0.1"
+                                       value="{{ form.screen_size.value|default_if_none:'' }}"
+                                       class="input-field">
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-memory" style="margin-right: 8px; color: #8b5cf6;"></i>RAM</label>
+                                <input type="text" name="ram" 
+                                       value="{{ form.ram.value|default_if_none:'' }}"
+                                       class="input-field">
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-microchip" style="margin-right: 8px; color: #8b5cf6;"></i>Processor</label>
+                                <input type="text" name="processor" 
+                                       value="{{ form.processor.value|default_if_none:'' }}"
+                                       class="input-field">
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-camera" style="margin-right: 8px; color: #8b5cf6;"></i>Camera Resolution</label>
+                                <input type="text" name="camera_resolution" 
+                                       value="{{ form.camera_resolution.value|default_if_none:'' }}"
+                                       class="input-field">
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-clipboard-check" style="margin-right: 8px; color: #8b5cf6;"></i>Condition</label>
+                                <select name="electronics_condition" class="input-field">
+                                    <option value="">Select Condition</option>
+                                    <option value="new" {% if form.electronics_condition.value == "new" %}selected{% endif %}>New</option>
+                                    <option value="second_hand" {% if form.electronics_condition.value == "second_hand" %}selected{% endif %}>Second Hand</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-file-contract" style="margin-right: 8px; color: #8b5cf6;"></i>Warranty</label>
+                                <div style="display: flex; align-items: center;">
+                                    <input type="checkbox" name="has_warranty" id="has_warranty"
+                                           style="height: 20px; width: 20px; color: #8b5cf6; border: 1px solid #d1d5db; border-radius: 4px;"
+                                           {% if form.has_warranty.value %}checked{% endif %}>
+                                    <label for="has_warranty" style="margin-left: 8px; color: #374151;">Has Warranty</label>
+                                </div>
+                                <input type="text" name="warranty_period" 
+                                       value="{{ form.warranty_period.value|default_if_none:'' }}"
+                                       placeholder="Warranty period"
+                                       class="input-field" style="margin-top: 8px;">
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-sim-card" style="margin-right: 8px; color: #8b5cf6;"></i>SIM Type</label>
+                                <select name="sim_type" class="input-field">
+                                    <option value="">Select Type</option>
+                                    <option value="single" {% if form.sim_type.value == "single" %}selected{% endif %}>Single SIM</option>
+                                    <option value="dual" {% if form.sim_type.value == "dual" %}selected{% endif %}>Dual SIM</option>
+                                    <option value="e_sim" {% if form.sim_type.value == "e_sim" %}selected{% endif %}>eSIM</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% elif category.name == 'Jobs' %}
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <div class="form-section-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h2>Job Details</h2>
+                    </div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <div class="grid-2">
+                            <div>
+                                <label class="form-label"><i class="fas fa-calendar-alt" style="margin-right: 8px; color: #8b5cf6;"></i>Job Type</label>
+                                <select name="job_type" class="input-field">
+                                    <option value="">Select Type</option>
+                                    <option value="full_time" {% if form.job_type.value == "full_time" %}selected{% endif %}>Full Time</option>
+                                    <option value="part_time" {% if form.job_type.value == "part_time" %}selected{% endif %}>Part Time</option>
+                                    <option value="contract" {% if form.job_type.value == "contract" %}selected{% endif %}>Contract</option>
+                                    <option value="internship" {% if form.job_type.value == "internship" %}selected{% endif %}>Internship</option>
+                                    <option value="remote" {% if form.job_type.value == "remote" %}selected{% endif %}>Remote</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-dollar-sign" style="margin-right: 8px; color: #8b5cf6;"></i>Salary</label>
+                                <input type="text" name="salary" 
+                                       value="{{ form.salary.value|default_if_none:'' }}"
+                                       placeholder="e.g. $50,000 or Negotiable"
+                                       class="input-field">
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-user-tie" style="margin-right: 8px; color: #8b5cf6;"></i>Experience Required</label>
+                                <input type="text" name="experience_required" 
+                                       value="{{ form.experience_required.value|default_if_none:'' }}"
+                                       placeholder="e.g. 3+ years"
+                                       class="input-field">
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-graduation-cap" style="margin-right: 8px; color: #8b5cf6;"></i>Education Required</label>
+                                <input type="text" name="education_required" 
+                                       value="{{ form.education_required.value|default_if_none:'' }}"
+                                       placeholder="e.g. Bachelor's Degree"
+                                       class="input-field">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% elif category.name == 'Service' %}
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <div class="form-section-icon">
+                            <i class="fas fa-concierge-bell"></i>
+                        </div>
+                        <h2>Service Details</h2>
+                    </div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <div class="grid-2">
+                            <div>
+                                <label class="form-label"><i class="fas fa-tools" style="margin-right: 8px; color: #8b5cf6;"></i>Service Type</label>
+                                <select name="service_type" class="input-field">
+                                    <option value="">Select Type</option>
+                                    <option value="cleaning" {% if form.service_type.value == "cleaning" %}selected{% endif %}>Cleaning</option>
+                                    <option value="moving" {% if form.service_type.value == "moving" %}selected{% endif %}>Moving & Storage</option>
+                                    <option value="repair" {% if form.service_type.value == "repair" %}selected{% endif %}>Repair & Maintenance</option>
+                                    <option value="it" {% if form.service_type.value == "it" %}selected{% endif %}>IT Services</option>
+                                    <option value="beauty" {% if form.service_type.value == "beauty" %}selected{% endif %}>Beauty & Wellness</option>
+                                    <option value="tutoring" {% if form.service_type.value == "tutoring" %}selected{% endif %}>Tutoring & Lessons</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-map-marker-alt" style="margin-right: 8px; color: #8b5cf6;"></i>Service Area</label>
+                                <input type="text" name="service_area" 
+                                       value="{{ form.service_area.value|default_if_none:'' }}"
+                                       placeholder="e.g. City-wide or specific areas"
+                                       class="input-field">
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-clock" style="margin-right: 8px; color: #8b5cf6;"></i>Availability</label>
+                                <input type="text" name="availability" 
+                                       value="{{ form.availability.value|default_if_none:'' }}"
+                                       placeholder="e.g. Mon-Fri 9am-5pm"
+                                       class="input-field">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% elif category.name == 'Fashion' %}
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <div class="form-section-icon">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <h2>Fashion Details</h2>
+                    </div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <div class="grid-3">
+                            <div>
+                                <label class="form-label"><i class="fas fa-vest" style="margin-right: 8px; color: #8b5cf6;"></i>Fashion Type</label>
+                                <select name="fashion_type" class="input-field">
+                                    <option value="">Select Type</option>
+                                    <option value="men" {% if form.fashion_type.value == "men" %}selected{% endif %}>Men's Fashion</option>
+                                    <option value="women" {% if form.fashion_type.value == "women" %}selected{% endif %}>Women's Fashion</option>
+                                    <option value="kids" {% if form.fashion_type.value == "kids" %}selected{% endif %}>Kids' Fashion</option>
+                                    <option value="watches" {% if form.fashion_type.value == "watches" %}selected{% endif %}>Watches</option>
+                                    <option value="jewelry" {% if form.fashion_type.value == "jewelry" %}selected{% endif %}>Jewelry</option>
+                                    <option value="bags" {% if form.fashion_type.value == "bags" %}selected{% endif %}>Bags & Accessories</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-ruler" style="margin-right: 8px; color: #8b5cf6;"></i>Size</label>
+                                <input type="text" name="size" 
+                                       value="{{ form.size.value|default_if_none:'' }}"
+                                       placeholder="e.g. S, M, L or specific measurements"
+                                       class="input-field">
+                            </div>
+                            <div>
+                                <label class="form-label"><i class="fas fa-cut" style="margin-right: 8px; color: #8b5cf6;"></i>Material</label>
+                                <input type="text" name="material" 
+                                       value="{{ form.material.value|default_if_none:'' }}"
+                                       placeholder="e.g. Cotton, Leather, Silk"
+                                       class="input-field">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Description -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <div class="form-section-icon">
+                            <i class="fas fa-align-left"></i>
+                        </div>
+                        <h2>Description</h2>
+                    </div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <div>
+                            <label class="form-label">Detailed Description</label>
+                            <textarea name="description" class="input-field" style="min-height: 150px;">{{ form.description.value|default_if_none:'' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image Upload -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <div class="form-section-icon">
+                            <i class="fas fa-images"></i>
+                        </div>
+                        <h2>Product Gallery</h2>
+                    </div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px;">
+                            <div>
+                                <h3 style="font-size: 16px; font-weight: 500; color: #374151;">Upload Your Images</h3>
+                                <p style="color: #6b7280; font-size: 14px; margin-top: 4px;">First image will be featured as cover</p>
+                            </div>
+                            <button type="button" id="addImageBtn" class="gradient-btn">
+                                <i class="fas fa-plus" style="margin-right: 8px;"></i>
+                                Add Images
+                            </button>
+                        </div>
+                        
+                        <div id="imageInputContainer" class="grid-3">
+                            <div class="image-input-group">
+                                <input type="file" name="images" accept="image/*" class="file-input input-field" multiple>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 24px;">
+                            <h3 style="font-size: 16px; font-weight: 500; color: #374151; margin-bottom: 16px;">Image Previews</h3>
+                            <div id="previewContainer" class="grid-3">
+                                <div class="preview-card">
+                                    <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #9ca3af; margin-bottom: 12px;"></i>
+                                    <p style="color: #6b7280; font-size: 14px;">Upload Preview</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review Process Information -->
+                  <div class="max-w-2xl w-full">
+        <!-- Review Process Information -->
+        <div class="form-section bg-white p-6 rounded-lg shadow-md">
+            <div class="flex items-center mb-6">
+                <div class="w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center mr-3">
+                    <i class="fas fa-info-circle text-violet-600"></i>
+                </div>
+                <h2 class="text-xl font-semibold text-gray-800">Review Process</h2>
+            </div>
+            
+            <div class="space-y-6">
+                <div class="info-container p-4 bg-gradient-to-r from-violet-50 to-pink-50 rounded-lg border border-violet-200">
+                    <h3 class="font-semibold text-violet-800 mb-3">What happens after submission?</h3>
+                    <div class="space-y-4">
+                        <!-- Pending Step -->
+                        <div class="flex items-start review-step">
+                            <div class="flex-shrink-0 mt-1">
+                                <span class="status-badge px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
+                                    <i class="fas fa-clock mr-2"></i> Pending
+                                </span>
+                            </div>
+                            <div class="step-content ml-4">
+                                <h3 class="font-medium text-gray-800">Ad is awaiting review</h3>
+                                <p class="text-gray-600 text-sm mt-1">Our team will review your ad within 24 hours</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Approved Step -->
+                        <div class="flex items-start review-step">
+                            <div class="flex-shrink-0 mt-1">
+                                <span class="status-badge px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                                    <i class="fas fa-check-circle mr-2"></i> Approved
+                                </span>
+                            </div>
+                            <div class="step-content ml-4">
+                                <h3 class="font-medium text-gray-800">Ad is live and visible</h3>
+                                <p class="text-gray-600 text-sm mt-1">Your ad will be published and visible to users</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Rejected Step -->
+                        <div class="flex items-start review-step">
+                            <div class="flex-shrink-0 mt-1">
+                                <span class="status-badge px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
+                                    <i class="fas fa-exclamation-circle mr-2"></i> Rejected
+                                </span>
+                            </div>
+                            <div class="step-content ml-4">
+                                <h3 class="font-medium text-gray-800">Ad didn't meet guidelines</h3>
+                                <p class="text-gray-600 text-sm mt-1">We'll notify you with reasons and suggestions</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+                <!-- Submit -->
+                <div class="submit-section">
+                    <button type="submit" class="gradient-btn" style="padding: 16px 40px; font-size: 18px; font-weight: 700;">
+                        <i class="fas fa-paper-plane" style="margin-right: 12px;"></i>
+                        Submit for Review
+                    </button>
+                    <p>
+                        <i class="fas fa-lock"></i> Secure submission · 24/7 support · 30-day visibility
+                    </p>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Features Section -->
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-card-icon">
+                    <i class="fas fa-eye" style="font-size: 20px; color: white;"></i>
+                </div>
+                <h3>Maximum Visibility</h3>
+                <p>Get 7x more views than regular listings with our featured placement.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-card-icon">
+                    <i class="fas fa-bolt" style="font-size: 20px; color: white;"></i>
+                </div>
+                <h3>Fast Approval</h3>
+                <p>Get your ad approved and live in under 24 hours with priority processing.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-card-icon">
+                    <i class="fas fa-headset" style="font-size: 20px; color: white;"></i>
+                </div>
+                <h3>Premium Support</h3>
+                <p>Dedicated support team to help you with your featured listing.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="success-modal">
+        <div class="success-modal-content">
+            <!-- Confetti -->
+            <div class="confetti primary-500" style="top: 10%; left: 10%; animation-delay: 0s;"></div>
+            <div class="confetti amber-400" style="top: 5%; left: 30%; animation-delay: 0.5s;"></div>
+            <div class="confetti green-400" style="top: 15%; left: 70%; animation-delay: 1s;"></div>
+            <div class="confetti pink-400" style="top: 20%; left: 50%; animation-delay: 1.5s;"></div>
+            <div class="confetti purple-400" style="top: 5%; left: 80%; animation-delay: 2s;"></div>
+            
+            <div style="text-align: center; position: relative; z-index: 10;">
+                <div class="success-icon">
+                    <i class="fas fa-check" style="font-size: 40px; color: white;"></i>
+                </div>
+                <h3>Ad Submitted Successfully!</h3>
+                <p>Your ad is now in review. We'll notify you once it's approved.</p>
+                <a href="{% url 'index' %}">Return to Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Handle success modal visibility
+    const successModal = document.getElementById('successModal');
+    
+    // Ensure modal is hidden on page load
+    successModal.style.display = 'none';
+
+    // Style all inputs
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        input.classList.add('input-field');
+    });
+    
+    // Condition selector styling
+    const conditionRadios = document.querySelectorAll('input[name="condition"]');
+    conditionRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            conditionRadios.forEach(r => {
+                r.nextElementSibling.style.background = '';
+                r.nextElementSibling.style.color = '';
+                r.nextElementSibling.style.borderColor = '';
+            });
+            this.nextElementSibling.style.background = 'linear-gradient(135deg, #8b5cf6, #ec4899)';
+            this.nextElementSibling.style.color = 'white';
+            this.nextElementSibling.style.borderColor = 'transparent';
+        });
+        
+        // Set initial state
+        if (radio.checked) {
+            radio.nextElementSibling.style.background = 'linear-gradient(135deg, #8b5cf6, #ec4899)';
+            radio.nextElementSibling.style.color = 'white';
+            radio.nextElementSibling.style.borderColor = 'transparent';
+        }
+    });
+
+    // Image upload functionality
+    const handleImageUpload = (input) => {
+        const files = input.files;
+        const previewContainer = document.getElementById('previewContainer');
+        
+        Array.from(files).forEach(file => {
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = (e) => {
+                    const preview = document.createElement('div');
+                    preview.className = 'preview-card';
+                    preview.style.border = '1px solid #e5e7eb';
+                    preview.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.05)';
+                    preview.innerHTML = `
+                        <img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent); padding: 12px;">
+                            <span style="color: white; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${file.name}</span>
+                        </div>
+                        <div style="position: absolute; top: 8px; right: 8px; display: flex;">
+                            <button type="button" class="feature-btn" style="background: rgba(31, 41, 55, 0.8); padding: 6px; border-radius: 50%; transition: background 0.3s ease;">
+                                <i class="fas fa-star" style="font-size: 12px; color: white;"></i>
+                            </button>
+                            <button type="button" class="remove-btn" style="background: rgba(31, 41, 55, 0.8); padding: 6px; border-radius: 50%; transition: background 0.3s ease; margin-left: 8px;">
+                                <i class="fas fa-times" style="font-size: 12px; color: white;"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Remove button functionality
+                    preview.querySelector('.remove-btn').addEventListener('click', () => {
+                        preview.remove();
+                        if (previewContainer.children.length === 0) {
+                            previewContainer.innerHTML = `
+                                <div class="preview-card">
+                                    <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #9ca3af; margin-bottom: 12px;"></i>
+                                    <p style="color: #6b7280; font-size: 14px;">Upload Preview</p>
+                                </div>
+                            `;
+                        }
+                    });
+                    
+                    // Feature button functionality (toggle featured status)
+                    const featureBtn = preview.querySelector('.feature-btn');
+                    featureBtn.addEventListener('click', () => {
+                        const allFeatureButtons = previewContainer.querySelectorAll('.feature-btn i');
+                        allFeatureButtons.forEach(btn => {
+                            btn.style.color = 'white';
+                            btn.classList.remove('fas');
+                            btn.classList.add('far');
+                        });
+                        const starIcon = featureBtn.querySelector('i');
+                        starIcon.style.color = '#f59e0b';
+                        starIcon.classList.remove('far');
+                        starIcon.classList.add('fas');
+                    });
+                    
+                    if (previewContainer.querySelector('[style*="border: 2px dashed"]')) {
+                        previewContainer.innerHTML = '';
+                    }
+                    
+                    previewContainer.appendChild(preview);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    };
+
+    const addNewImageInput = () => {
+        const imageInputContainer = document.getElementById('imageInputContainer');
+        const inputGroup = document.createElement('div');
+        inputGroup.className = 'image-input-group';
+        inputGroup.style.marginBottom = '12px';
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.name = 'images';
+        input.multiple = true;
+        input.classList.add('file-input', 'input-field');
+        input.addEventListener('change', (e) => handleImageUpload(e.target));
+        inputGroup.appendChild(input);
+        imageInputContainer.appendChild(inputGroup);
+    };
+
+    document.getElementById('addImageBtn').addEventListener('click', () => {
+        addNewImageInput();
+    });
+
+    // Add event listeners to existing file inputs
+    document.querySelectorAll('input[type="file"]').forEach(input => {
+        input.addEventListener('change', (e) => handleImageUpload(e.target));
+    });
+
+    // AJAX form submission
+    async function handleFormSubmit(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const successModal = document.getElementById('successModal');
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            });
+
+            if (response.ok) {
+                successModal.style.display = 'flex';
+            } else {
+                console.error('Form submission failed:', response.statusText);
+                alert('Error submitting form. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        }
+    }
+
+    // Close modal function
+    function closeSuccessModal() {
+        const successModal = document.getElementById('successModal');
+        if (successModal) {
+            successModal.style.display = 'none';
+        }
+    }
+
+    // Attach form submit handler
+    const productForm = document.getElementById('productForm');
+    if (productForm) {
+        productForm.addEventListener('submit', handleFormSubmit);
+    }
+
+    // Attach close modal handler to the dashboard link
+    const dashboardLink = document.querySelector('#successModal a');
+    if (dashboardLink) {
+        dashboardLink.addEventListener('click', closeSuccessModal);
+    }
+});
+    </script>
+</body>
+</html>
+{% endblock %}

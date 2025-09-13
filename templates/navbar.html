@@ -1,0 +1,454 @@
+{% load static %}
+
+<!-- Top Bar: Icons -->
+<nav class="bg-white border-b border-gray-200 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-end h-10 space-x-4">
+      <!-- Notifications -->
+      <a href="{% url 'notification_center' %}" class="relative flex items-center justify-center h-full px-1 text-gray-500 hover:text-gray-700 transition-colors">
+        <i class="fas fa-bell text-lg"></i>
+        {% if unread_count > 0 %}
+          <span class="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center h-4 w-4 rounded-full bg-red-500 text-[9px] text-white font-medium">
+            {{ unread_count }}
+          </span>
+        {% else %}
+          <span class="absolute top-0 right-0 inline-flex h-1.5 w-1.5 rounded-full bg-gray-300"></span>
+        {% endif %}
+      </a>
+
+      <!-- Favorites -->
+      <a href="{% url 'my_favorites' %}" class="relative flex items-center justify-center h-full px-1 text-gray-500 hover:text-gray-700 transition-colors">
+        <i class="fas fa-heart text-lg"></i>
+        {% if favorites_count > 0 %}
+          <span class="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center h-4 w-4 rounded-full bg-red-500 text-[9px] text-white font-medium">
+            {{ favorites_count }}
+          </span>
+        {% else %}
+          <span class="absolute top-0 right-0 inline-flex h-1.5 w-1.5 rounded-full bg-gray-300"></span>
+        {% endif %}
+      </a>
+
+      <!-- Other Icons -->
+      <button id="mobile-search-button" class="text-gray-600 hover:text-gray-800 md:hidden">
+        <i class="fas fa-search fa-lg"></i>
+      </button>
+      <a href="https://facebook.com" class="text-gray-600 hover:text-gray-800"><i class="fab fa-facebook fa-lg"></i></a>
+      <a href="https://twitter.com" class="text-gray-600 hover:text-gray-800"><i class="fab fa-twitter fa-lg"></i></a>
+      <a href="https://instagram.com" class="text-gray-600 hover:text-gray-800"><i class="fab fa-instagram fa-lg"></i></a>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Navbar -->
+<nav class="bg-white shadow sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      
+      <!-- Logo -->
+      <div class="flex-shrink-0">
+        <a href="{% url 'index' %}" class="flex items-center space-x-2">
+          <img
+            src="{% static 'images/logo.png' %}"
+            alt="Almis Marketplace"
+            class="h-10 w-auto sm:h-12 md:h-10 lg:h-12"
+          />
+        </a>
+      </div>
+
+      <!-- Desktop Search - Improved layout -->
+      <div class="hidden md:flex md:flex-1 md:justify-center relative">
+        <form method="GET" action="{% url 'search_ads' %}" id="desktop-search-form" class="flex items-center bg-white rounded-lg border border-gray-200 w-full max-w-xl">
+          
+          <!-- Category dropdown -->
+          <div class="relative flex-1 border-r border-gray-200">
+            <button
+              type="button"
+              id="category-button"
+              class="w-full text-left py-2 pl-4 pr-8 text-gray-700 focus:outline-none flex items-center"
+            >
+              <i class="fas fa-tag text-gray-500 mr-2"></i>
+              <span id="category-label" class="truncate">Categories</span>
+              <i class="fas fa-chevron-down ml-auto text-gray-400"></i>
+            </button>
+            
+            <!-- Category panel -->
+            <div
+              id="category-panel"
+              class="hidden absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto"
+            >
+              {% for category in categories %}
+                <a
+                  href="#"
+                  class="flex items-center px-3 py-2 hover:bg-gray-100 transition-colors border-b border-gray-100 last:border-b-0"
+                  data-id="{{ category.id }}"
+                  data-name="{{ category.name }}"
+                >
+                  <img src="{{ category.image.url }}" alt="{{ category.name }}"
+                       class="h-6 w-6 rounded-full object-cover mr-2" />
+                  <span class="text-gray-700">{{ category.name }}</span>
+                </a>
+              {% endfor %}
+            </div>
+            <input type="hidden" name="category" id="category-input" value="" required>
+            <!-- invisible constraint input so HTML5 will mark category as required (browser validation) -->
+            <input type="text" id="desktop-category-constraint" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;border:0;padding:0;margin:0;pointer-events:none;" tabindex="-1" aria-hidden="true" required>
+          </div>
+
+          <!-- Keywords -->
+          <div class="relative flex-1 border-r border-gray-200">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input name="q" type="text" placeholder="Keywords" class="w-full py-2 pl-10 pr-3 focus:outline-none" value="{{ request.GET.q }}" required aria-required="true" />
+          </div>
+
+          <!-- Location -->
+          <div class="relative flex-1">
+            <i class="fas fa-map-marker-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input name="location" type="text" placeholder="Location" class="w-full py-2 pl-10 pr-3 focus:outline-none" value="{{ request.GET.location }}" required aria-required="true" />
+          </div>
+
+          <button type="submit" class="px-4 py-2 bg-pink-500 text-white hover:bg-pink-600 rounded-r-lg">
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+      </div>
+
+      <!-- Right: Links & Post Ad -->
+      <div class="flex items-center space-x-2">
+        <ul class="hidden md:flex md:items-center md:space-x-6">
+          <li><a href="{% url 'about_us' %}" class="text-gray-700 hover:text-gray-900">About Us</a></li>
+          {% if user.is_authenticated %}
+            <li class="relative">
+              <button id="account-toggle" class="flex items-center text-gray-700 hover:text-gray-900">
+                <i class="fas fa-user-circle fa-lg mr-1"></i> {{ user.full_name }}
+              </button>
+              <div id="account-menu" class="hidden absolute top-full right-0 mt-1 z-50 w-48 bg-white border rounded-md shadow-lg py-1">
+                <a href="{% url 'dashboard' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+                <form method="post" action="{% url 'logout' %}">{% csrf_token %}
+                  <button type="submit" class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</button>
+                </form>
+              </div>
+            </li>
+          {% else %}
+            <li><a href="{% url 'login' %}" class="text-gray-700 hover:text-gray-900">Login</a></li>
+          {% endif %}
+        </ul>
+
+        <a href="{% url 'menu' %}?is_paid=false"
+           class="px-3 py-2 text-sm sm:text-base bg-gradient-to-r from-pink-500 to-indigo-500 text-white font-semibold rounded-lg hover:from-indigo-600 hover:to-pink-600">
+          Post Ad <i class="fas fa-arrow-right ml-1"></i>
+        </a>
+
+        <!-- Mobile menu button -->
+        <button id="mobile-menu-button" class="text-gray-600 hover:text-gray-800 md:hidden">
+          <i class="fas fa-bars fa-lg"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu - COMPLETELY REDESIGNED -->
+  <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+    <div class="px-4 py-3 space-y-3">
+      <!-- Mobile Search Form - Collapsible Sections -->
+      <form method="GET" action="{% url 'search_ads' %}" id="mobile-search-form" class="space-y-3">
+        <!-- Category dropdown -->
+        <div class="border border-gray-300 rounded-lg overflow-hidden">
+          <button type="button" id="mobile-category-toggle" class="w-full flex justify-between items-center p-3 bg-gray-50">
+            <div class="flex items-center">
+              <i class="fas fa-tag text-gray-500 mr-2"></i>
+              <span id="mobile-category-label">Select Category</span>
+            </div>
+            <i class="fas fa-chevron-down text-gray-400"></i>
+          </button>
+          <div id="mobile-category-panel" class="hidden bg-white border-t border-gray-200" aria-hidden="true">
+            {% for category in categories %}
+              <button type="button" class="mobile-category-option w-full text-left flex items-center p-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
+                      data-id="{{ category.id }}" data-name="{{ category.name }}">
+                <img src="{{ category.image.url }}" alt="{{ category.name }}"
+                     class="h-6 w-6 rounded-full object-cover mr-2" />
+                <span class="text-gray-700">{{ category.name }}</span>
+              </button>
+            {% endfor %}
+          </div>
+          <input type="hidden" name="category" id="mobile-category-input" value="" required>
+          <!-- invisible constraint input for mobile form -->
+          <input type="text" id="mobile-category-constraint" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;border:0;padding:0;margin:0;pointer-events:none;" tabindex="-1" aria-hidden="true" required>
+          <!-- inline error (visible) for mobile category -->
+          <p id="mobile-category-error" class="text-red-500 text-sm mt-1 hidden">Please select a category</p>
+        </div>
+
+        <!-- Keywords -->
+        <div class="border border-gray-300 rounded-lg overflow-hidden">
+          <div class="flex items-center p-3">
+            <i class="fas fa-search text-gray-500 mr-2"></i>
+            <input name="q" type="text" placeholder="Enter keywords" class="w-full focus:outline-none bg-transparent" value="{{ request.GET.q }}" required aria-required="true" />
+            <!-- invisible constraint input for mobile keywords (anchors validation bubble to this field) -->
+            <input type="text" id="mobile-q-constraint" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;border:0;padding:0;margin:0;pointer-events:none;" tabindex="-1" aria-hidden="true" required>
+            <!-- inline error for mobile keywords -->
+            <p id="mobile-q-error" class="text-red-500 text-sm mt-1 hidden">Please enter keywords</p>
+          </div>
+        </div>
+
+        <!-- Location -->
+        <div class="border border-gray-300 rounded-lg overflow-hidden">
+          <div class="flex items-center p-3">
+            <i class="fas fa-map-marker-alt text-gray-500 mr-2"></i>
+            <input name="location" type="text" placeholder="Enter location" class="w-full focus:outline-none bg-transparent" value="{{ request.GET.location }}" required aria-required="true" />
+            <!-- invisible constraint input for mobile location (anchors validation bubble to this field) -->
+            <input type="text" id="mobile-location-constraint" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;border:0;padding:0;margin:0;pointer-events:none;" tabindex="-1" aria-hidden="true" required>
+            <!-- inline error for mobile location -->
+            <p id="mobile-location-error" class="text-red-500 text-sm mt-1 hidden">Please enter a location</p>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-pink-500 text-white rounded-lg font-medium">
+          Search Now
+        </button>
+      </form>
+
+      <a href="{% url 'about_us' %}" class="block px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md">About Us</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'dashboard' %}" class="block px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md">Profile</a>
+        <form method="post" action="{% url 'logout' %}">{% csrf_token %}
+          <button type="submit" class="w-full text-left px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md">Logout</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}" class="block px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md">Login</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // ===== DESKTOP FUNCTIONALITY =====
+  const catBtn = document.getElementById('category-button');
+  const catPanel = document.getElementById('category-panel');
+  const catInput = document.getElementById('category-input');
+  const catLabel = document.getElementById('category-label');
+  const desktopCategoryConstraint = document.getElementById('desktop-category-constraint');
+
+  // Ensure panels are hidden on load (fix for small-screen auto-expanding)
+  if (catPanel) catPanel.classList.add('hidden');
+
+  if (catBtn && catPanel) {
+    catBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      catPanel.classList.toggle('hidden');
+    });
+
+    catPanel.querySelectorAll('a[data-name]').forEach(option => {
+      option.addEventListener('click', e => {
+        e.preventDefault();
+        catLabel.textContent = option.dataset.name;
+        catInput.value = option.dataset.id;
+        // satisfy the constraint input so browser validation passes
+        if (desktopCategoryConstraint) desktopCategoryConstraint.value = option.dataset.id;
+        catPanel.classList.add('hidden');
+      });
+    });
+
+    document.addEventListener('click', e => {
+      if (!catBtn.contains(e.target) && !catPanel.contains(e.target)) {
+        catPanel.classList.add('hidden');
+      }
+    });
+  }
+
+  // If category preselected from server, set the constraint value so validation is satisfied
+  if (catInput && desktopCategoryConstraint && catInput.value) {
+    desktopCategoryConstraint.value = catInput.value;
+  }
+
+  // Account menu toggle
+  const accountToggle = document.getElementById('account-toggle');
+  const accountMenu = document.getElementById('account-menu');
+  
+  if (accountToggle && accountMenu) {
+    accountToggle.addEventListener('click', e => {
+      e.stopPropagation();
+      accountMenu.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', e => {
+      if (!accountToggle.contains(e.target) && !accountMenu.contains(e.target)) {
+        accountMenu.classList.add('hidden');
+      }
+    });
+  }
+
+  // ===== MOBILE FUNCTIONALITY =====
+  const mobileMenuButton = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+  
+  if (mobileMenuButton && mobileMenu) {
+    mobileMenuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+  }
+
+  const mobileCatToggle = document.getElementById('mobile-category-toggle');
+  const mobileCatPanel = document.getElementById('mobile-category-panel');
+  const mobileCatLabel = document.getElementById('mobile-category-label');
+  const mobileCatInput = document.getElementById('mobile-category-input');
+  const mobileCategoryConstraint = document.getElementById('mobile-category-constraint');
+  // constraints for mobile keywords and location
+  const mobileQConstraint = document.getElementById('mobile-q-constraint');
+  const mobileLocationConstraint = document.getElementById('mobile-location-constraint');
+
+  // sync visible mobile inputs to the hidden constraint inputs so native validation anchors correctly
+  const mobileQInput = document.querySelector('#mobile-search-form input[name="q"]');
+  const mobileLocationInput = document.querySelector('#mobile-search-form input[name="location"]');
+  if (mobileQInput && mobileQConstraint) {
+    mobileQInput.addEventListener('input', () => {
+      mobileQConstraint.value = mobileQInput.value;
+    });
+    // prefill if server provided value
+    if (mobileQInput.value) mobileQConstraint.value = mobileQInput.value;
+  }
+  if (mobileLocationInput && mobileLocationConstraint) {
+    mobileLocationInput.addEventListener('input', () => {
+      mobileLocationConstraint.value = mobileLocationInput.value;
+    });
+    if (mobileLocationInput.value) mobileLocationConstraint.value = mobileLocationInput.value;
+  }
+
+  // Ensure mobile panel is hidden on load (fixes the issue where it shows without clicking)
+  if (mobileCatPanel) {
+    mobileCatPanel.classList.add('hidden');
+    mobileCatPanel.setAttribute('aria-hidden', 'true');
+  }
+
+  if (mobileCatToggle && mobileCatPanel) {
+    mobileCatToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      mobileCatPanel.classList.toggle('hidden');
+      mobileCatPanel.setAttribute('aria-hidden', mobileCatPanel.classList.contains('hidden'));
+
+      const ico = mobileCatToggle.querySelector('i');
+      if (ico) {
+        ico.classList.toggle('fa-chevron-down');
+        ico.classList.toggle('fa-chevron-up');
+      }
+    });
+
+    // Close when clicking outside mobile category panel
+    document.addEventListener('click', e => {
+      if (!mobileCatToggle.contains(e.target) && !mobileCatPanel.contains(e.target)) {
+        mobileCatPanel.classList.add('hidden');
+        mobileCatPanel.setAttribute('aria-hidden', 'true');
+        const ico = mobileCatToggle.querySelector('i');
+        if (ico) {
+          ico.classList.remove('fa-chevron-up');
+          ico.classList.add('fa-chevron-down');
+        }
+      }
+    });
+
+    document.querySelectorAll('.mobile-category-option').forEach(option => {
+      option.addEventListener('click', () => {
+        mobileCatLabel.textContent = option.dataset.name;
+        mobileCatInput.value = option.dataset.id;
+        // satisfy the constraint input so browser validation passes
+        if (mobileCategoryConstraint) mobileCategoryConstraint.value = option.dataset.id;
+        mobileCatPanel.classList.add('hidden');
+        mobileCatPanel.setAttribute('aria-hidden', 'true');
+        const ico = mobileCatToggle.querySelector('i');
+        if (ico) {
+          ico.classList.remove('fa-chevron-up');
+          ico.classList.add('fa-chevron-down');
+        }
+      });
+    });
+  }
+
+  // If mobile category preselected from server, set value
+  if (mobileCatInput && mobileCategoryConstraint && mobileCatInput.value) {
+    mobileCategoryConstraint.value = mobileCatInput.value;
+  }
+
+  // ===== FORM SUBMIT: ensure category constraint is enforced using HTML5 validation (no alerts) =====
+  document.getElementById('desktop-search-form')?.addEventListener('submit', function(e) {
+    if (desktopCategoryConstraint && !desktopCategoryConstraint.value) {
+      // will show native browser validation message
+      desktopCategoryConstraint.reportValidity();
+      e.preventDefault();
+    }
+  });
+
+  document.getElementById('mobile-search-form')?.addEventListener('submit', function(e) {
+    // hide previous inline errors
+    const mobileCategoryError = document.getElementById('mobile-category-error');
+    const mobileQError = document.getElementById('mobile-q-error');
+    const mobileLocationError = document.getElementById('mobile-location-error');
+    if (mobileCategoryError) mobileCategoryError.classList.add('hidden');
+    if (mobileQError) mobileQError.classList.add('hidden');
+    if (mobileLocationError) mobileLocationError.classList.add('hidden');
+
+    let invalid = false;
+
+    // Category
+    if (!mobileCatInput || !mobileCatInput.value) {
+      if (mobileCategoryError) mobileCategoryError.classList.remove('hidden');
+      invalid = true;
+    }
+
+    // Keywords
+    if (!mobileQInput || !mobileQInput.value.trim()) {
+      if (mobileQError) mobileQError.classList.remove('hidden');
+      invalid = true;
+    }
+
+    // Location
+    if (!mobileLocationInput || !mobileLocationInput.value.trim()) {
+      if (mobileLocationError) mobileLocationError.classList.remove('hidden');
+      invalid = true;
+    }
+
+    if (invalid) {
+      e.preventDefault();
+      // focus first invalid field (category button, then q, then location)
+      if (!mobileCatInput || !mobileCatInput.value) {
+        mobileCatToggle.focus();
+        return;
+      }
+      if (!mobileQInput || !mobileQInput.value.trim()) {
+        mobileQInput.focus();
+        return;
+      }
+      if (!mobileLocationInput || !mobileLocationInput.value.trim()) {
+        mobileLocationInput.focus();
+        return;
+      }
+    }
+  });
+
+  // hide inline errors when user interacts
+  if (mobileQInput) {
+    mobileQInput.addEventListener('input', () => {
+      const e = document.getElementById('mobile-q-error'); if (e) e.classList.add('hidden');
+    });
+  }
+  if (mobileLocationInput) {
+    mobileLocationInput.addEventListener('input', () => {
+      const e = document.getElementById('mobile-location-error'); if (e) e.classList.add('hidden');
+    });
+  }
+  if (document.querySelectorAll('.mobile-category-option')) {
+    document.querySelectorAll('.mobile-category-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        const e = document.getElementById('mobile-category-error'); if (e) e.classList.add('hidden');
+      });
+    });
+  }
+
+  // Hide panels on resize to avoid leftover open panels when switching sizes
+  window.addEventListener('resize', () => {
+    if (catPanel) catPanel.classList.add('hidden');
+    if (mobileCatPanel) {
+      mobileCatPanel.classList.add('hidden');
+      mobileCatPanel.setAttribute('aria-hidden', 'true');
+    }
+  });
+});
+</script>
