@@ -1,7 +1,7 @@
 FROM python:3.11-slim
 
 ENV PYTHONUNBUFFERED=1
-ENV DJANGO_SETTINGS_MODULE=Ecommerce-clean.settings 
+ENV DJANGO_SETTINGS_MODULE=Ecommerce.settings 
 WORKDIR /app
 
 COPY requirements.txt .
@@ -11,4 +11,4 @@ COPY . .
 
 RUN python manage.py collectstatic --noinput
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "Ecommerce-clean.wsgi:application"]  
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "Ecommerce.wsgi:application"]  
