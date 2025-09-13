@@ -77,7 +77,7 @@ DATABASES = {
 # If DATABASE_URL is set (on Render), use that instead
 if 'DATABASE_URL' in os.environ:
     DATABASES['default'] = dj_database_url.config(
-        default=os.environ.get('postgresql://postgres:sMuKzEjoWzFWobaWoUNfGubBajxcdleM@centerbeam.proxy.rlwy.net:35452/railway'),
+        default=os.environ.get('postgresql://postgres:MFHqKLoNDiQyFfMZPZAYMVRwIPncSOxO@switchyard.proxy.rlwy.net:29797/railway'),
         conn_max_age=600,
         ssl_require=not DEBUG
     )
