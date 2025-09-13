@@ -1,0 +1,117 @@
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
+ cd C:\Users\salma\Ecommerce
+.\.venv\Scripts\Activate.ps1
+
+python manage.py migrate
+python manage.py loaddata data.json
+
+
+$env:DATABASE_URL=postgresql://postgres:JbmDNXBHltlWLQpjobWrUZxDuFRAmrZt@yamanote.proxy.rlwy.net:55548/railwayp
+
+$env:DATABASE_URL=postgresql://postgres:jIgNZVZQSvzAIMxrxHAWMDDJwNINcLkR@interchange.proxy.rlwy.net:30862/railway
+
+SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+
+
+
+C:\Users\salma\Ecommerce>.\.venv\Scripts\activate
+
+(.venv) C:\Users\salma\Ecommerce>set DATABASE_URL=postgresql://postgres:jIgNZVZQSvzAIMxrxHAWMDDJwNINcLkR@interchange.proxy.rlwy.net:30862/railway
+
+(.venv) C:\Users\salma\Ecommerce>python manage.py migrate
+System check identified some issues:
+
+WARNINGS:
+?: settings.ACCOUNT_AUTHENTICATION_METHOD is deprecated, use: settings.ACCOUNT_LOGIN_METHODS = {'email'}
+?: settings.ACCOUNT_EMAIL_REQUIRED is deprecated, use: settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+?: settings.ACCOUNT_USERNAME_REQUIRED is deprecated, use: settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+Operations to perform:
+  Apply all migrations: account, admin, auth, base, contenttypes, sessions, sites, socialaccount
+Running migrations:
+  No migrations to apply.
+
+(.venv) C:\Users\salma\Ecommerce>python manage.py createsuperuser
+System check identified some issues:
+
+WARNINGS:
+?: settings.ACCOUNT_AUTHENTICATION_METHOD is deprecated, use: settings.ACCOUNT_LOGIN_METHODS = {'email'}
+?: settings.ACCOUNT_EMAIL_REQUIRED is deprecated, use: settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+?: settings.ACCOUNT_USERNAME_REQUIRED is deprecated, use: settings.ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+Email address: salmahoussein@outlook.com
+Password:
+Password (again):
+INFO 2025-07-10 06:21:46,168 signals New user created: salmahoussein@outlook.com
+Superuser created successfully.
+Microsoft Windows [Version 10.0.22631.5624]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\salma> cd C:\Users\salma\Ecommerce
+
+C:\Users\salma\Ecommerce>railway --version
+railway 4.5.4
+
+
+C:\Users\salma\Ecommerce>.\.venv\Scripts\Activate.ps1
+
+C:\Users\salma\Ecommerce>python manage.py makemigrations
+Migrations for 'base':
+  base\migrations\0001_initial.py
+    + Create model User
+    + Create model Ad
+    + Create model AdImage
+    + Create model Category
+    + Add field category to ad
+    + Create model Comment
+    + Create model FeaturedAd
+    + Create model FeaturedAdHistory
+    + Create model Notification
+    + Create model PendingFeaturedAd
+    + Create index base_ad_is_feat_fa4b4e_idx on field(s) is_featured of model ad
+    + Create index base_ad_status_b74e60_idx on field(s) status of model ad
+
+C:\Users\salma\Ecommerce>python manage.py migrate
+Operations to perform:
+  Apply all migrations: admin, auth, base, contenttypes, sessions
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0001_initial... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying base.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying sessions.0001_initial... OK
+
+C:\Users\salma\Ecommerce>set DATABASE_URL=postgresql://postgres:jIgNZVZQSvzAIMxrxHAWMDDJwNINcLkR@interchange.proxy.rlwy.net:30862/railway
+
+C:\Users\salma\Ecommerce>python manage.py createsuperuser
+Email address: salmamacash@gmail.com
+Password:
+Password (again):
+Superuser created successfully.
+
+C:\Users\salma\Ecommerce>python manage.py runserver
+Performing system checks...
+
+System check identified no issues (0 silenced).
+July 21, 2025 - 20:09:40
+Django version 5.2.4, using settings 'Ecommerce.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CTRL-BREAK.
+
+python manage.py migrate base zero
+python manage.py makemigrations base
+python manage.py migrate base
