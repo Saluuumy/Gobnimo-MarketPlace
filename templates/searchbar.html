@@ -1,0 +1,87 @@
+{% load static %}
+
+
+<section class="content-container">
+    <div class="logo2">
+        <img src="{% static 'images/logo.png' %}" alt="Logo">
+    </div>
+    <div class="toggler">
+      <div id="toggleButton"><i class="fas fa-bars"></i></div>
+      <menu class="toggler-menu">
+        <div class="side-menu">
+          <ul>
+              {% for category in categories %}
+              {% if not category.parent_category %}
+              <li class="parent-category">
+                <img class="icon" src="{{ category.image.name }}" alt="">
+                {% if category.subcategories.all %}
+                 
+                  <span class="side-menu-item">{{ category.name }}</span>
+                  
+                  <ul class="subcategories">
+                      {% for subcategory in category.subcategories.all %}
+                      <li>
+                          <li><a href="{% url 'product_list' subcategory.id %}">{{ subcategory.name }}</a></li>
+  
+                      
+                      {% endfor %}
+                  </ul>
+                  {% else %}
+                  <a href="{% url 'product_list' category.id %}" class="side-menu-item">{{ category.name }}</a>
+  
+                
+                
+                  {% endif %}
+              </li>
+              {% endif %}
+              {% endfor %}
+          </ul>
+      </div>
+
+      </menu>
+  </div>
+  <form method="GET" action="{% url 'search_ads' %}">
+<div class="search-panel">
+    <select class="category-select">
+        <option value="">All Categories</option>
+        {% for category in categories %}
+            <option value="{{ category.id }}">{{ category.name }}</option>
+            {% for subcategory in category.subcategories.all %}
+                <option value="{{ subcategory.id }}">- {{ subcategory.name }}</option>
+            {% endfor %}
+        {% endfor %}
+    </select>
+    <input type="text" placeholder="Search" name="keyword" id="">
+    <button class="sea-btn" type="submit">Searchgg</button>
+
+</div>
+  </form>
+    <div class="side-menu">
+            <ul>
+                {% for category in categories %}
+                {% if not category.parent_category %}
+                <li class="parent-category">
+                  <img class="icon" src="{{ category.image.name }}" alt="">
+                  {% if category.subcategories.all %}
+                   
+                    <span class="side-menu-item">{{ category.name }}</span>
+                    
+                    <ul class="subcategories">
+                        {% for subcategory in category.subcategories.all %}
+                        <li>
+                            <li><a href="{% url 'product_list' subcategory.id %}">{{ subcategory.name }}</a></li>
+    
+                        
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <a href="{% url 'product_list' category.id %}" class="side-menu-item">{{ category.name }}</a>
+    
+                  
+                  
+                    {% endif %}
+                </li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+        </div>

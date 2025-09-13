@@ -1,0 +1,74 @@
+
+{% extends 'main.html' %}
+
+
+{% block content %}
+<div class="update-profile-container">
+    <h1 class="update-profile-header">Update Profile</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Avatar Preview Elements -->
+        <div id="preview-avatar" style="margin-top: 10px;">
+            {% if user.avatar %}
+                <img id="avatar-preview" src="{{ user.avatar.url }}" alt="" style="max-width: 100%; max-height: 80px;margin-bottom: 27px; ;border: 1px solid #ddd; border-radius: 60%;">
+            {% else %}
+                <img id="avatar-preview" alt="Current Avatar" style="max-width: 100%; max-height: 200px;margin-bottom: 27px; border: 1px solid #ddd; border-radius: 5px; display: none;">
+            {% endif %}
+        </div>
+
+        {% for field in form.visible_fields %}
+            {% if field.name == 'avatar' %}
+                
+                <div class="update-profile-field">
+                    {{ field }}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        {% for field in form.visible_fields %}
+            {% if field.name != 'avatar' %}
+                <div class="update-profile-label">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                </div>
+                <div class="update-profile-field">
+                    {{ field }}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <div class="button-container">
+            <button type="submit" class="update-profile-button">Save</button>
+            <a href="{% url 'view_profile' user.username %}" class="update-profile-button cancel-button">Cancel</a>
+        </div>
+    </form>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <script>
+        function previewAvatar(input) {
+            var avatarPreview = document.getElementById('avatar-preview');
+            var previewContainer = document.getElementById('preview-avatar');
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                    avatarPreview.src = e.target.result;
+                    previewContainer.style.display = 'block'; // Show the preview
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                previewContainer.style.display = 'none'; // Hide the preview
+            }
+        }
+
+        $(document).ready(function() {
+            // Trigger the preview when the file input changes
+            $('#id_avatar').change(function() {
+                previewAvatar(this);
+            });
+        });
+    </script>
+</div>
+{% endblock %}

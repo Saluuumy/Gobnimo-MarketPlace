@@ -1,0 +1,27 @@
+{% extends 'main.html' %}
+
+
+{% block content %}
+
+{% include 'searchbar.html' %}
+
+<div class="products">
+        {% for product in products %}
+        <div class="ad-img-container">
+            <div class="ad-img-card">
+              <a href="{% url 'product_detail' product.id %}">
+                {% if product.image_set.all %}
+                  <img src="{{ product.image_set.first.image.url }}" alt="{{ product.name }}">
+                {% endif %}
+              </a>
+            </div>
+            <div class="advertise-info">
+              <span class="header">${{ product.name }} </span>
+              <span class="price">${{ product.price }} </span>
+              <span class="date">13 days ago </span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+    {% endblock %}

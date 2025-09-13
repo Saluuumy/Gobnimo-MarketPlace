@@ -1,0 +1,55 @@
+[
+  {
+    "model": "base.category",
+    "pk": 1,
+    "fields": {
+      "name": "Vehicles",
+      "parent_category": null,
+      "image": "images/vehicles.png"
+    }
+  },
+  {
+    "model": "base.category",
+    "pk": 2,
+    "fields": {
+      "name": "Cars",
+      "parent_category": 1,
+      "image": "images/cars.png"
+    }
+  },
+  {
+    "model": "base.ad",
+    "pk": 1,
+    "fields": {
+      "advertiser": 1,
+      "category": 2,
+      "name": "Toyota Corolla 2018",
+      "price": "8000.00",
+      "location": "Hargeisa",
+      "condition": "Used",
+      "description": "Well maintained, low mileage.",
+      "views": 0,
+      "motortype": "Petrol",
+      "geartype": "Automatic",
+      "year": 2018,
+      "color": "White",
+      "num_rooms": null,
+      "num_baths": null,
+      "is_approved": true,
+      "is_featured": false,
+      "status": "approved",
+      "created_at": "2025-07-09T00:00:00Z"
+    }
+  },
+  {
+    "model": "base.comment",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "ad": 1,
+      "text": "Looks nice, is the price negotiable?",
+      "timestamp": "2025-07-09T00:00:00Z",
+      "parent": null
+    }
+  }
+]

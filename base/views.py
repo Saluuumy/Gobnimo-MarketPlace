@@ -1,0 +1,674 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Category,  AdImage,Ad ,User ,Comment ,FeaturedAd, FeaturedAdHistory,PendingFeaturedAd ,Notification,Favorite
+from .forms import AdForm ,SignupForm,LoginForm,AuthenticationForm ,CommentForm ,AdPaidForm,UserProfileForm
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse, HttpResponseBadRequest
+from django_ratelimit.decorators import ratelimit
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.conf import settings
+from django.http import JsonResponse
+from django.utils.encoding import force_bytes
+from django.views.decorators.http import require_POST
+from django.contrib.auth.views import PasswordResetView
+from django.core.mail import send_mail
+from django.contrib.auth.tokens import default_token_generator
+from django.urls import reverse
+import logging
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models import Prefetch
+from allauth.socialaccount.models import SocialAccount
+from django.http import HttpResponse
+from django.contrib import messages
+from django.db.models import Q
+from django.views.decorators.http import require_http_methods
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.utils.html import strip_tags
+import smtplib
+from django.core.paginator import Paginator
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import DetailView
+from django.db.models import F
+from django.db.models import Q, Count
+from django.core.paginator import Paginator
+import re
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignupForm(request.POST, request.FILES)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.username = form.cleaned_data['email']  # Set username to email
+            user.is_active = False
+            user.email_verified = False
+            user.save()
+
+            # Send verification email
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            verification_url = request.build_absolute_uri(
+                reverse('verify_email', kwargs={'uidb64': uid, 'token': token})
+            )
+
+            # Render HTML email content
+            html_content = render_to_string('base/verification_email.html', {
+                'verification_url': verification_url,
+            })
+            text_content = strip_tags(html_content)
+
+            # Send email with both plain text and HTML
+            subject = 'Verify Your Email'
+            from_email = settings.EMAIL_HOST_USER
+            recipient_list = [user.email]
+            email = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+            email.attach_alternative(html_content, "text/html")
+            email.send()
+
+            return render(request, 'base/verification_sent.html')
+        else:
+            return render(request, 'base/signup.html', {'form': form})
+    else:
+        form = SignupForm()
+    return render(request, 'base/signup.html', {'form': form})
+
+def verify_email(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.email_verified = True
+        user.save()
+        return render(request, 'base/verification_success.html')
+    return render(request, 'base/verification_failed.html')
+
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'base/auth/custom_reset.html'
+    
+    def form_valid(self, form):
+        # Add custom logic here
+        return super().form_valid(form)
+@require_http_methods(["GET", "POST"])
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            user = authenticate(request, email=email, password=password)
+            if user is not None:
+                if user.email_verified and user.is_active:
+                    login(request, user)
+                    return redirect('index')  # Redirect to home page
+                elif not user.email_verified:
+                    form.add_error(None, "Please verify your email before logging in.")
+                else:
+                    form.add_error(None, "Your account is inactive. Contact support.")
+            else:
+                form.add_error(None, "Invalid email or password.")
+        return render(request, 'base/login.html', {'form': form})
+    else:
+        form = LoginForm()
+    return render(request, 'base/login.html', {'form': form})
+
+def logout_user(request):
+    logout(request)
+    return redirect('index')
+
+def index(request):
+    # Get featured ads
+    featured_ads = Ad.objects.filter(
+        status='approved',  # Use status instead of is_approved
+        featuredad__featured_start_date__lte=timezone.now(),
+        featuredad__featured_expiry_date__gte=timezone.now()
+    ).prefetch_related('images')
+    
+    # Get all categories with approved ads
+    categories = Category.objects.annotate(
+        approved_ads_count=Count('ad', filter=Q(ad__status='approved'))
+    ).prefetch_related(
+        Prefetch(
+            'ad_set',
+            queryset=Ad.objects.filter(status='approved').order_by('-created_at')[:20],  # Show 20 ads
+            to_attr='approved_ads'
+        )
+    )
+    
+    return render(request, 'base/index.html', {
+        'categories': categories,
+        'featured_products': featured_ads,
+    })
+    
+def menu(request):
+    # Get approved ads that are currently featured
+    featured_ads = Ad.objects.filter(
+        is_approved=True,
+        featuredad__featured_start_date__lte=timezone.now(),
+        featuredad__featured_expiry_date__gte=timezone.now()
+    ).prefetch_related('featuredad')
+
+    # Handle 'is_paid' from GET parameters
+    is_paid = request.GET.get('is_paid', 'false').lower() == 'true'
+    request.session['is_paid'] = is_paid
+
+    # Get all categories with approved ads count
+    categories = Category.objects.annotate(
+        approved_ads_count=Count('ad', filter=Q(ad__is_approved=True))
+    ).order_by('name')
+
+    return render(
+        request,
+        'base/post_ad_categories.html',
+        {
+            'categories': categories,
+            'featured_products': featured_ads,
+        }
+    )
+
+def about_us(request):
+    categories = Category.objects.all()
+    return render(request, 'base/aboutus.html', {
+       
+        'categories': categories,
+    })
+logger = logging.getLogger(__name__)
+@login_required(login_url='login')
+def ad_form(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    categories = Category.objects.all()
+    show_success = False
+
+    if request.method == 'POST':
+        form = AdForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                ad = form.save(commit=False)
+                ad.category = category
+                ad.advertiser = request.user
+                ad.is_approved = False
+                ad.save()
+
+                images = request.FILES.getlist('images')
+                if not images:
+                    logger.warning("No images selected for upload")
+                    messages.error(request, "No images selected")
+                else:
+                    for img in images:
+                        logger.info(f"Uploading image: {img.name}, size: {img.size} bytes")
+                        AdImage.objects.create(ad=ad, image=img)
+                    messages.success(request, "Your digital masterpiece is now soaring through our approval cosmos!")
+                    show_success = True
+                    form = AdForm()
+            except Exception as e:
+                logger.error(f"Error saving ad or images: {str(e)}", exc_info=True)
+                messages.error(request, f"Error: {str(e)}")
+                form = AdForm(request.POST, request.FILES)
+        else:
+            logger.error(f"Form errors: {form.errors}")
+            messages.error(request, "Invalid form data. Please check fields.")
+            form = AdForm(request.POST, request.FILES)
+    else:
+        form = AdForm()
+
+    return render(request, 'base/upload.html', {
+        'form': form,
+        'category': category,
+        'show_success': show_success,
+        'categories': categories,
+    })
+
+@login_required(login_url='login')
+def create_ad_form(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    categories = Category.objects.all()
+    show_success = False  # Default to False
+
+    if request.method == 'POST':
+        form = AdPaidForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                # Save Ad
+                ad = form.save(commit=False)
+                ad.category = category
+                ad.advertiser = request.user
+                ad.is_approved = False
+                ad.save()
+
+                # Save images
+                images = request.FILES.getlist('images')
+                if images:
+                    for img in images:
+                        AdImage.objects.create(ad=ad, image=img)
+
+                # Create PendingFeaturedAd
+                PendingFeaturedAd.objects.create(
+                    ad=ad,
+                    payment_screenshot=form.cleaned_data['payment_screenshot'],
+                    featured_start_date=form.cleaned_data['featured_start_date'],
+                    featured_expiry_date=form.cleaned_data['featured_expiry_date']
+                )
+
+                messages.success(request, "Your digital masterpiece is now soaring through our approval cosmos!")
+                show_success = True  # Set to True on success
+                form = AdPaidForm()  # Reset form
+            except Exception as e:
+                messages.error(request, f"Error: {str(e)}")
+        else:
+            messages.error(request, "Invalid form data. Please check fields.")
+    else:
+        form = AdPaidForm()
+
+    return render(request, 'base/create_paid_ad.html', {
+        'form': form,
+        'category': category,
+        'show_success': show_success,
+        'categories': categories,
+    })
+@receiver(post_save, sender=Ad)
+def handle_ad_approval(sender, instance, created, **kwargs):
+    if not created and instance.is_approved:
+        # Check if it already has a FeaturedAd
+        if not hasattr(instance, 'featuredad'):
+            try:
+                pending = PendingFeaturedAd.objects.get(ad=instance)
+                # Create FeaturedAd using the pending data
+                FeaturedAd.objects.create(
+                    ad=instance,
+                    payment_screenshot=pending.payment_screenshot,
+                    featured_start_date=pending.featured_start_date,
+                    featured_expiry_date=pending.featured_expiry_date
+                )
+                # Create FeaturedAdHistory (optional)
+                FeaturedAdHistory.objects.create(
+                    ad=instance,
+                    amount_paid=0.0,
+                    payment_screenshot=pending.payment_screenshot,
+                    expires_at=pending.featured_expiry_date
+                )
+                # Delete the pending ad
+                pending.delete()
+            except PendingFeaturedAd.DoesNotExist:
+                pass
+
+            
+def handle_ad_redirect(request, subcategory_id):
+    is_paid = request.session.get('is_paid', False)
+
+    if is_paid:
+        return redirect('create_ad_form', category_id=subcategory_id)
+    else:
+        return redirect('ad_form', category_id=subcategory_id)
+    
+@login_required(login_url='login')
+def notification_center(request):
+    notifications = Notification.objects.filter(
+        user=request.user
+    ).order_by('-created_at')
+    
+    # Get unread IDs before marking as read
+    unread_ids = list(notifications.filter(is_read=False).values_list('id', flat=True))
+    
+    # Pagination
+    paginator = Paginator(notifications, 10)  # 10 per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Mark current page notifications as read
+    Notification.objects.filter(id__in=unread_ids).update(is_read=True)
+    
+    # Add was_unread flag for styling
+    for notification in page_obj:
+        notification.was_unread = notification.id in unread_ids
+    
+    return render(request, 'base/notification_center.html', {'page_obj': page_obj})
+
+@login_required(login_url='login')
+def delete_notification(request, pk):
+    notification = get_object_or_404(
+        Notification, 
+        id=pk, 
+        user=request.user
+    )
+    notification.delete()
+    return redirect('notification_center')
+
+@login_required(login_url='login')
+def mark_all_read(request):
+    Notification.objects.filter(
+        user=request.user, 
+        is_read=False
+    ).update(is_read=True)
+    return redirect('notification_center')
+
+@login_required(login_url='login')
+def toggle_favorite(request, ad_id):
+    ad = get_object_or_404(Ad, pk=ad_id)
+    user = request.user
+
+    # Check if favorite exists
+    favorite_exists = Favorite.objects.filter(user=user, ad=ad).exists()
+    
+    if favorite_exists:
+        # Delete existing favorite
+        Favorite.objects.filter(user=user, ad=ad).delete()
+        favorited = False
+    else:
+        # Create new favorite
+        Favorite.objects.create(user=user, ad=ad)
+        favorited = True
+
+    # Handle AJAX requests (for JavaScript fetch)
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({
+            'favorited': favorited,
+            'favorite_count': ad.favorited_by.count()
+        })
+    else:
+        # Redirect to current page or ad detail
+        return redirect(request.META.get('HTTP_REFERER', 'home'))  # Go back to previous page
+ 
+
+@login_required(login_url='login')
+def my_favorites(request):
+    categories = Category.objects.all()
+    # Get user's favorites with related ad data and prefetch images
+    favorites = Favorite.objects.filter(user=request.user).select_related(
+        'ad__category'
+    ).prefetch_related(
+        'ad__images'
+    )
+    
+
+    # Create a set of favorited ad IDs for template checks
+    user_favorites = set(favorites.values_list('ad_id', flat=True))
+    categories = Category.objects.all()
+    return render(request, 'base/favorites.html', {
+        'favorites': favorites,
+        'categories': categories,
+        'user_favorites': user_favorites,
+        
+    })
+
+def product_detail(request, ad_id):
+    ad = get_object_or_404(Ad, pk=ad_id)
+    categories = Category.objects.all()
+    
+    # Increment view count
+    Ad.objects.filter(pk=ad.pk).update(views=F('views') + 1)
+    
+    # Get similar items (same category, exclude current ad)
+    similar_items = Ad.objects.filter(
+        category=ad.category, 
+        status='approved'
+    ).exclude(id=ad.id).order_by('-created_at')[:6]
+    
+    # Get user's favorites if authenticated
+    if request.user.is_authenticated:
+        user_favorites = set(request.user.favorites.values_list('ad_id', flat=True))
+    else:
+        user_favorites = set()
+    
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.user = request.user
+            comment.ad = ad
+            comment.save()
+            return redirect('product_detail', ad_id=ad_id)
+    else:
+        form = CommentForm()
+        
+    comments = Comment.objects.filter(ad=ad, parent=None)
+    
+    return render(request, 'base/ad_detail.html', {
+        'ad': ad,
+        'categories': categories,
+        'form': form,
+        'comments': comments,
+        'user_favorites': user_favorites,
+        'similar_items': similar_items  # Add similar items to context
+    })
+def search_ads(request):
+    # Get search parameters
+    categories = Category.objects.all()
+    keyword = request.GET.get('q', '').strip()
+    location = request.GET.get('location', '').strip()
+    category_id = request.GET.get('category', '').strip()
+    
+    # Start with approved ads only
+    base_query = Ad.objects.filter(status='approved')
+    ads = base_query
+    has_exact = False
+    has_similar = False
+    
+    # Extract state from location if possible
+    state = None
+    if location:
+        state_match = re.search(r'\b([A-Z]{2})\b', location, re.IGNORECASE)
+        state = state_match.group(1).upper() if state_match else None
+    
+    # Build dynamic filters for exact matches
+    exact_filters = Q()
+    
+    # Keyword search (search multiple fields)
+    if keyword:
+        keyword_query = Q()
+        for word in keyword.split():
+            keyword_query |= (
+                Q(name__icontains=word) |
+                Q(description__icontains=word) |
+                Q(motortype__icontains=word) |
+                Q(geartype__icontains=word) |
+                Q(color__icontains=word)
+            )
+        exact_filters &= keyword_query
+    
+    # Location search
+    if location:
+        location_query = Q()
+        location_query |= Q(location__icontains=location)
+        
+        if state:
+            location_query |= Q(location__icontains=state)
+        
+        exact_filters &= location_query
+    
+    # Category search (direct category only - no subcategories)
+    if category_id:
+        try:
+            # Filter by direct category only
+            exact_filters &= Q(category__id=category_id)
+        except (ValueError, Category.DoesNotExist):
+            # Handle invalid category IDs gracefully
+            pass
+    
+    # Apply all filters for exact matches
+    ads = base_query.filter(exact_filters).order_by('-is_featured', '-created_at')
+    has_exact = ads.exists()
+    
+    # SIMILAR ADS - Only show same category vehicles
+    similar_ads = base_query.none()
+    if not has_exact or ads.count() < 5:
+        similar_query = Q()
+        
+        # Maintain the same category filter for similar listings
+        if category_id:
+            try:
+                # Filter by direct category only
+                similar_query &= Q(category__id=category_id)
+            except (ValueError, Category.DoesNotExist):
+                pass
+        
+        # Keyword similarity (match any word)
+        if keyword:
+            keyword_similar = Q()
+            for word in keyword.split()[:3]:  # Limit to first 3 words
+                keyword_similar |= (
+                    Q(name__icontains=word) |
+                    Q(description__icontains=word)
+                )
+            similar_query &= keyword_similar
+        
+        # Apply similar query and exclude exact matches
+        similar_ads = base_query.filter(similar_query).exclude(id__in=ads.values_list('id', flat=True))
+        
+        # Order by featured and date
+        similar_ads = similar_ads.order_by('-is_featured', '-created_at')[:8]
+        
+        has_similar = similar_ads.exists()
+    
+    # Get category name if exists
+    category_name = ""
+    if category_id:
+        try:
+            category_name = Category.objects.get(id=category_id).name
+        except (ValueError, Category.DoesNotExist):
+            pass
+
+    # Pagination
+    paginator = Paginator(ads, 12)
+    page_number = request.GET.get('page')
+    page_ads = paginator.get_page(page_number)
+    
+    return render(request, 'base/search_results.html', {
+        'ads': page_ads,
+        'similar_ads': similar_ads,
+        'keyword': keyword,
+        'location': location,
+        'categories': categories,
+        'category_name': category_name,
+        'has_exact': has_exact,
+        'has_similar': has_similar,
+        'has_results': has_exact or has_similar
+    })
+
+@login_required(login_url='login')
+def add_comment(request, ad_id):
+    ad = get_object_or_404(Ad, pk=ad_id)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.user = request.user
+            comment.ad = ad
+            comment.save()
+            return redirect('product_detail', ad_id=ad_id)
+    return redirect('product_detail', ad_id=ad_id)
+
+
+
+
+def view_profile(request, username):
+    user = get_object_or_404(User, username=username)
+    ads = Ad.objects.filter(advertiser=user)
+    return render(request, 'base/profile.html', {'user': user, 'ads': ads})
+
+
+def view_advertiser_profile(request, username):
+    user = User.objects.get(username=username)
+    ads = Ad.objects.filter(advertiser=user)
+    
+    return render(request, 'base/view_advertiser_profile.html', {'advertiser': user, 'ads': ads})
+
+@csrf_exempt
+@login_required(login_url='login')
+@require_http_methods(["DELETE"])
+def delete_comment(request, comment_id):
+    try:
+        comment = Comment.objects.get(id=comment_id, user=request.user)
+        comment.delete()
+        return JsonResponse({'status': 'success'}, status=200)
+    except Comment.DoesNotExist:
+        return JsonResponse({'error': 'Comment not found or not authorized'}, status=403)
+
+
+def product_list(request, category_id):
+    category = get_object_or_404(Category, pk=category_id)
+    categories = Category.objects.all()
+
+    ads = Ad.objects.filter(category=category)
+    return render(request, 'base/product_list.html', {'categories': categories,'category': category, 'ads': ads})
+
+@login_required(login_url='login')
+def deleteComment(request, pk):
+    comment = Comment.objects.get(id=pk)
+
+    if request.user != comment.user:
+        return HttpResponse('Your are not allowed here!!')
+
+    if request.method == 'POST':
+        comment.delete()
+        return redirect('index')
+    return render(request, 'base/delete.html', {'obj': comment})
+
+@login_required(login_url='login')
+def reply_to_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            reply = form.save(commit=False)
+            reply.user = request.user
+            reply.ad = comment.ad
+            reply.parent = comment
+            reply.save()
+            return redirect('product_detail', ad_id=comment.ad.id)
+    return redirect('product_detail', ad_id=comment.ad.id)
+
+@login_required
+def dashboard(request):
+    user = request.user
+    ads = Ad.objects.filter(advertiser=user).order_by('-created_at')
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile has been updated successfully!')
+            return redirect('dashboard')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = UserProfileForm(instance=user)
+
+    context = {
+        'user': user,
+        'ads': ads,
+        'form': form,
+    }
+    return render(request, 'base/dashboard.html', context)
+
+@login_required
+def delete_ad(request, ad_id):
+    ad = get_object_or_404(Ad, id=ad_id, advertiser=request.user)
+    if request.method == 'POST':
+        ad.delete()
+        messages.success(request, 'Ad deleted successfully!')
+        return redirect('dashboard')
+    return redirect('dashboard')
+
+
+class AdDetailView(DetailView):
+    model = Ad
+    template_name = 'ad_detail.html'
+    context_object_name = 'ad'
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        Ad.objects.filter(pk=obj.pk).update(views=F('views') + 1)
+        return obj
+    
+
+
+    

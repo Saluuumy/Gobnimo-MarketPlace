@@ -1,0 +1,29 @@
+# render.yaml
+services:
+  - type: web
+    name: ecommerce-platform
+    env: python
+    plan: free
+    region: oregon  # or any preferred region
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn Ecommerce.wsgi:application"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ecommerce_db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: false
+      - key: PYTHON_VERSION
+        value: 3.11.0
+    autoDeploy: true
+    pullRequestPreviewsEnabled: true
+
+databases:
+  - name: ecommerce_db
+    plan: free
+    region: oregon
+    databaseName: ecommerce
+    user: ecommerce_user

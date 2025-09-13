@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Gobonimo Mart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Scoped focus styles - only applies to form inputs */
+        .signup-form input:focus:not([type="checkbox"]):not([type="radio"]),
+        .signup-form textarea:focus,
+        .signup-form select:focus {
+            outline: none;
+            border-color: #7e22ce;
+            box-shadow: 0 0 0 3px rgba(126, 34, 206, 0.2);
+        }
+        
+        /* Rest of your custom styles */
+        .form-input {
+            padding-left: 2.5rem;
+            height: 3rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+        
+        .form-input:focus {
+            background-color: #ffffff;
+        }
+        
+        .gradient-btn {
+            background: linear-gradient(135deg, #7e22ce 0%, #d946ef 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .gradient-btn:hover {
+            background: linear-gradient(135deg, #6b21a8 0%, #c026d3 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(126, 34, 206, 0.3);
+        }
+        
+        .file-input::file-selector-button {
+            background: linear-gradient(135deg, #7e22ce 0%, #d946ef 100%);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            margin-right: 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-input::file-selector-button:hover {
+            background: linear-gradient(135deg, #6b21a8 0%, #c026d3 100%);
+        }
+        
+        .error-message {
+            background: rgba(244, 63, 94, 0.1);
+            border-left: 3px solid #f43f5e;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-50 text-gray-900">
+    <div class="w-full max-w-md p-8 rounded-2xl bg-white shadow-lg border border-gray-100">
+        <div class="flex justify-center mb-8">
+            <a href="/" class="flex items-center">
+               
+    <span class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">
+                    Gobonimo Marketplace
+                </span>
+            </a>
+        </div>
+        
+        <h2 class="text-2xl font-bold text-center mb-2 text-gray-800">Create Your Account</h2>
+        <p class="text-center text-gray-600 mb-8">Join our community today</p>
+        
+        <form method="post" enctype="multipart/form-data" class="signup-form space-y-5 bg-gray-50 p-6 rounded-xl border border-gray-200">
+            {% csrf_token %}
+            <div class="error-message text-pink-600 text-sm p-3 rounded-lg mb-4 flex items-start hidden">
+                <i class="fas fa-exclamation-circle mr-2 mt-0.5"></i>
+                <div>
+                    <p>Sample error message</p>
+                </div>
+            </div>
+            
+            <div>
+                <label for="id_email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-envelope text-purple-500"></i>
+                    </div>
+                    <input type="email" name="email" id="id_email" class="form-input w-full pl-10" required placeholder="your@email.com">
+                </div>
+            </div>
+            
+            <div>
+                <label for="id_full_name" class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-user text-purple-500"></i>
+                    </div>
+                    <input type="text" name="full_name" id="id_full_name" class="form-input w-full pl-10" placeholder="John Doe">
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="id_password1" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-purple-500"></i>
+                        </div>
+                        <input type="password" name="password1" id="id_password1" class="form-input w-full pl-10 pr-10" required>
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            <i class="fas fa-eye-slash text-gray-400 cursor-pointer toggle-password" data-target="id_password1"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="id_password2" class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-purple-500"></i>
+                        </div>
+                        <input type="password" name="password2" id="id_password2" class="form-input w-full pl-10 pr-10" required>
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            <i class="fas fa-eye-slash text-gray-400 cursor-pointer toggle-password" data-target="id_password2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <label for="id_phone_number" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-phone text-purple-500"></i>
+                    </div>
+                    <input type="text" name="phone_number" id="id_phone_number" class="form-input w-full pl-10" placeholder="+1 (555) 123-4567">
+                </div>
+            </div>
+            
+            <div>
+                <label for="id_bio" class="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+                <div class="relative">
+                    <div class="absolute top-3 left-3">
+                        <i class="fas fa-pen text-purple-500"></i>
+                    </div>
+                    <textarea name="bio" id="id_bio" class="w-full py-3 pl-10 pr-3 bg-white border border-gray-200 rounded-lg text-gray-900 focus:border-purple-500 h-24" placeholder="Tell us about yourself..."></textarea>
+                </div>
+            </div>
+            
+            <div>
+                <label for="id_location" class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-map-marker-alt text-purple-500"></i>
+                    </div>
+                    <input type="text" name="location" id="id_location" class="form-input w-full pl-10" placeholder="City, Country">
+                </div>
+            </div>
+            
+        
+            
+            <div class="flex items-start pt-2">
+                <div class="flex items-center h-5">
+                    <input id="terms" name="terms" type="checkbox" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded" required>
+                </div>
+                <div class="ml-3 text-sm">
+                    <label for="terms" class="text-gray-700">
+                        I agree to the <a href="#" class="text-purple-600 hover:text-purple-500 hover:underline">Terms</a> and <a href="#" class="text-purple-600 hover:text-purple-500 hover:underline">Privacy Policy</a>
+                    </label>
+                </div>
+            </div>
+            
+            <button type="submit" class="w-full py-3 gradient-btn text-white font-bold rounded-lg mt-4 flex items-center justify-center">
+                <i class="fas fa-user-plus mr-2"></i> Create Account
+            </button>
+        </form>
+        
+        <p class="mt-6 text-center text-sm text-gray-600">
+            Already have an account? <a href="{% url 'login' %}" class="font-semibold text-purple-600 hover:text-purple-500">Log In</a>
+        </p>
+    </div>
+    
+    <script>
+        // Toggle password visibility
+        document.querySelectorAll('.toggle-password').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const target = this.getAttribute('data-target');
+                const input = document.getElementById(target);
+                const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                input.setAttribute('type', type);
+                this.classList.toggle('fa-eye-slash');
+                this.classList.toggle('fa-eye');
+            });
+        });
+        
+        // Preview avatar image
+        const avatarInput = document.getElementById('id_avatar');
+        const avatarPreview = document.getElementById('avatar-preview');
+        
+        avatarInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    avatarPreview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>

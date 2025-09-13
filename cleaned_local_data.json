@@ -1,0 +1,73 @@
+[
+  {
+    "model": "base.category",
+    "pk": 3,
+    "fields": {
+      "name": "Vehicles",
+      "parent_category": null,
+      "image": "images/Screenshot_2025-07-05_at_20-30-55_Problem_loading_page_t4GsmBb.png"
+    }
+  },
+  {
+    "model": "base.category",
+    "pk": 4,
+    "fields": {
+      "name": "Cars",
+      "parent_category": 3,
+      "image": "images/Screenshot_2025-07-05_at_03-59-04_502_Bad_Gateway.png"
+    }
+  },
+  {
+    "model": "base.category",
+    "pk": 5,
+    "fields": {
+      "name": "Electronics",
+      "parent_category": null,
+      "image": "images/Screenshot_2025-07-05_at_21-15-09_Postgres_Railway.png"
+    }
+  },
+  {
+    "model": "base.category",
+    "pk": 6,
+    "fields": {
+      "name": "Mobiles",
+      "parent_category": 5,
+      "image": "images/Screenshot_2025-07-05_at_21-15-09_Postgres_Railway_vNfIHhU.png"
+    }
+  },
+  {
+    "model": "base.ad",
+    "pk": 1,
+    "fields": {
+      "advertiser": 1,
+      "category": 4,
+      "name": "YOUR_AD_TITLE_HERE",
+      "price": "100.00",
+      "location": "YOUR_LOCATION_HERE",
+      "condition": "",
+      "description": "YOUR_DESCRIPTION_HERE",
+      "views": 0,
+      "motortype": "",
+      "geartype": "",
+      "year": null,
+      "color": "",
+      "num_rooms": null,
+      "num_baths": null,
+      "is_approved": false,
+      "is_featured": false,
+      "status": "pending",
+      "created_at": "2025-07-09T00:00:00Z"
+    }
+  },
+  {
+    "model": "base.comment",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "ad": 1,
+      "text": "YOUR_COMMENT_TEXT_HERE",
+      "timestamp": "2025-07-09T00:00:00Z",
+      "parent": null
+    }
+  }
+]
