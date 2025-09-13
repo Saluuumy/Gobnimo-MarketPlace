@@ -1,31 +1,19 @@
 import os
 from pathlib import Path
-import environ
 import dj_database_url
-
-# Initialize environment
-env = environ.Env()
-environ.Env.read_env()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Security settings
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-default-key-for-development-only')
-DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+# Security settings - Use environment variables in production
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-key-only-for-local-development')
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 # Host/domain settings
 ALLOWED_HOSTS = [
-    '.onrender.com',
     'localhost',
     '127.0.0.1',
+    '.onrender.com',
     'gobnimo-marketplace.onrender.com',
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    'https://*.onrender.com',
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-    'https://gobnimo-marketplace.onrender.com',  # Updated to HTTPS for production
 ]
 
 # Application definition
@@ -80,11 +68,19 @@ WSGI_APPLICATION = 'Ecommerce.wsgi.application'
 
 # Database configuration
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL', f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
-        conn_max_age=600
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
+
+# If DATABASE_URL is set (on Render), use that instead
+if 'DATABASE_URL' in os.environ:
+    DATABASES['default'] = dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600,
+        ssl_require=not DEBUG
+    )
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -134,52 +130,37 @@ AUTHENTICATION_BACKENDS = [
 # Allauth settings
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION = 'optional'  # Changed to optional to avoid email issues
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
-ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Adver Platform] '
+ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Gobnimo Marketplace] '
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
-# Email configuration
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-else:
-    EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
-    SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
-    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'salmamacash@gmail.com')
-    SENDGRID_SANDBOX_MODE_IN_DEBUG = False
-    SENDGRID_ECHO_TO_STDOUT = DEBUG
+# Email configuration - simplified for development
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Password reset timeout
 PASSWORD_RESET_TIMEOUT = 172800  # 2 days in seconds
 
-# Security settings
-SECURE_SSL_REDIRECT = not DEBUG
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SECURE = not DEBUG
+# Security settings - only enable in production
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    CSRF_TRUSTED_ORIGINS = [
+        'https://*.onrender.com',
+        'https://gobnimo-marketplace.onrender.com',
+    ]
+else:
+    # Development settings
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    CSRF_TRUSTED_ORIGINS = [
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
+    ]
 
 # WhiteNoise configuration
 WHITENOISE_AUTOREFRESH = DEBUG
-
-# Logging for debugging
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-        },
-        'django.core.mail': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-    },
-}
