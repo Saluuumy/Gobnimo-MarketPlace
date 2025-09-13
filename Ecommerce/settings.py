@@ -18,14 +18,14 @@ ALLOWED_HOSTS = [
     '.onrender.com',
     'localhost',
     '127.0.0.1',
-    'adver-platform.onrender.com',
+    'gobnimo-marketplace.onrender.com',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'https://*.onrender.com',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
-    'https://adver-platform.onrender.com',  # Updated to HTTPS for production
+    'https://gobnimo-marketplace.onrender.com',  # Updated to HTTPS for production
 ]
 
 # Application definition
