@@ -154,6 +154,8 @@ ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Adver Platform] '
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
+
+
 # Email configuration
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
