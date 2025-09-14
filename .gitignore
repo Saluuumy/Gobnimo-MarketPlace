@@ -90,4 +90,3 @@ Thumbs.db
 # Ecommerce-specific (e.g., if using Stripe, AWS, etc.)
 *.pem
 *.key
-config/secrets.*
