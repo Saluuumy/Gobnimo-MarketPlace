@@ -62,7 +62,7 @@ class User(AbstractUser):
     email_verified = models.BooleanField(_('email verified'), default=False)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS =  ['full_name']
 
     objects = CustomUserManager()
 
