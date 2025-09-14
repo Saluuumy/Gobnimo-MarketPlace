@@ -1,1279 +1,349 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Almis Market - Premium Marketplace</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #7E57C2;      /* Deep purple */
-            --primary-dark: #673AB7;
-            --secondary: #26A69A;    /* Teal */
-            --accent: #FF7043;       /* Coral */
-            --light: #f8fafc;
-            --dark: #1A237E;
-            --card-bg: #ffffff;
-            --text-dark: #263238;
-            --text-light: #78909C;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        body {
-            background-color: #f5f7fa;
-            color: var(--text-dark);
-        }
-        
-        .navbar {
-            background: var(--card-bg);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        }
-        
-        .logo {
-            background: linear-gradient(135deg, var(--primary) 0%, #5E35B1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 800;
-            font-family: 'Montserrat', sans-serif;
-            letter-spacing: -0.5px;
-        }
-        
-        .search-box {
-            transition: all 0.3s ease;
-            border: 1px solid #e2e8f0;
-        }
-        
-        .search-box:focus-within {
-            box-shadow: 0 10px 25px rgba(126, 87, 194, 0.15);
-            border-color: var(--primary);
-        }
-        
-        .search-btn {
-            background: var(--primary);
-            color: white;
-            transition: all 0.3s ease;
-        }
-        
-        .search-btn:hover {
-            background: var(--primary-dark);
-        }
-        
-        .mobile-menu {
-            transform: translateX(100%);
-            transition: transform 0.3s ease-in-out;
-        }
-        
-        .mobile-menu.open {
-            transform: translateX(0);
-        }
-        
-        .overlay {
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-        
-        .overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .hero-section {
-            background: linear-gradient(135deg, var(--primary) 0%, #5E35B1 100%);
-            color: white;
-            position: relative;
-            overflow: hidden;
-            height: 343px;
-        }
-        
-        .category-tag {
-            transition: all 0.3s ease;
-            background: var(--card-bg);
-            border: 1px solid #e2e8f0;
-        }
-        
-        .category-tag:hover, .category-tag.active {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-3px);
-            border-color: var(--primary);
-        }
-        
-        .product-card {
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            background: var(--card-bg);
-            border: 1px solid #e2e8f0;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-            border-color: var(--secondary);
-        }
-        
-        .sale-badge {
-            background: var(--secondary);
-            animation: pulse 2s infinite;
-        }
-        
-        .new-badge {
-            background: var(--accent);
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .scroll-btn {
-            transition: all 0.3s ease;
-            background: var(--primary);
-            color: white;
-        }
-        
-        .scroll-btn:hover {
-            background: var(--secondary);
-            transform: scale(1.1);
-        }
-        
-        .product-container {
-            scroll-behavior: smooth;
-            scroll-snap-type: x mandatory;
-            cursor: grab;
-        }
-        
-        .product-card {
-            scroll-snap-align: start;
-        }
-        
-        .scroll-container {
-            scrollbar-width: none;
-        }
-        
-        .scroll-container::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .product-meta {
-            color: var(--text-light);
-            font-size: 0.75rem;
-        }
-        
-        .rating {
-            color: var(--accent);
-        }
-        
-        .price {
-            color: var(--primary);
-            font-weight: 700;
-        }
-        
-        .mobile-menu {
-            background: var(--dark);
-        }
-        
-        .featured-label {
-            background: var(--accent);
-            color: white;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 4px;
-            display: inline-block;
-            margin-bottom: 5px;
-            font-size: 0.75rem;
-        }
-        
-        .hamburger span {
-            background: var(--primary);
-        }
-        
-        @media (max-width: 768px) {
-            .mobile-logo {
-                font-size: 1.25rem;
-            }
-            
-            .mobile-nav-links {
-                font-size: 0.875rem;
-                gap: 0.75rem;
-            }
-            
-            .categories-section {
-                display: none;
-            }
-            
-            .hero-section {
-                height: 200px; /* Even thinner on mobile */
-            }
-        }
-        
-        .hamburger {
-            width: 30px;
-            height: 20px;
-            position: relative;
-            cursor: pointer;
-        }
-        
-        .hamburger span {
-            position: absolute;
-            height: 3px;
-            width: 100%;
-            background: var(--primary);
-            border-radius: 2px;
-            transition: all 0.3s ease;
-        }
-        
-        .hamburger span:nth-child(1) {
-            top: 0;
-        }
-        
-        .hamburger span:nth-child(2) {
-            top: 8px;
-        }
-        
-        .hamburger span:nth-child(3) {
-            top: 16px;
-        }
-        
-        .hamburger.active span:nth-child(1) {
-            transform: rotate(45deg);
-            top: 8px;
-        }
-        
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
-        }
-        
-        .hamburger.active span:nth-child(3) {
-            transform: rotate(-45deg);
-            top: 8px;
-        }
-        
-        .cta-section {
-            background: linear-gradient(135deg, var(--primary) 0%, #5E35B1 100%);
-        }
-        
-        .footer {
-            background: var(--dark);
-        }
-        
-        .stat-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-        }
-        
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(126, 87, 194, 0.2);
-        }
-        
-        .btn-secondary {
-            background: var(--accent);
-            color: white;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-secondary:hover {
-            background: #F4511E;
-            transform: translateY(-3px);
-        }
-        
-        /* Enhanced Gallery Styles */
-        .gallery-container {
-            position: relative;
-            height: 100%;
-            display: flex;
-            align-items: center;
-        }
-        
-        .gallery-slides {
-            display: flex;
-            transition: transform 0.8s ease-in-out;
-            width: 100%;
-            height: 100%;
-        }
-        
-        .gallery-slide {
-            flex: 0 0 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .gallery-content {
-            display: flex;
-            width: 100%;
-            max-width: 1100px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .gallery-text {
-            flex: 1;
-            padding-right: 30px;
-        }
-        
-        .gallery-products {
-            display: flex;
-            gap: 15px;
-            flex: 2;
-        }
-        
-        .gallery-product {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            padding: 15px;
-            width: 180px;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .gallery-product:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-        
-        .gallery-product img {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: transform 0.3s ease;
-        }
-        
-        .gallery-product:hover img {
-            transform: scale(1.05);
-        }
-        
-        .gallery-product h3 {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: white;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .gallery-product .price {
-            font-size: 1rem;
-            color: white;
-            font-weight: 700;
-            display: block;
-        }
-        
-        .gallery-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, rgba(94, 53, 177, 0.8) 0%, rgba(94, 53, 177, 0.4) 100%);
-            z-index: 1;
-        }
-        
-        .advertise-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
-            z-index: 20;
-        }
-        
-        .advertise-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-        
-        @media (max-width: 900px) {
-            .gallery-content {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-            
-            .gallery-text {
-                padding-right: 0;
-                margin-bottom: 20px;
-            }
-            
-            .gallery-products {
-                width: 100%;
-                overflow-x: auto;
-                justify-content: flex-start;
-                padding-bottom: 10px;
-            }
-            
-            .gallery-product {
-                flex-shrink: 0;
-            }
-            
-            .advertise-btn {
-                top: 10px;
-                right: 10px;
-                padding: 6px 12px;
-                font-size: 0.75rem;
-            }
-        }
-        
-        .slide-counter {
-            position: absolute;
-            bottom: 15px;
-            right: 20px;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.8rem;
-            z-index: 10;
-        }
-        
-        .gallery-product .sale-tag {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: var(--accent);
-            color: white;
-            font-size: 0.7rem;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-weight: 600;
-        }
-        
-        .gallery-text h1 {
-            font-size: 2.2rem;
-            line-height: 1.2;
-            margin-bottom: 15px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .gallery-text p {
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-        }
-    </style>
-</head>
-<body>
-    <!-- Navbar -->
-    <nav class="navbar sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-3">
-            <div class="flex items-center justify-between">
-                <!-- Logo -->
-                <div class="flex items-center">
-                    <div class="logo text-xl md:text-2xl font-bold mobile-logo">Almis Market</div>
-                </div>
+{% extends 'main.html' %}
+{% load static %}
 
-                <!-- Search Panel - Hidden on mobile -->
-                <div class="hidden md:flex items-center space-x-2 flex-grow mx-4">
-                    <div class="search-box flex items-center bg-white rounded-lg overflow-hidden flex-grow max-w-2xl">
-                        <select class="bg-gray-50 px-3 py-2 text-gray-700 focus:outline-none text-sm">
-                            <option>All Categories</option>
-                            <option>Electronics</option>
-                            <option>Furniture</option>
-                            <option>Clothing</option>
-                            <option>Vehicles</option>
-                            <option>Real Estate</option>
-                        </select>
-                        <div class="w-px h-6 bg-gray-200"></div>
-                        <input type="text" placeholder="Location" class="px-3 py-2 w-32 focus:outline-none text-sm">
-                        <div class="w-px h-6 bg-gray-200"></div>
-                        <input type="text" placeholder="Search for anything..." class="px-3 py-2 flex-grow focus:outline-none text-sm">
-                        <button class="search-btn px-4 py-2 text-sm min-w-[100px]">
-                            <i class="fas fa-search mr-1"></i> Search
-                        </button>
-                    </div>
-                </div>
+{% block content %}
+<div id="overlay" class="overlay fixed inset-0 bg-black bg-opacity-50 z-40"></div>
 
-                <!-- Desktop Nav Links -->
-                <div class="hidden md:flex items-center space-x-4">
-                    <a href="#" class="font-medium text-gray-700 hover:text-primary transition flex items-center text-sm">
-                        <i class="fas fa-plus-circle mr-1"></i> Upload Ad
-                    </a>
-                    <a href="#" class="font-medium text-gray-700 hover:text-primary transition text-sm">Login</a>
-                    <a href="#" class="btn-primary px-3 py-1.5 rounded-lg text-sm">Signup</a>
-                </div>
+<!-- Refactored Index Template: Sponsored / Featured carousel + Category scrollers -->
+<style>
+  /* Theme helpers */
+  :root{
+    --gap: 1rem;
+    --card-w-desktop: 16rem; /* 256px */
+  }
 
-                <!-- Mobile Menu Button -->
-                <div class="md:hidden flex items-center space-x-3">
-                    <a href="#" class="text-primary hover:text-primary-dark transition flex items-center">
-                        <i class="fas fa-plus-circle mr-1"></i>
-                        <span class="hidden sm:inline">Upload</span>
-                    </a>
-                    <a href="#" class="text-primary hover:text-primary-dark transition">
-                        <i class="fas fa-user mr-1"></i>
-                        <span class="hidden sm:inline">Login</span>
-                    </a>
-                    <button id="mobile-menu-button" class="hamburger">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
-                </div>
-            </div>
+  /* Accessible focus ring */
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(124,58,237,0.16);
+    border-radius: .5rem;
+  }
 
-            <!-- Mobile Search Panel -->
-            <div class="mt-4 md:hidden">
-                <div class="search-box flex flex-col bg-white rounded-lg overflow-hidden">
-                    <select class="bg-gray-50 px-3 py-2 text-gray-700 focus:outline-none text-sm">
-                        <option>All Categories</option>
-                        <option>Electronics</option>
-                        <option>Furniture</option>
-                        <option>Clothing</option>
-                        <option>Vehicles</option>
-                        <option>Real Estate</option>
-                    </select>
-                    <input type="text" placeholder="Location" class="px-3 py-2 border-t border-gray-200 focus:outline-none text-sm">
-                    <div class="flex">
-                        <input type="text" placeholder="Search for anything..." class="px-3 py-2 flex-grow border-t border-gray-200 focus:outline-none text-sm">
-                        <button class="search-btn px-4 py-2 text-sm min-w-[80px]">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
+  /* Carousel / Track styles */
+  .carousel-wrapper { 
+    overflow: hidden; 
+    position: relative; 
+  }
+  
+  .carousel-track { 
+    display: flex; 
+    gap: var(--gap); 
+    align-items: stretch; 
+  }
+  
+  .carousel-group { 
+    display: flex; 
+    gap: var(--gap); 
+    flex-shrink: 0;
+  }
+
+  /* Infinite scrolling animation */
+  @keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-100% - var(--gap))); }
+  }
+  
+  .carousel-track.animate {
+    animation: scroll 30s linear infinite;
+  }
+  
+  .carousel-wrapper:hover .carousel-track {
+    animation-play-state: paused;
+  }
+
+  /* Desktop product card sizing */
+  .desktop-card { flex: 0 0 var(--card-w-desktop); }
+
+  /* Mobile horizontal lists: touch-friendly */
+  .product-container {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .product-container > .product-card {
+    scroll-snap-align: start;
+  }
+
+  /* Reduced motion respect */
+  @media (prefers-reduced-motion: reduce) {
+    .carousel-track { animation: none !important; }
+  }
+
+  /* Small utility tweaks */
+  .badge-pill { padding: .125rem .5rem; font-size: .7rem; border-radius: .375rem; }
+  .card-image { height: 9rem; object-fit: cover; width: 100%; }
+</style>
+
+<section class="bg-purple-50 py-6">
+  <div class="max-w-6xl mx-auto px-4">
+    <div class="bg-gradient-to-r from-purple-600/90 to-pink-500/90 rounded-3xl shadow-lg p-6 md:p-8 relative z-10">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center">
+          <span class="premium-badge bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-full w-9 h-9 flex items-center justify-center mr-3 shadow" aria-hidden="true">
+            <i class="fas fa-crown text-sm" style="position: relative;
+  top: 10px;"></i>
+          </span>
+          <h2 class="font-bold text-white text-lg md:text-xl">Sponsored Products</h2>
         </div>
-    </nav>
 
-    <!-- Mobile Menu -->
-    <div class="mobile-menu fixed top-0 right-0 h-full w-64 z-50 shadow-xl p-6">
-        <div class="flex justify-between items-center mb-8">
-            <div class="logo text-xl font-bold text-white">Almis Market</div>
-            <button id="close-menu" class="text-gray-300 hover:text-white">
-                <i class="fas fa-times text-2xl"></i>
-            </button>
+        <div>
+          <a href="{% url 'menu' %}?is_paid=true"
+             class="advertise-btn inline-flex items-center gap-2 ml-2 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-gray-900 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold shadow transition-all duration-300"
+             role="button" aria-label="Advertise here">
+            <i class="fas fa-bullhorn"></i>
+            <span>Advertise Here</span>
+          </a>
         </div>
-        <div class="flex flex-col space-y-4">
-            <a href="#" class="font-medium text-gray-300 hover:text-white transition py-2 border-b border-gray-700">
-                <i class="fas fa-home mr-3"></i> Home
-            </a>
-            <a href="#" class="font-medium text-gray-300 hover:text-white transition py-2 border-b border-gray-700">
-                <i class="fas fa-compass mr-3"></i> Browse
-            </a>
-            <a href="#" class="font-medium text-gray-300 hover:text-white transition py-2 border-b border-gray-700">
-                <i class="fas fa-list mr-3"></i> Categories
-            </a>
-            <a href="#" class="font-medium text-gray-300 hover:text-white transition py-2 border-b border-gray-700">
-                <i class="fas fa-plus-circle mr-3"></i> Upload Ad
-            </a>
-            <a href="#" class="font-medium text-gray-300 hover:text-white transition py-2 border-b border-gray-700">
-                <i class="fas fa-user mr-3"></i> My Account
-            </a>
-            <a href="#" class="btn-primary px-4 py-2 rounded-lg text-center mt-4">
-                Signup
-            </a>
-        </div>
-    </div>
-    <div id="overlay" class="overlay fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+      </div>
 
-    <!-- Hero Section - Enhanced Gallery -->
-    <section class="hero-section py-16 px-4">
-        <div class="gallery-overlay"></div>
-        <button class="advertise-btn">
-            <i class="fas fa-bullhorn mr-2"></i>Advertise Here
-        </button>
-        <div class="gallery-container">
-            <div class="gallery-slides">
-                <!-- Slide 1 -->
-                <div class="gallery-slide">
-                    <div class="slide-counter">1/3</div>
-                    <div class="gallery-content">
-                        <div class="gallery-text">
-                            <h1>Discover Amazing Deals</h1>
-                            <p>Find everything you need at unbeatable prices</p>
-                            <div class="flex flex-wrap gap-4">
-                                <button class="btn-primary px-8 py-3 rounded-full font-bold">Start Shopping</button>
-                                <button class="btn-secondary px-8 py-3 rounded-full font-bold">Sell Items</button>
-                            </div>
-                        </div>
-                        <div class="gallery-products">
-                            <div class="gallery-product">
-                                <div class="sale-tag">15% OFF</div>
-                                <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=300" alt="Smart Watch">
-                                <h3>Smart Watch</h3>
-                                <span class="price">$249.99</span>
-                            </div>
-                            <div class="gallery-product">
-                                <div class="sale-tag">NEW</div>
-                                <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=300" alt="Headphones">
-                                <h3>Wireless Headphones</h3>
-                                <span class="price">$129.99</span>
-                            </div>
-                            <div class="gallery-product">
-                                <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=300" alt="Watch">
-                                <h3>Luxury Watch</h3>
-                                <span class="price">$349.99</span>
-                            </div>
-                        </div>
+      <!-- Desktop Carousel -->
+      <div class="hidden md:block">
+        <div class="carousel-wrapper">
+          <div class="carousel-track carousel-group animate" aria-hidden="false">
+            {% comment %} Single group of featured cards {% endcomment %}
+            {% for product in featured_products|slice:":8" %}
+              <article class="relative bg-white rounded-xl shadow-md overflow-hidden border border-purple-200 flex-shrink-0 desktop-card product-card" role="article" aria-label="{{ product.name }}">
+                <div class="absolute top-3 left-3 badge-pill bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold drop-shadow">FEATURED</div>
+                <a href="{% url 'product_detail' product.id %}" aria-label="Open {{ product.name }}">
+                  {% if product.images.first %}
+                    <img src="{{ product.images.first.image.url }}" srcset="{{ product.images.first.image.url }} 1x, {{ product.images.first.image.url }} 2x" loading="lazy" alt="{{ product.name }} - {{ product.location }} - ${{ product.price }}" class="card-image">
+                  {% else %}
+                    <div class="bg-gray-100 w-full h-36 flex items-center justify-center border-dashed border-2 border-gray-200">
+                      <i class="fas fa-image text-gray-400 text-3xl" aria-hidden="true"></i>
                     </div>
+                  {% endif %}
+                </a>
+                <div class="p-3">
+                  <h3 class="font-semibold text-sm truncate">{{ product.name|truncatechars:40 }}</h3>
+                  <p class="text-xs text-gray-500 mt-1">{{ product.location|default:"" }} &middot; {{ product.created_at|timesince }} ago</p>
+                  <div class="mt-2 flex items-center justify-between">
+                    <div class="text-base font-bold text-purple-700">${{ product.price }}</div>
+                    <a href="{% url 'product_detail' product.id %}" class="inline-block px-2.5 py-1.5 rounded-md bg-gradient-to-r from-purple-600 to-pink-500 text-white text-xs font-medium">View</a>
+                  </div>
                 </div>
-                
-                <!-- Slide 2 -->
-                <div class="gallery-slide">
-                    <div class="slide-counter">2/3</div>
-                    <div class="gallery-content">
-                        <div class="gallery-text">
-                            <h1>Hot Deals This Week</h1>
-                            <p>Limited time offers you don't want to miss</p>
-                            <div class="flex flex-wrap gap-4">
-                                <button class="btn-primary px-8 py-3 rounded-full font-bold">View Deals</button>
-                            </div>
-                        </div>
-                        <div class="gallery-products">
-                            <div class="gallery-product">
-                                <div class="sale-tag">10% OFF</div>
-                                <img src="https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?auto=format&fit=crop&w=300" alt="Gaming Console">
-                                <h3>Gaming Console</h3>
-                                <span class="price">$499.99</span>
-                            </div>
-                            <div class="gallery-product">
-                                <div class="sale-tag">TOP</div>
-                                <img src="https://images.unsplash.com/photo-1504274066651-8d31a536b11a?auto=format&fit=crop&w=300" alt="Furniture">
-                                <h3>Modern Sofa</h3>
-                                <span class="price">$899.99</span>
-                            </div>
-                            <div class="gallery-product">
-                                <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&w=300" alt="Shoes">
-                                <h3>Running Shoes</h3>
-                                <span class="price">$89.99</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Slide 3 -->
-                <div class="gallery-slide">
-                    <div class="slide-counter">3/3</div>
-                    <div class="gallery-content">
-                        <div class="gallery-text">
-                            <h1>New Arrivals</h1>
-                            <p>Fresh products added daily</p>
-                            <div class="flex flex-wrap gap-4">
-                                <button class="btn-primary px-8 py-3 rounded-full font-bold">Shop New</button>
-                            </div>
-                        </div>
-                        <div class="gallery-products">
-                            <div class="gallery-product">
-                                <div class="sale-tag">HOT</div>
-                                <img src="https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=300" alt="Sneakers">
-                                <h3>Designer Sneakers</h3>
-                                <span class="price">$129.99</span>
-                            </div>
-                            <div class="gallery-product">
-                                <img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?auto=format&fit=crop&w=300" alt="Camera">
-                                <h3>DSLR Camera</h3>
-                                <span class="price">$799.99</span>
-                            </div>
-                            <div class="gallery-product">
-                                <div class="sale-tag">NEW</div>
-                                <img src="https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&w=300" alt="Laptop">
-                                <h3>Ultrabook Pro</h3>
-                                <span class="price">$1299.99</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Categories (Hidden on mobile) -->
-    <section class="categories-section py-10 px-4 bg-gray-50">
-        <div class="container mx-auto max-w-6xl">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-primary mb-3">Popular Categories</h2>
-                <p class="text-gray-600 max-w-2xl mx-auto">Browse through our most popular categories and find what you're looking for</p>
-            </div>
-            <div class="flex flex-wrap gap-4 justify-center">
-                <div class="category-tag px-6 py-3 rounded-xl shadow cursor-pointer active">
-                    <i class="fas fa-th mr-2"></i> All Items
-                </div>
-                <div class="category-tag px-6 py-3 rounded-xl shadow cursor-pointer">
-                    <i class="fas fa-laptop mr-2"></i> Electronics
-                </div>
-                <div class="category-tag px-6 py-3 rounded-xl shadow cursor-pointer">
-                    <i class="fas fa-home mr-2"></i> Home & Garden
-                </div>
-                <div class="category-tag px-6 py-3 rounded-xl shadow cursor-pointer">
-                    <i class="fas fa-tshirt mr-2"></i> Fashion
-                </div>
-                <div class="category-tag px-6 py-3 rounded-xl shadow cursor-pointer">
-                    <i class="fas fa-car mr-2"></i> Vehicles
-                </div>
-                <div class="category-tag px-6 py-3 rounded-xl shadow cursor-pointer">
-                    <i class="fas fa-building mr-2"></i> Real Estate
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Featured Products -->
-    <section class="py-12 px-4">
-        <div class="container mx-auto max-w-6xl">
-            <div class="flex justify-between items-center mb-8">
-                <div>
-                    <h2 class="text-2xl md:text-3xl font-bold text-primary">Hot Deals</h2>
-                    <p class="text-gray-600">Limited time offers you don't want to miss</p>
-                </div>
-                <div class="flex space-x-2">
-                    <button class="scroll-btn p-3 rounded-full shadow left-scroll">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button class="scroll-btn p-3 rounded-full shadow right-scroll">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-            </div>
+              </article>
+            {% endfor %}
             
+            {% comment %} Duplicate for seamless looping {% endcomment %}
+            {% for product in featured_products|slice:":8" %}
+              <article class="relative bg-white rounded-xl shadow-md overflow-hidden border border-purple-200 flex-shrink-0 desktop-card product-card" role="article" aria-label="{{ product.name }} (duplicate)">
+                <div class="absolute top-3 left-3 badge-pill bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold drop-shadow">FEATURED</div>
+                <a href="{% url 'product_detail' product.id %}" aria-label="Open {{ product.name }}">
+                  {% if product.images.first %}
+                    <img src="{{ product.images.first.image.url }}" srcset="{{ product.images.first.image.url }} 1x, {{ product.images.first.image.url }} 2x" loading="lazy" alt="{{ product.name }} - {{ product.location }} - ${{ product.price }}" class="card-image">
+                  {% else %}
+                    <div class="bg-gray-100 w-full h-36 flex items-center justify-center border-dashed border-2 border-gray-200">
+                      <i class="fas fa-image text-gray-400 text-3xl" aria-hidden="true"></i>
+                    </div>
+                  {% endif %}
+                </a>
+                <div class="p-3">
+                  <h3 class="font-semibold text-sm truncate">{{ product.name|truncatechars:40 }}</h3>
+                  <p class="text-xs text-gray-500 mt-1">{{ product.location|default:"" }} &middot; {{ product.created_at|timesince }} ago</p>
+                  <div class="mt-2 flex items-center justify-between">
+                    <div class="text-base font-bold text-purple-700">${{ product.price }}</div>
+                    <a href="{% url 'product_detail' product.id %}" class="inline-block px-2.5 py-1.5 rounded-md bg-gradient-to-r from-purple-600 to-pink-500 text-white text-xs font-medium">View</a>
+                  </div>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile: horizontal scroll with scroll-snap -->
+      <div class="ad-container flex overflow-x-auto pb-4 -mx-2 px-2 md:hidden product-container" aria-label="Sponsored products">
+        {% for product in featured_products|slice:":8" %}
+          <div class="flex-shrink-0 w-52 bg-white rounded-xl shadow-md border border-purple-200 mx-2 overflow-hidden hover:shadow-lg transition product-card" role="article" aria-label="{{ product.name }}">
             <div class="relative">
-                <div class="product-container flex overflow-x-auto pb-6 space-x-6 scroll-container" style="scrollbar-width: none;">
-                    <!-- Product Card 1 -->
-                    <div class="product-card bg-white rounded-2xl overflow-hidden flex-shrink-0 w-72">
-                        <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600" alt="Smart Watch" class="w-full h-56 object-cover">
-                            <div class="sale-badge absolute top-3 left-3 text-white text-xs font-bold px-3 py-1 rounded-full">25% OFF</div>
-                        </div>
-                        <div class="p-5">
-                            <div class="featured-label">Featured</div>
-                            <h3 class="font-bold text-lg">Smart Watch Series 5</h3>
-                            <p class="text-gray-500 text-sm mt-1">Electronics</p>
-                            <div class="flex justify-between items-center mt-3">
-                                <span class="price text-xl">$249.99</span>
-                                <div class="flex items-center rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star-half-alt"></i>
-                                    <span class="text-sm ml-1 text-gray-600">4.8</span>
-                                </div>
-                            </div>
-                            <div class="flex justify-between mt-3">
-                                <div class="product-meta flex items-center">
-                                    <i class="fas fa-eye mr-1"></i>
-                                    <span>1.2K views</span>
-                                </div>
-                                <div class="product-meta">
-                                    <i class="far fa-clock mr-1"></i>
-                                    <span>2 days ago</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Product Card 2 -->
-                    <div class="product-card bg-white rounded-2xl overflow-hidden flex-shrink-0 w-72">
-                        <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=600" alt="Headphones" class="w-full h-56 object-cover">
-                            <div class="new-badge absolute top-3 left-3 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</div>
-                        </div>
-                        <div class="p-5">
-                            <h3 class="font-bold text-lg">Wireless Headphones Pro</h3>
-                            <p class="text-gray-500 text-sm mt-1">Electronics</p>
-                            <div class="flex justify-between items-center mt-3">
-                                <span class="price text-xl">$129.99</span>
-                                <div class="flex items-center rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="far fa-star"></i>
-                                    <span class="text-sm ml-1 text-gray-600">4.6</span>
-                                </div>
-                            </div>
-                            <div class="flex justify-between mt-3">
-                                <div class="product-meta flex items-center">
-                                    <i class="fas fa-eye mr-1"></i>
-                                    <span>845 views</span>
-                                </div>
-                                <div class="product-meta">
-                                    <i class="far fa-clock mr-1"></i>
-                                    <span>5 days ago</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Product Card 3 -->
-                    <div class="product-card bg-white rounded-2xl overflow-hidden flex-shrink-0 w-72">
-                        <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=600" alt="Watch" class="w-full h-56 object-cover">
-                        </div>
-                        <div class="p-5">
-                            <div class="featured-label">Staff Pick</div>
-                            <h3 class="font-bold text-lg">Luxury Chronograph Watch</h3>
-                            <p class="text-gray-500 text-sm mt-1">Accessories</p>
-                            <div class="flex justify-between items-center mt-3">
-                                <span class="price text-xl">$349.99</span>
-                                <div class="flex items-center rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <span class="text-sm ml-1 text-gray-600">4.8</span>
-                                </div>
-                            </div>
-                            <div class="flex justify-between mt-3">
-                                <div class="product-meta flex items-center">
-                                    <i class="fas fa-eye mr-1"></i>
-                                    <span>2.3K views</span>
-                                </div>
-                                <div class="product-meta">
-                                    <i class="far fa-clock mr-1"></i>
-                                    <span>1 day ago</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Product Card 4 -->
-                    <div class="product-card bg-white rounded-2xl overflow-hidden flex-shrink-0 w-72">
-                        <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?auto=format&fit=crop&w=600" alt="Gaming Console" class="w-full h-56 object-cover">
-                            <div class="sale-badge absolute top-3 left-3 text-white text-xs font-bold px-3 py-1 rounded-full">15% OFF</div>
-                        </div>
-                        <div class="p-5">
-                            <h3 class="font-bold text-lg">Next-Gen Gaming Console</h3>
-                            <p class="text-gray-500 text-sm mt-1">Electronics</p>
-                            <div class="flex justify-between items-center mt-3">
-                                <span class="price text-xl">$499.99</span>
-                                <div class="flex items-center rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <span class="text-sm ml-1 text-gray-600">4.9</span>
-                                </div>
-                            </div>
-                            <div class="flex justify-between mt-3">
-                                <div class="product-meta flex items-center">
-                                    <i class="fas fa-eye mr-1"></i>
-                                    <span>3.1K views</span>
-                                </div>
-                                <div class="product-meta">
-                                    <i class="far fa-clock mr-1"></i>
-                                    <span>Just now</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+              <a href="{% url 'product_detail' product.id %}" aria-label="Open {{ product.name }}">
+                {% if product.images.first %}
+                  <img src="{{ product.images.first.image.url }}" srcset="{{ product.images.first.image.url }} 1x, {{ product.images.first.image.url }} 2x" loading="lazy" alt="{{ product.name }}" class="w-full h-32 object-cover">
+                {% else %}
+                  <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-32 flex items-center justify-center">
+                    <i class="fas fa-image text-gray-400 text-3xl" aria-hidden="true"></i>
+                  </div>
+                {% endif %}
+                <span class="absolute top-2 right-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white text-[10px] px-2 py-0.5 rounded">Sponsored</span>
+              </a>
             </div>
-        </div>
-    </section>
+            <div class="p-3">
+              <h3 class="font-semibold text-sm truncate text-purple-800">{{ product.name }}</h3>
+              <div class="flex items-center mt-2 text-xs">
+                <span class="font-bold text-pink-500">${{ product.price }}</span>
+                <span class="ml-auto text-gray-500">
+                  <i class="fas fa-eye mr-1" aria-hidden="true"></i>{{ product.views }}
+                </span>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
 
-    <!-- Trending Products -->
-    <section class="py-12 px-4 bg-gray-50">
-        <div class="container mx-auto max-w-6xl">
-            <div class="flex justify-between items-center mb-8">
-                <div>
-                    <h2 class="text-2xl md:text-3xl font-bold text-primary">Trending Now</h2>
-                    <p class="text-gray-600">Products everyone is talking about</p>
-                </div>
-                <a href="#" class="text-primary font-medium hover:underline text-sm md:text-base">View All <i class="fas fa-arrow-right ml-1"></i></a>
-            </div>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                <!-- Product 1 -->
-                <div class="product-card bg-white rounded-2xl overflow-hidden">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1504274066651-8d31a536b11a?auto=format&fit=crop&w=600" alt="Furniture" class="w-full h-56 object-cover">
-                    </div>
-                    <div class="p-5">
-                        <h3 class="font-bold text-lg">Modern Sofa Set</h3>
-                        <p class="text-gray-500 text-sm mt-1">Furniture</p>
-                        <div class="flex justify-between items-center mt-3">
-                            <span class="price text-xl">$899.99</span>
-                            <div class="flex items-center rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                                <span class="text-sm ml-1 text-gray-600">4.5</span>
-                            </div>
-                        </div>
-                        <div class="flex justify-between mt-3">
-                            <div class="product-meta flex items-center">
-                                <i class="fas fa-eye mr-1"></i>
-                                <span>1.5K views</span>
-                            </div>
-                            <div class="product-meta">
-                                <i class="far fa-clock mr-1"></i>
-                                <span>1 week ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Product 2 -->
-                <div class="product-card bg-white rounded-2xl overflow-hidden">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&w=600" alt="Shoes" class="w-full h-56 object-cover">
-                        <div class="new-badge absolute top-3 left-3 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</div>
-                    </div>
-                    <div class="p-5">
-                        <h3 class="font-bold text-lg">Running Shoes Pro</h3>
-                        <p class="text-gray-500 text-sm mt-1">Fashion</p>
-                        <div class="flex justify-between items-center mt-3">
-                            <span class="price text-xl">$89.99</span>
-                            <div class="flex items-center rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <span class="text-sm ml-1 text-gray-600">4.7</span>
-                            </div>
-                        </div>
-                        <div class="flex justify-between mt-3">
-                            <div class="product-meta flex items-center">
-                                <i class="fas fa-eye mr-1"></i>
-                                <span>2.4K views</span>
-                            </div>
-                            <div class="product-meta">
-                                <i class="far fa-clock mr-1"></i>
-                                <span>2 days ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Product 3 -->
-                <div class="product-card bg-white rounded-2xl overflow-hidden">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=600" alt="Shoes" class="w-full h-56 object-cover">
-                    </div>
-                    <div class="p-5">
-                        <h3 class="font-bold text-lg">Designer Sneakers</h3>
-                        <p class="text-gray-500 text-sm mt-1">Fashion</p>
-                        <div class="flex justify-between items-center mt-3">
-                            <span class="price text-xl">$129.99</span>
-                            <div class="flex items-center rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="far fa-star"></i>
-                                <span class="text-sm ml-1 text-gray-600">4.7</span>
-                            </div>
-                        </div>
-                        <div class="flex justify-between mt-3">
-                            <div class="product-meta flex items-center">
-                                <i class="fas fa-eye mr-1"></i>
-                                <span>3.7K views</span>
-                            </div>
-                            <div class="product-meta">
-                                <i class="far fa-clock mr-1"></i>
-                                <span>4 days ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Product 4 -->
-                <div class="product-card bg-white rounded-2xl overflow-hidden">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?auto=format&fit=crop&w=600" alt="Camera" class="w-full h-56 object-cover">
-                        <div class="sale-badge absolute top-3 left-3 text-white text-xs font-bold px-3 py-1 rounded-full">30% OFF</div>
-                    </div>
-                    <div class="p-5">
-                        <div class="featured-label">Editor's Choice</div>
-                        <h3 class="font-bold text-lg">DSLR Camera Pro</h3>
-                        <p class="text-gray-500 text-sm mt-1">Electronics</p>
-                        <div class="flex justify-between items-center mt-3">
-                            <span class="price text-xl">$799.99</span>
-                            <div class="flex items-center rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <span class="text-sm ml-1 text-gray-600">4.9</span>
-                            </div>
-                        </div>
-                        <div class="flex justify-between mt-3">
-                            <div class="product-meta flex items-center">
-                                <i class="fas fa-eye mr-1"></i>
-                                <span>4.2K views</span>
-                            </div>
-                            <div class="product-meta">
-                                <i class="far fa-clock mr-1"></i>
-                                <span>1 week ago</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    </div>
+  </div>
+</section>
 
-    <!-- CTA Section -->
-    <section class="cta-section py-16 px-4 text-white">
-        <div class="container mx-auto max-w-4xl text-center">
-            <h2 class="text-3xl md:text-4xl font-bold mb-4">Ready to Sell Your Items?</h2>
-            <p class="text-xl mb-8 max-w-2xl mx-auto">Join thousands of sellers on Almis Market Place and reach millions of potential buyers.</p>
-            <button class="btn-secondary px-10 py-4 rounded-full font-bold text-lg">Start Selling Now</button>
-        </div>
-    </section>
+<section class="categories-section py-6 -mt-4 px-4 bg-gradient-to-b from-purple-50 to-white relative z-0">
+  <div class="container mx-auto max-w-6xl">
+    <div class="text-center mb-5">
+      <h2 class="text-xl font-bold text-gray-900 mb-1">Browse by Category</h2>
+      <p class="text-gray-600 text-sm max-w-2xl mx-auto">Explore products in our categories</p>
+    </div>
 
-    <!-- Footer -->
-    <footer class="footer py-12 px-4">
-        <div class="container mx-auto max-w-6xl">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                    <div class="logo text-2xl font-bold mb-4 text-white">Almis Market</div>
-                    <p class="text-gray-400 mb-4">The best marketplace for buying and selling new and used products.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-                
-                <div>
-                    <h3 class="text-lg font-bold mb-4 text-white">Quick Links</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Home</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">About Us</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Categories</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Sell Product</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Contact</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h3 class="text-lg font-bold mb-4 text-white">Customer Service</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Help Center</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">FAQs</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Shipping Policy</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Returns & Refunds</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Privacy Policy</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h3 class="text-lg font-bold mb-4 text-white">Newsletter</h3>
-                    <p class="text-gray-400 mb-4">Subscribe to get special offers and updates</p>
-                    <div class="flex">
-                        <input type="email" placeholder="Your email" class="px-4 py-3 w-full rounded-l text-gray-700 focus:outline-none">
-                        <button class="bg-primary px-4 rounded-r">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-                <p>&copy; 2023 Almis Market Place. All rights reserved.</p>
-            </div>
+    {% for category in categories %}
+      {% if category.approved_ads %}
+      <div class="mb-5">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="text-lg font-bold text-gray-900">{{ category.name }}</h3>
+          <div class="flex space-x-1">
+            <button class="scroll-btn prev-btn p-1.5 rounded-full shadow-sm bg-white text-purple-800 hover:bg-purple-100 border border-gray-200" data-category="{{ category.id }}" aria-label="Previous {{ category.name }}">
+              <i class="fas fa-chevron-left text-xs" aria-hidden="true"></i>
+            </button>
+            <button class="scroll-btn next-btn p-1.5 rounded-full shadow-sm bg-white text-purple-800 hover:bg-purple-100 border border-gray-200" data-category="{{ category.id }}" aria-label="Next {{ category.name }}">
+              <i class="fas fa-chevron-right text-xs" aria-hidden="true"></i>
+            </button>
+          </div>
         </div>
-    </footer>
 
-    <script>
-        // Mobile Menu Toggle
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const closeMenu = document.getElementById('close-menu');
-        const mobileMenu = document.querySelector('.mobile-menu');
-        const overlay = document.getElementById('overlay');
-        const hamburger = document.querySelector('.hamburger');
-        
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.add('open');
-            overlay.classList.add('active');
-            hamburger.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        });
-        
-        closeMenu.addEventListener('click', () => {
-            mobileMenu.classList.remove('open');
-            overlay.classList.remove('active');
-            hamburger.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        });
-        
-        overlay.addEventListener('click', () => {
-            mobileMenu.classList.remove('open');
-            overlay.classList.remove('active');
-            hamburger.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        });
-        
-        // Product Carousel Navigation
-        const leftScroll = document.querySelector('.left-scroll');
-        const rightScroll = document.querySelector('.right-scroll');
-        const productContainer = document.querySelector('.product-container');
-        
-        leftScroll.addEventListener('click', () => {
-            productContainer.scrollBy({ left: -300, behavior: 'smooth' });
-        });
-        
-        rightScroll.addEventListener('click', () => {
-            productContainer.scrollBy({ left: 300, behavior: 'smooth' });
-        });
-        
-        // Category Tags
-        const categoryTags = document.querySelectorAll('.category-tag');
-        
-        categoryTags.forEach(tag => {
-            tag.addEventListener('click', () => {
-                categoryTags.forEach(t => t.classList.remove('active'));
-                tag.classList.add('active');
-            });
-        });
-        
-        // Drag to scroll for product cards
-        let isDown = false;
-        let startX;
-        let scrollLeft;
-        
-        productContainer.addEventListener('mousedown', (e) => {
-            isDown = true;
-            startX = e.pageX - productContainer.offsetLeft;
-            scrollLeft = productContainer.scrollLeft;
-            productContainer.style.cursor = 'grabbing';
-        });
-        
-        productContainer.addEventListener('mouseleave', () => {
-            isDown = false;
-            productContainer.style.cursor = 'grab';
-        });
-        
-        productContainer.addEventListener('mouseup', () => {
-            isDown = false;
-            productContainer.style.cursor = 'grab';
-        });
-        
-        productContainer.addEventListener('mousemove', (e) => {
-            if (!isDown) return;
-            e.preventDefault();
-            const x = e.pageX - productContainer.offsetLeft;
-            const walk = (x - startX) * 2; // Scroll speed
-            productContainer.scrollLeft = scrollLeft - walk;
-        });
-        
-        // Touch events for mobile
-        productContainer.addEventListener('touchstart', (e) => {
-            isDown = true;
-            startX = e.touches[0].pageX - productContainer.offsetLeft;
-            scrollLeft = productContainer.scrollLeft;
-        });
-        
-        productContainer.addEventListener('touchend', () => {
-            isDown = false;
-        });
-        
-        productContainer.addEventListener('touchmove', (e) => {
-            if (!isDown) return;
-            const x = e.touches[0].pageX - productContainer.offsetLeft;
-            const walk = (x - startX) * 2;
-            productContainer.scrollLeft = scrollLeft - walk;
-        });
-        
-        // Auto-scroll gallery for demo purposes
-        setInterval(() => {
-            productContainer.scrollBy({ left: 300, behavior: 'smooth' });
-            
-            // Reset to start if at end
-            if (productContainer.scrollLeft + productContainer.offsetWidth >= productContainer.scrollWidth - 50) {
-                setTimeout(() => {
-                    productContainer.scrollTo({ left: 0, behavior: 'smooth' });
-                }, 2000);
-            }
-        }, 5000);
-        
-        // Gallery Slideshow
-        const gallerySlides = document.querySelector('.gallery-slides');
-        const totalSlides = document.querySelectorAll('.gallery-slide').length;
-        let currentSlide = 0;
-        let autoSlideInterval;
-        const slideCounters = document.querySelectorAll('.slide-counter');
-        
-        // Update slide counter
-        function updateSlideCounter() {
-            slideCounters.forEach(counter => {
-                counter.textContent = `${currentSlide + 1}/${totalSlides}`;
-            });
-        }
-        
-        // Go to specific slide
-        function goToSlide(index) {
-            currentSlide = index;
-            gallerySlides.style.transform = `translateX(-${currentSlide * 100}%)`;
-            updateSlideCounter();
-        }
-        
-        // Next slide
-        function nextSlide() {
-            currentSlide = (currentSlide + 1) % totalSlides;
-            goToSlide(currentSlide);
-        }
-        
-        // Start auto slide
-        function startAutoSlide() {
-            autoSlideInterval = setInterval(nextSlide, 5000);
-        }
-        
-        // Stop auto slide
-        function stopAutoSlide() {
-            clearInterval(autoSlideInterval);
-        }
-        
-        // Initialize
-        updateSlideCounter();
-        startAutoSlide();
-        
-        // Pause auto slide when hovering over gallery
-        const galleryContainer = document.querySelector('.gallery-container');
-        galleryContainer.addEventListener('mouseenter', stopAutoSlide);
-        galleryContainer.addEventListener('mouseleave', startAutoSlide);
-        
-        // Advertise button functionality
-        const advertiseBtn = document.querySelector('.advertise-btn');
-        advertiseBtn.addEventListener('click', () => {
-            alert('Thank you for your interest in advertising! Our team will contact you shortly.');
-        });
-    </script>
-</body>
-</html>
+        <div class="relative -mt-1">
+          <div class="product-container flex overflow-x-auto pb-3 space-x-3" data-category="{{ category.id }}" aria-label="{{ category.name }} products">
+            {% for product in category.approved_ads %}
+            <div class="bg-white rounded-lg shadow overflow-hidden border border-gray-200 hover:shadow-md transition flex-shrink-0 w-56 product-card" role="article" aria-label="{{ product.name }}">
+              <div class="relative">
+                {% if product.images.first %}
+                <a href="{% url 'product_detail' product.id %}">
+                  <img src="{{ product.images.first.image.url }}" srcset="{{ product.images.first.image.url }} 1x, {{ product.images.first.image.url }} 2x" loading="lazy" alt="{{ product.name }}" class="w-full h-40 object-cover">
+                </a>
+                {% else %}
+                <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-40 flex items-center justify-center">
+                  <i class="fas fa-image text-gray-400 text-3xl" aria-hidden="true"></i>
+                </div>
+                {% endif %}
+
+                {% if product.is_featured %}
+                <span class="absolute top-1 left-1 bg-pink-500 text-white text-xs font-bold px-1.5 py-0.5 rounded">Featured</span>
+                {% endif %}
+
+                <span class="absolute top-1 right-1 bg-black bg-opacity-70 text-white text-xs font-bold px-1.5 py-0.5 rounded">${{ product.price }}</span>
+              </div>
+
+              <div class="p-3">
+                <h3 class="font-bold text-sm mb-1 truncate">{{ product.name }}</h3>
+                <div class="flex items-center text-gray-600 text-xs mb-1">
+                  <i class="fas fa-map-marker-alt mr-1 text-xs" aria-hidden="true"></i>
+                  <span class="truncate">{{ product.location }}</span>
+                </div>
+                <div class="flex items-center text-gray-600 text-xs">
+                  <i class="far fa-clock mr-1 text-xs" aria-hidden="true"></i>
+                  <span>{{ product.created_at|timesince }} ago</span>
+                </div>
+                <div class="flex justify-between items-center mt-2">
+                  <span class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">{{ product.category.name }}</span>
+                  <a href="{% url 'product_detail' product.id %}" class="text-pink-600 hover:text-pink-800 font-medium text-xs">View Details</a>
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-600 text-xs italic py-2">No approved ads in this category.</p>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    {% endfor %}
+
+  </div>
+</section>
+
+{% include 'footer.html' %}
+
+<script>
+// ------------------------
+// Robust client JS for index page
+// - Guards against missing selectors
+// - Smooth, pausable auto-scroll for sponsor strip
+// - Scroll buttons for category scrollers
+// - Respects reduced-motion
+// ------------------------
+
+document.addEventListener('DOMContentLoaded', () => {
+  const q = (sel, ctx = document) => ctx.querySelector(sel);
+  const qa = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+
+  // --- Auto-scroll for mobile sponsor strip ---
+  const adContainer = q('.ad-container');
+  if (adContainer) {
+    let running = false;
+    let rafId = null;
+    const speed = 0.35; // px per frame
+    let pos = adContainer.scrollLeft;
+
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!prefersReduced && adContainer.scrollWidth > adContainer.clientWidth) {
+      function step() {
+        const max = adContainer.scrollWidth - adContainer.clientWidth;
+        pos = pos + speed;
+        if (pos >= max) pos = 0;
+        adContainer.scrollLeft = pos;
+        rafId = requestAnimationFrame(step);
+      }
+      function start() {
+        if (running) return;
+        running = true;
+        rafId = requestAnimationFrame(step);
+      }
+      function stop() {
+        running = false;
+        if (rafId) cancelAnimationFrame(rafId);
+      }
+
+      // start
+      start();
+      ['mouseenter', 'focusin', 'touchstart'].forEach(e => adContainer.addEventListener(e, stop, { passive: true }));
+      ['mouseleave', 'focusout', 'touchend'].forEach(e => adContainer.addEventListener(e, start, { passive: true }));
+    }
+  }
+
+  // --- Scroll buttons for category lists ---
+  qa('.scroll-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const catId = btn.getAttribute('data-category');
+      if (!catId) return;
+      const container = document.querySelector(`.product-container[data-category="${catId}"]`);
+      if (!container) return;
+      const isPrev = btn.classList.contains('prev-btn');
+      const card = container.querySelector('.product-card');
+      const cardRect = card ? card.getBoundingClientRect() : null;
+      const scrollAmount = cardRect ? Math.round(cardRect.width + 12) : 288;
+      container.scrollBy({ left: isPrev ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+    });
+  });
+
+  // --- Advertise CTA fallback ---
+  const advertiseBtn = q('.advertise-btn');
+  if (advertiseBtn) {
+    advertiseBtn.addEventListener('click', (e) => {
+      // Let the link navigate normally. Optional: open a lightweight modal instead.
+      // Example: if you want modal behavior, preventDefault() and show modal.
+    });
+  }
+
+  // --- Keyboard accessibility for horizontal scrollers (left/right) ---
+  qa('.product-container').forEach(container => {
+    container.setAttribute('tabindex', '0');
+    container.addEventListener('keydown', (ev) => {
+      if (ev.key === 'ArrowRight') {
+        container.scrollBy({ left: 280, behavior: 'smooth' });
+        ev.preventDefault();
+      } else if (ev.key === 'ArrowLeft') {
+        container.scrollBy({ left: -280, behavior: 'smooth' });
+        ev.preventDefault();
+      }
+    });
+  });
+});
+</script>
+
+{% endblock %}
