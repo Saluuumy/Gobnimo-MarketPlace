@@ -141,39 +141,27 @@ SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
+        'allauth.account.auth_backends.AuthenticationBackend',
+
     # Remove any custom backends that might be causing the issue
 ]
 
 # Allauth settings (unchanged)
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # or 'optional', 'none'
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
-ACCOUNT_CONFIRM_EMAIL_ON_GET = True
-ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
-ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Adver Platform] '
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
 
-
-# Email configuration
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-else:
-    EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
-    SENDGRID_API_KEY = env('SENDGRID_API_KEY')  # No hardcoded default
-    SENDGRID_SANDBOX_MODE_IN_DEBUG = False
-    SENDGRID_ECHO_TO_STDOUT = False  # Don't echo in production
-
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='salmahoussein@outlook.com')  # Standardized
+SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
 
 # Password reset timeout (unchanged)
 PASSWORD_RESET_TIMEOUT = 172800  # 2 days in seconds
 
-# Security settings (unchanged)
-SECURE_SSL_REDIRECT = not DEBUG
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SECURE = not DEBUG
+
 
 # WhiteNoise configuration (unchanged)
 WHITENOISE_AUTOREFRESH = DEBUG
