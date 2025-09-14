@@ -74,6 +74,7 @@ env.local
 # IDEs
 .idea/
 *.iml
+.vscode/settings.json
 
 # OS generated files
 .DS_Store
@@ -90,3 +91,4 @@ Thumbs.db
 # Ecommerce-specific (e.g., if using Stripe, AWS, etc.)
 *.pem
 *.key
+config/secrets.*
