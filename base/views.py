@@ -170,6 +170,7 @@ def index(request):
         'featured_products': featured_ads,
     })
     
+
 def menu(request):
     # Get approved ads that are currently featured
     featured_ads = Ad.objects.filter(
@@ -182,10 +183,10 @@ def menu(request):
     is_paid = request.GET.get('is_paid', 'false').lower() == 'true'
     request.session['is_paid'] = is_paid
 
-    # Get all categories with approved ads count
+    # Get all categories with approved ads count, ensuring uniqueness
     categories = Category.objects.annotate(
-        approved_ads_count=Count('ad', filter=Q(ad__is_approved=True))
-    ).order_by('name')
+        approved_ads_count=Count('ad', filter=Q(ad__is_approved=True), distinct=True)
+    ).order_by('name').distinct()
 
     return render(
         request,
