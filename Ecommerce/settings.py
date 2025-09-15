@@ -1,38 +1,19 @@
 import os
 from pathlib import Path
-import environ
+from dotenv import load_dotenv
 import dj_database_url
 
-# Initialize environment
-env = environ.Env(
-    DEBUG=(bool, False),
-    ALLOWED_HOSTS=(list, []),
-    CSRF_TRUSTED_ORIGINS=(list, []),
-)
-environ.Env.read_env(os.path.join(Path(__file__).resolve().parent.parent, '.env'))  # Explicit path for clarity
+
+# Load environment variables
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Security settings
-SECRET_KEY = env('SECRET_KEY')  # No default; must be set in env
-DEBUG = env('DEBUG')
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-temporary-key-for-testing-12345')
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-# Host/domain settings (load from env)
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[
-    '.onrender.com',
-    'localhost',
-    '127.0.0.1',
-    'gobnimo-marketplace.onrender.com',  # Updated domain
-])
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
-CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[
-    'https://*.onrender.com',
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-    'https://gobnimo-marketplace.onrender.com',
-])
-
-# Application definition (unchanged)
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -40,8 +21,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
-    'whitenoise.runserver_nostatic',
     'base.apps.BaseConfig',
     'allauth',
     'allauth.account',
@@ -52,7 +31,6 @@ AUTH_USER_MODEL = 'base.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -99,7 +77,6 @@ else:
         }
     }
 
-# Password validation (unchanged)
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -115,35 +92,27 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization (unchanged)
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (unchanged)
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Media files (unchanged)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Static files storage (unchanged)
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# Default primary key field type (unchanged)
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Allauth configuration (unchanged)
+# Allauth settings
 SITE_ID = 1
-
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
-    # Remove any custom backends that might be causing the issue
 ]
 
+# Email verification settings
 # Allauth settings (unchanged)
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
@@ -154,30 +123,23 @@ ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Adver Platform] '
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
+# Email Configuration for SendGrid SMTP
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'apikey'  # This is literally the word 'apikey'
+EMAIL_HOST_PASSWORD = os.getenv('SENDGRID_API_KEY')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'salmamacash@gmail.com')
 
 
-# Email configuration
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-else:
-    EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
-    SENDGRID_API_KEY = env('SENDGRID_API_KEY')  # No hardcoded default
-    SENDGRID_SANDBOX_MODE_IN_DEBUG = False
-    SENDGRID_ECHO_TO_STDOUT = False  # Don't echo in production
 
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='salmahoussein@outlook.com')  # Standardized
-
-# Password reset timeout (unchanged)
-PASSWORD_RESET_TIMEOUT = 172800  # 2 days in seconds
-
+# CSRF settings
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000,http://127.0.0.1:8000').split(',')
 # Security settings (unchanged)
 SECURE_SSL_REDIRECT = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
-
-# WhiteNoise configuration (unchanged)
-WHITENOISE_AUTOREFRESH = DEBUG
-
 # Logging for debugging (unchanged)
 LOGGING = {
     'version': 1,
