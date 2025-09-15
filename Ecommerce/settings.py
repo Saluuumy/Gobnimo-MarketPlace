@@ -1,26 +1,32 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
+import environ
 import dj_database_url
 
-
-# Load environment variables
-load_dotenv()
+# Initialize environment
+env = environ.Env(
+    DEBUG=(bool, False),
+    ALLOWED_HOSTS=(list, []),
+    CSRF_TRUSTED_ORIGINS=(list, []),
+)
+environ.Env.read_env(os.path.join(Path(__file__).resolve().parent.parent, '.env'))  # Explicit path for clarity
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-temporary-key-for-testing-12345')
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
-
+# Security settings
+SECRET_KEY = env('SECRET_KEY')  # No default; must be set in env
+DEBUG = env('DEBUG')
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+   'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'whitenoise.runserver_nostatic',
     'base.apps.BaseConfig',
     'allauth',
     'allauth.account',
@@ -30,7 +36,8 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'base.User'
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
+ 'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -103,6 +110,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -137,9 +145,14 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'salmamacash@gmail.com')
 # CSRF settings
 CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000,http://127.0.0.1:8000').split(',')
 # Security settings (unchanged)
+
+PASSWORD_RESET_TIMEOUT = 172800  # 2 days in seconds
+
 SECURE_SSL_REDIRECT = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
+WHITENOISE_AUTOREFRESH = DEBUG
+
 # Logging for debugging (unchanged)
 LOGGING = {
     'version': 1,
