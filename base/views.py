@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Category,  AdImage,Ad ,User ,Comment ,FeaturedAd, FeaturedAdHistory,PendingFeaturedAd ,Notification,Favorite
-from .forms import AdForm ,SignupForm,LoginForm,AuthenticationForm ,CommentForm ,AdPaidForm,UserProfileForm
+from .models import Category, AdImage, Ad, User, Comment, FeaturedAd, FeaturedAdHistory, PendingFeaturedAd, Notification, Favorite
+from .forms import AdForm, SignupForm, LoginForm, AuthenticationForm, CommentForm, AdPaidForm, UserProfileForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
@@ -39,13 +39,14 @@ from django.db.models import F
 from django.db.models import Q, Count
 from django.core.paginator import Paginator
 import re
-
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save(commit=False)
-            user.username = form.cleaned_data['email']  # Set username to email
+            user.username = form.cleaned_data['email']
             user.is_active = False
             user.email_verified = False
             user.save()
@@ -60,18 +61,38 @@ def signup(request):
             # Render HTML email content
             html_content = render_to_string('base/verification_email.html', {
                 'verification_url': verification_url,
+                'user': user,
             })
             text_content = strip_tags(html_content)
 
-            # Send email with both plain text and HTML
-            subject = 'Verify Your Email'
-            from_email = settings.EMAIL_HOST_USER
-            recipient_list = [user.email]
-            email = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
-            email.attach_alternative(html_content, "text/html")
-            email.send()
-
-            return render(request, 'base/verification_sent.html')
+            # Send email using Django's send_mail
+            try:
+                send_mail(
+                    'Verify Your Email',
+                    text_content,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [user.email],
+                    html_message=html_content,
+                    fail_silently=False,
+                )
+                return render(request, 'base/verification_sent.html')
+            except Exception as e:
+                logger.error(f"Failed to send verification email: {e}")
+                # Fallback to console email backend for debugging
+                if settings.DEBUG:
+                    from django.core.mail.backends.console import EmailBackend
+                    backend = EmailBackend()
+                    backend.send_messages([EmailMultiAlternatives(
+                        'Verify Your Email',
+                        text_content,
+                        settings.DEFAULT_FROM_EMAIL,
+                        [user.email],
+                        alternatives=[(html_content, 'text/html')]
+                    )])
+                    return render(request, 'base/verification_sent.html')
+                else:
+                    messages.error(request, "Failed to send verification email. Please try again later.")
+                    return render(request, 'base/signup.html', {'form': form})
         else:
             return render(request, 'base/signup.html', {'form': form})
     else:
