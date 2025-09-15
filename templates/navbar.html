@@ -67,7 +67,7 @@
               class="w-full text-left py-2 pl-4 pr-8 text-gray-700 focus:outline-none flex items-center"
             >
               <i class="fas fa-tag text-gray-500 mr-2"></i>
-              <span id="category-label" class="truncate">Categories</span>
+              <span id="category-label" class="truncate">Qaybaha</span>
               <i class="fas fa-chevron-down ml-auto text-gray-400"></i>
             </button>
             
@@ -96,13 +96,13 @@
           <!-- Keywords -->
           <div class="relative flex-1 border-r border-gray-200">
             <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-            <input name="q" type="text" placeholder="Keywords" class="w-full py-2 pl-10 pr-3 focus:outline-none" value="{{ request.GET.q }}" required aria-required="true" />
+            <input name="q" type="text" placeholder="Erey" class="w-full py-2 pl-10 pr-3 focus:outline-none" value="{{ request.GET.q }}" required aria-required="true" />
           </div>
 
           <!-- Location -->
           <div class="relative flex-1">
             <i class="fas fa-map-marker-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-            <input name="location" type="text" placeholder="Location" class="w-full py-2 pl-10 pr-3 focus:outline-none" value="{{ request.GET.location }}" required aria-required="true" />
+            <input name="location" type="text" placeholder="Goob" class="w-full py-2 pl-10 pr-3 focus:outline-none" value="{{ request.GET.location }}" required aria-required="true" />
           </div>
 
           <button type="submit" class="px-4 py-2 bg-pink-500 text-white hover:bg-pink-600 rounded-r-lg">
@@ -114,7 +114,7 @@
       <!-- Right: Links & Post Ad -->
       <div class="flex items-center space-x-2">
         <ul class="hidden md:flex md:items-center md:space-x-6">
-          <li><a href="{% url 'about_us' %}" class="text-gray-700 hover:text-gray-900">About Us</a></li>
+          <li><a href="{% url 'about_us' %}" class="text-gray-700 hover:text-gray-900">Nagu Saabsan</a></li>
           {% if user.is_authenticated %}
             <li class="relative">
               <button id="account-toggle" class="flex items-center text-gray-700 hover:text-gray-900">
@@ -196,7 +196,7 @@
             <!-- invisible constraint input for mobile location (anchors validation bubble to this field) -->
             <input type="text" id="mobile-location-constraint" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;border:0;padding:0;margin:0;pointer-events:none;" tabindex="-1" aria-hidden="true" required>
             <!-- inline error for mobile location -->
-            <p id="mobile-location-error" class="text-red-500 text-sm mt-1 hidden">Please enter a location</p>
+            <p id="mobile-location-error" class="text-red-500 text-sm mt-1 hidden">Fadlan geli goob</p>
           </div>
         </div>
 
@@ -205,7 +205,7 @@
         </button>
       </form>
 
-      <a href="{% url 'about_us' %}" class="block px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md">About Us</a>
+      <a href="{% url 'about_us' %}" class="block px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md">Nagu Saabsan</a>
       {% if user.is_authenticated %}
         <a href="{% url 'dashboard' %}" class="block px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md">Profile</a>
         <form method="post" action="{% url 'logout' %}">{% csrf_token %}

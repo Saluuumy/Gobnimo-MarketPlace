@@ -92,7 +92,7 @@
              class="advertise-btn inline-flex items-center gap-2 ml-2 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-gray-900 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold shadow transition-all duration-300"
              role="button" aria-label="Advertise here">
             <i class="fas fa-bullhorn"></i>
-            <span>Advertise Here</span>
+            <span>Halkan ku xayeysi</span>
           </a>
         </div>
       </div>
@@ -188,8 +188,8 @@
 <section class="categories-section py-6 -mt-4 px-4 bg-gradient-to-b from-purple-50 to-white relative z-0">
   <div class="container mx-auto max-w-6xl">
     <div class="text-center mb-5">
-      <h2 class="text-xl font-bold text-gray-900 mb-1">Browse by Category</h2>
-      <p class="text-gray-600 text-sm max-w-2xl mx-auto">Explore products in our categories</p>
+      <h2 class="text-xl font-bold text-gray-900 mb-1">Ku baar qayb ahaan</h2>
+      <p class="text-gray-600 text-sm max-w-2xl mx-auto">Gobonimo-Marketo</p>
     </div>
 
     {% for category in categories %}
@@ -241,7 +241,7 @@
                 </div>
                 <div class="flex justify-between items-center mt-2">
                   <span class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">{{ product.category.name }}</span>
-                  <a href="{% url 'product_detail' product.id %}" class="text-pink-600 hover:text-pink-800 font-medium text-xs">View Details</a>
+                  <a href="{% url 'product_detail' product.id %}" class="text-pink-600 hover:text-pink-800 font-medium text-xs">Eeg faahfaahinta</a>
                 </div>
               </div>
             </div>
@@ -260,13 +260,6 @@
 {% include 'footer.html' %}
 
 <script>
-// ------------------------
-// Robust client JS for index page
-// - Guards against missing selectors
-// - Smooth, pausable auto-scroll for sponsor strip
-// - Scroll buttons for category scrollers
-// - Respects reduced-motion
-// ------------------------
 
 document.addEventListener('DOMContentLoaded', () => {
   const q = (sel, ctx = document) => ctx.querySelector(sel);
