@@ -210,7 +210,7 @@ def ad_form(request, category_id):
     categories = Category.objects.all()
     show_success = False
 
-    print("Default storage:", default_storage)  # Debug: Should show MediaCloudinaryStorage
+    print("Default storage:", default_storage)  # Debug
 
     if request.method == 'POST':
         form = AdForm(request.POST, request.FILES)
@@ -220,7 +220,7 @@ def ad_form(request, category_id):
                 ad.category = category
                 ad.advertiser = request.user
                 ad.is_approved = False
-                ad.save()
+                ad.save()  # Save Ad (with image if defined)
 
                 images = request.FILES.getlist('images')
                 if not images:
@@ -230,11 +230,11 @@ def ad_form(request, category_id):
                     for img in images:
                         logger.info(f"Uploading image: {img.name}, size: {img.size} bytes")
                         ad_image = AdImage(ad=ad)
-                        ad_image.image = img  # Assign before save to use storage
-                        ad_image.save()
+                        ad_image.image = img  # Assign file
+                        ad_image.save()  # Trigger Cloudinary upload
                     messages.success(request, "Your digital masterpiece is now soaring through our approval cosmos!")
                     show_success = True
-                    form = AdForm()
+                    form = AdForm()  # Reset form
             except Exception as e:
                 logger.error(f"Error saving ad or images: {str(e)}", exc_info=True)
                 messages.error(request, f"Error: {str(e)}")

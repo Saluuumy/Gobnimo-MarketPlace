@@ -78,13 +78,21 @@ TEMPLATES = [
 WSGI_APPLICATION = 'Ecommerce.wsgi.application'
 
 # Database configuration - FIXED
-DATABASES = {
-    'default': dj_database_url.config(
-        default=env('DATABASE_URL', default='sqlite:///db.sqlite3'),
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
-}
+if 'DATABASE_URL' in os.environ:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('postgresql://gobonimo_database_user:miTmKgiVXnmmz26XvDfe2vC78Bz0wbTu@dpg-d32unqer433s73bcj6lg-a.oregon-postgres.render.com/gobonimo_database'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
