@@ -98,65 +98,7 @@ body{
   width: 12rem !important;
 }
 
-   /* Accessible focus ring */
-  :focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 4px rgba(124,58,237,0.16);
-    border-radius: .5rem;
-  }
-
-  /* Carousel / Track styles */
-  .carousel-wrapper { 
-    overflow: hidden; 
-    position: relative; 
-  }
-  
-  .carousel-track { 
-    display: flex; 
-    gap: var(--gap); 
-    align-items: stretch; 
-  }
-  
-  .carousel-group { 
-    display: flex; 
-    gap: var(--gap); 
-    flex-shrink: 0;
-  }
-
-  /* Infinite scrolling animation */
-  @keyframes scroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(calc(-100% - var(--gap))); }
-  }
-  
-  .carousel-track.animate {
-    animation: scroll 30s linear infinite;
-  }
-  
-  .carousel-wrapper:hover .carousel-track {
-    animation-play-state: paused;
-  }
-
-  /* Desktop product card sizing */
-  .desktop-card { flex: 0 0 var(--card-w-desktop); }
-
-  /* Mobile horizontal lists: touch-friendly */
-  .product-container {
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-  }
-  .product-container > .product-card {
-    scroll-snap-align: start;
-  }
-
-  /* Reduced motion respect */
-  @media (prefers-reduced-motion: reduce) {
-    .carousel-track { animation: none !important; }
-  }
-
-  /* Small utility tweaks */
-  .badge-pill { padding: .125rem .5rem; font-size: .7rem; border-radius: .375rem; }
-  .card-image { height: 9rem; object-fit: cover; width: 100%; }
+ 
           .ad-container {
             scrollbar-width: thin;
             scrollbar-color: #cbd5e1 #f1f5f9;

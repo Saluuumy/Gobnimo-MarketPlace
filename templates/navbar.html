@@ -163,7 +163,7 @@
             {% for category in categories %}
               <button type="button" class="mobile-category-option w-full text-left flex items-center p-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
                       data-id="{{ category.id }}" data-name="{{ category.name }}">
-                <img src="{{ category.image.url }}" alt="{{ category.name }}"
+                <img src="{{ category.image.url }}" 
                      class="h-6 w-6 rounded-full object-cover mr-2" />
                 <span class="text-gray-700">{{ category.name }}</span>
               </button>
