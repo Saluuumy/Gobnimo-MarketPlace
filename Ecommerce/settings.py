@@ -9,25 +9,17 @@ env = environ.Env(
     ALLOWED_HOSTS=(list, []),
     CSRF_TRUSTED_ORIGINS=(list, []),
 )
+environ.Env.read_env(os.path.join(Path(__file__).resolve().parent.parent, '.env'))  # Explicit path for clarity
 
-# Read .env file for local development
-env_path = os.path.join(Path(__file__).resolve().parent.parent, '.env')
-if os.path.exists(env_path):
-    environ.Env.read_env(env_path)
-    print("Loaded environment variables from .env file")
-else:
-    print("No .env file found, using system environment variables")
-
-# Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Security settings
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = env('SECRET_KEY')  # No default; must be set in env
 DEBUG = env('DEBUG')
-ALLOWED_HOSTS = env('ALLOWED_HOSTS')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+   'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -39,14 +31,12 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'cloudinary',
-    'cloudinary_storage',  # This must come before your own apps
 ]
 
 AUTH_USER_MODEL = 'base.User'
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
+ 'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -77,7 +67,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Ecommerce.wsgi.application'
 
-# Database configuration - FIXED
+# Database configuration
 if 'DATABASE_URL' in os.environ:
     DATABASES = {
         'default': dj_database_url.config(
@@ -109,30 +99,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Cloudinary configuration - FIXED
-CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME')
-CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY')
-CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET')
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_I18N = True
+USE_TZ = True
 
-print(f"Cloudinary config - Name: {CLOUDINARY_CLOUD_NAME}, Key: {CLOUDINARY_API_KEY}, Secret: {bool(CLOUDINARY_API_SECRET)}")
-
-if CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    CLOUDINARY_STORAGE = {
-        'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
-        'API_KEY': CLOUDINARY_API_KEY,
-        'API_SECRET': CLOUDINARY_API_SECRET,
-    }
-    print("Cloudinary storage configured successfully")
-else:
-    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-    print("Cloudinary not configured. Using local file storage.")
-
-# Static and media files
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-MEDIA_URL = '/media/'  # This will be overridden by Cloudinary when active
+
+MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
@@ -142,10 +118,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SITE_ID = 1
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 # Email verification settings
+# Allauth settings (unchanged)
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
@@ -160,21 +136,24 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'apikey'
-EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_API_KEY')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'salmamacash@gmail.com')
+EMAIL_HOST_USER = 'apikey'  # This is literally the word 'apikey'
+EMAIL_HOST_PASSWORD = os.getenv('SENDGRID_API_KEY')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'salmamacash@gmail.com')
+
+
 
 # CSRF settings
-CSRF_TRUSTED_ORIGINS = env('CSRF_TRUSTED_ORIGINS', default=['http://localhost:8000', 'http://127.0.0.1:8000'])
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000,http://127.0.0.1:8000').split(',')
+# Security settings (unchanged)
 
-# Security settings
 PASSWORD_RESET_TIMEOUT = 172800  # 2 days in seconds
+
 SECURE_SSL_REDIRECT = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 WHITENOISE_AUTOREFRESH = DEBUG
 
-# Logging for debugging
+# Logging for debugging (unchanged)
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -183,15 +162,10 @@ LOGGING = {
             'class': 'logging.StreamHandler',
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
-    },
     'loggers': {
         'django': {
             'handlers': ['console'],
             'level': 'INFO',
-            'propagate': False,
         },
         'django.core.mail': {
             'handlers': ['console'],

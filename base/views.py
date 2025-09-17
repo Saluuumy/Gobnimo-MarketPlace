@@ -9,7 +9,6 @@ from django_ratelimit.decorators import ratelimit
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.conf import settings
 from django.http import JsonResponse
-from django.core.files.storage import default_storage
 from django.utils.encoding import force_bytes
 from django.views.decorators.http import require_POST
 from django.contrib.auth.views import PasswordResetView
@@ -210,8 +209,6 @@ def ad_form(request, category_id):
     categories = Category.objects.all()
     show_success = False
 
-    print("Default storage:", default_storage)  # Debug
-
     if request.method == 'POST':
         form = AdForm(request.POST, request.FILES)
         if form.is_valid():
@@ -220,7 +217,7 @@ def ad_form(request, category_id):
                 ad.category = category
                 ad.advertiser = request.user
                 ad.is_approved = False
-                ad.save()  # Save Ad (with image if defined)
+                ad.save()
 
                 images = request.FILES.getlist('images')
                 if not images:
@@ -229,12 +226,10 @@ def ad_form(request, category_id):
                 else:
                     for img in images:
                         logger.info(f"Uploading image: {img.name}, size: {img.size} bytes")
-                        ad_image = AdImage(ad=ad)
-                        ad_image.image = img  # Assign file
-                        ad_image.save()  # Trigger Cloudinary upload
+                        AdImage.objects.create(ad=ad, image=img)
                     messages.success(request, "Your digital masterpiece is now soaring through our approval cosmos!")
                     show_success = True
-                    form = AdForm()  # Reset form
+                    form = AdForm()
             except Exception as e:
                 logger.error(f"Error saving ad or images: {str(e)}", exc_info=True)
                 messages.error(request, f"Error: {str(e)}")
