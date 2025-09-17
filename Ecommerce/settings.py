@@ -9,7 +9,7 @@ env = environ.Env(
     ALLOWED_HOSTS=(list, []),
     CSRF_TRUSTED_ORIGINS=(list, []),
 )
-environ.Env.read_env(os.path.join(Path(__file__).resolve().parent.parent, '.env'))
+environ.Env.read_env(os.path.join(Path(__file__).resolve().parent.parent, '.env'))  # Optional for local dev
 
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,8 +32,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'cloudinary',  # Added for Cloudinary
-    'cloudinary_storage',  # Added for Django Cloudinary storage
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 AUTH_USER_MODEL = 'base.User'
@@ -71,21 +71,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'Ecommerce.wsgi.application'
 
 # Database configuration
-if 'DATABASE_URL' in os.environ:
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=os.environ.get('postgresql://gobonimo_database_user:miTmKgiVXnmmz26XvDfe2vC78Bz0wbTu@dpg-d32unqer433s73bcj6lg-a.oregon-postgres.render.com/gobonimo_database'),
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+DATABASES = {
+    'default': dj_database_url.config(
+        default='sqlite:///db.sqlite3',
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
