@@ -9,12 +9,14 @@ env = environ.Env(
     ALLOWED_HOSTS=(list, []),
     CSRF_TRUSTED_ORIGINS=(list, []),
 )
-# Read .env file for local development (optional, Render uses dashboard env vars)
-environ.Env.read_env(os.path.join(Path(__file__).resolve().parent.parent, '.env'))
-print("Environment variables loaded:", {
-    'CLOUDINARY_CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
-    'DEBUG': os.environ.get('DEBUG')
-})  # Debug env var loading
+
+# Read .env file for local development
+env_path = os.path.join(Path(__file__).resolve().parent.parent, '.env')
+if os.path.exists(env_path):
+    environ.Env.read_env(env_path)
+    print("Loaded environment variables from .env file")
+else:
+    print("No .env file found, using system environment variables")
 
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,7 +40,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'cloudinary',
-    'cloudinary_storage',
+    'cloudinary_storage',  # This must come before your own apps
 ]
 
 AUTH_USER_MODEL = 'base.User'
@@ -107,35 +109,38 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Cloudinary configuration for persistent media storage
-CLOUDINARY_CLOUD_NAME = env('CLOUDINARY_CLOUD_NAME')
-CLOUDINARY_API_KEY = env('CLOUDINARY_API_KEY')
-CLOUDINARY_API_SECRET = env('CLOUDINARY_API_SECRET')
+# Cloudinary configuration - Use os.environ.get() instead of env()
+CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME')
+CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY')
+CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET')
 
-if all([CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET]):  # Ensure all are present
+print(f"Cloudinary config - Name: {CLOUDINARY_CLOUD_NAME}, Key: {CLOUDINARY_API_KEY}, Secret: {bool(CLOUDINARY_API_SECRET)}")
+
+if CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
+    # Import cloudinary only if credentials are available
     import cloudinary
+    import cloudinary.uploader
+    import cloudinary.api
+    
     cloudinary.config(
         cloud_name=CLOUDINARY_CLOUD_NAME,
         api_key=CLOUDINARY_API_KEY,
         api_secret=CLOUDINARY_API_SECRET,
     )
+    
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    CLOUDINARY_STORAGE = {
-        'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
-        'API_KEY': CLOUDINARY_API_KEY,
-        'API_SECRET': CLOUDINARY_API_SECRET,
-    }
-    print("Cloudinary storage configured successfully")  # Debug confirmation
+    
+    print("Cloudinary storage configured successfully")
 else:
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-    print("Cloudinary not configured. Falling back to local file storage.")
+    print("Cloudinary not configured. Using local file storage.")
 
 # Static and media files
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-MEDIA_URL = '/media/'  # Used locally or as a fallback URL
-MEDIA_ROOT = BASE_DIR / 'media'  # Only used with local storage
+MEDIA_URL = '/media/'  # This will be overridden by Cloudinary when active
+MEDIA_ROOT = BASE_DIR / 'media'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -163,8 +168,8 @@ EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'apikey'
-EMAIL_HOST_PASSWORD = env('SENDGRID_API_KEY')
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='salmamacash@gmail.com')
+EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_API_KEY')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'salmamacash@gmail.com')
 
 # CSRF settings
 CSRF_TRUSTED_ORIGINS = env('CSRF_TRUSTED_ORIGINS', default=['http://localhost:8000', 'http://127.0.0.1:8000'])
@@ -175,12 +180,6 @@ SECURE_SSL_REDIRECT = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 WHITENOISE_AUTOREFRESH = DEBUG
-SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0  # 1 year for HSTS in production
-SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
-SECURE_HSTS_PRELOAD = not DEBUG
-SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_BROWSER_XSS_FILTER = True
-X_FRAME_OPTIONS = 'DENY'
 
 # Logging for debugging
 LOGGING = {
