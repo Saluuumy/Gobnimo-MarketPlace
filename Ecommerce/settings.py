@@ -77,22 +77,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Ecommerce.wsgi.application'
 
-# Database configuration
-if 'DATABASE_URL' in os.environ:
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=os.environ.get('postgresql://gobonimo_database_user:miTmKgiVXnmmz26XvDfe2vC78Bz0wbTu@dpg-d32unqer433s73bcj6lg-a.oregon-postgres.render.com/gobonimo_database'),
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+# Database configuration - FIXED
+DATABASES = {
+    'default': dj_database_url.config(
+        default=env('DATABASE_URL', default='sqlite:///db.sqlite3'),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -109,7 +101,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Cloudinary configuration - Use os.environ.get() instead of env()
+# Cloudinary configuration - FIXED
 CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME')
 CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY')
 CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET')
@@ -117,19 +109,12 @@ CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET')
 print(f"Cloudinary config - Name: {CLOUDINARY_CLOUD_NAME}, Key: {CLOUDINARY_API_KEY}, Secret: {bool(CLOUDINARY_API_SECRET)}")
 
 if CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
-    # Import cloudinary only if credentials are available
-    import cloudinary
-    import cloudinary.uploader
-    import cloudinary.api
-    
-    cloudinary.config(
-        cloud_name=CLOUDINARY_CLOUD_NAME,
-        api_key=CLOUDINARY_API_KEY,
-        api_secret=CLOUDINARY_API_SECRET,
-    )
-    
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
+        'API_KEY': CLOUDINARY_API_KEY,
+        'API_SECRET': CLOUDINARY_API_SECRET,
+    }
     print("Cloudinary storage configured successfully")
 else:
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
