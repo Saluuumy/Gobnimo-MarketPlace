@@ -1,349 +1,554 @@
-{% extends 'main.html' %}
-{% load static %}
-
-{% block content %}
-<div id="overlay" class="overlay fixed inset-0 bg-black bg-opacity-50 z-40"></div>
-
-<!-- Refactored Index Template: Sponsored / Featured carousel + Category scrollers -->
-<style>
-  /* Theme helpers */
-  :root{
-    --gap: 1rem;
-    --card-w-desktop: 16rem; /* 256px */
-  }
-
-  /* Accessible focus ring */
-  :focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 4px rgba(124,58,237,0.16);
-    border-radius: .5rem;
-  }
-
-  /* Carousel / Track styles */
-  .carousel-wrapper { 
-    overflow: hidden; 
-    position: relative; 
-  }
-  
-  .carousel-track { 
-    display: flex; 
-    gap: var(--gap); 
-    align-items: stretch; 
-  }
-  
-  .carousel-group { 
-    display: flex; 
-    gap: var(--gap); 
-    flex-shrink: 0;
-  }
-
-  /* Infinite scrolling animation */
-  @keyframes scroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(calc(-100% - var(--gap))); }
-  }
-  
-  .carousel-track.animate {
-    animation: scroll 30s linear infinite;
-  }
-  
-  .carousel-wrapper:hover .carousel-track {
-    animation-play-state: paused;
-  }
-
-  /* Desktop product card sizing */
-  .desktop-card { flex: 0 0 var(--card-w-desktop); }
-
-  /* Mobile horizontal lists: touch-friendly */
-  .product-container {
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-  }
-  .product-container > .product-card {
-    scroll-snap-align: start;
-  }
-
-  /* Reduced motion respect */
-  @media (prefers-reduced-motion: reduce) {
-    .carousel-track { animation: none !important; }
-  }
-
-  /* Small utility tweaks */
-  .badge-pill { padding: .125rem .5rem; font-size: .7rem; border-radius: .375rem; }
-  .card-image { height: 9rem; object-fit: cover; width: 100%; }
-</style>
-
-<section class="bg-purple-50 py-6">
-  <div class="max-w-6xl mx-auto px-4">
-    <div class="bg-gradient-to-r from-purple-600/90 to-pink-500/90 rounded-3xl shadow-lg p-6 md:p-8 relative z-10">
-
-      <!-- Header -->
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center">
-          <span class="premium-badge bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-full w-9 h-9 flex items-center justify-center mr-3 shadow" aria-hidden="true">
-            <i class="fas fa-crown text-sm" style="position: relative;
-  top: 10px;"></i>
-          </span>
-          <h2 class="font-bold text-white text-lg md:text-xl">Sponsored Products</h2>
-        </div>
-
-        <div>
-          <a href="{% url 'menu' %}?is_paid=true"
-             class="advertise-btn inline-flex items-center gap-2 ml-2 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-gray-900 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold shadow transition-all duration-300"
-             role="button" aria-label="Advertise here">
-            <i class="fas fa-bullhorn"></i>
-            <span>Advertise Here</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- Desktop Carousel -->
-      <div class="hidden md:block">
-        <div class="carousel-wrapper">
-          <div class="carousel-track carousel-group animate" aria-hidden="false">
-            {% comment %} Single group of featured cards {% endcomment %}
-            {% for product in featured_products|slice:":8" %}
-              <article class="relative bg-white rounded-xl shadow-md overflow-hidden border border-purple-200 flex-shrink-0 desktop-card product-card" role="article" aria-label="{{ product.name }}">
-                <div class="absolute top-3 left-3 badge-pill bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold drop-shadow">FEATURED</div>
-                <a href="{% url 'product_detail' product.id %}" aria-label="Open {{ product.name }}">
-                  {% if product.images.first %}
-                    <img src="{{ product.images.first.image.url }}" srcset="{{ product.images.first.image.url }} 1x, {{ product.images.first.image.url }} 2x" loading="lazy" alt="{{ product.name }} - {{ product.location }} - ${{ product.price }}" class="card-image">
-                  {% else %}
-                    <div class="bg-gray-100 w-full h-36 flex items-center justify-center border-dashed border-2 border-gray-200">
-                      <i class="fas fa-image text-gray-400 text-3xl" aria-hidden="true"></i>
-                    </div>
-                  {% endif %}
-                </a>
-                <div class="p-3">
-                  <h3 class="font-semibold text-sm truncate">{{ product.name|truncatechars:40 }}</h3>
-                  <p class="text-xs text-gray-500 mt-1">{{ product.location|default:"" }} &middot; {{ product.created_at|timesince }} ago</p>
-                  <div class="mt-2 flex items-center justify-between">
-                    <div class="text-base font-bold text-purple-700">${{ product.price }}</div>
-                    <a href="{% url 'product_detail' product.id %}" class="inline-block px-2.5 py-1.5 rounded-md bg-gradient-to-r from-purple-600 to-pink-500 text-white text-xs font-medium">View</a>
-                  </div>
-                </div>
-              </article>
-            {% endfor %}
-            
-            {% comment %} Duplicate for seamless looping {% endcomment %}
-            {% for product in featured_products|slice:":8" %}
-              <article class="relative bg-white rounded-xl shadow-md overflow-hidden border border-purple-200 flex-shrink-0 desktop-card product-card" role="article" aria-label="{{ product.name }} (duplicate)">
-                <div class="absolute top-3 left-3 badge-pill bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold drop-shadow">FEATURED</div>
-                <a href="{% url 'product_detail' product.id %}" aria-label="Open {{ product.name }}">
-                  {% if product.images.first %}
-                    <img src="{{ product.images.first.image.url }}" srcset="{{ product.images.first.image.url }} 1x, {{ product.images.first.image.url }} 2x" loading="lazy" alt="{{ product.name }} - {{ product.location }} - ${{ product.price }}" class="card-image">
-                  {% else %}
-                    <div class="bg-gray-100 w-full h-36 flex items-center justify-center border-dashed border-2 border-gray-200">
-                      <i class="fas fa-image text-gray-400 text-3xl" aria-hidden="true"></i>
-                    </div>
-                  {% endif %}
-                </a>
-                <div class="p-3">
-                  <h3 class="font-semibold text-sm truncate">{{ product.name|truncatechars:40 }}</h3>
-                  <p class="text-xs text-gray-500 mt-1">{{ product.location|default:"" }} &middot; {{ product.created_at|timesince }} ago</p>
-                  <div class="mt-2 flex items-center justify-between">
-                    <div class="text-base font-bold text-purple-700">${{ product.price }}</div>
-                    <a href="{% url 'product_detail' product.id %}" class="inline-block px-2.5 py-1.5 rounded-md bg-gradient-to-r from-purple-600 to-pink-500 text-white text-xs font-medium">View</a>
-                  </div>
-                </div>
-              </article>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
-
-      <!-- Mobile: horizontal scroll with scroll-snap -->
-      <div class="ad-container flex overflow-x-auto pb-4 -mx-2 px-2 md:hidden product-container" aria-label="Sponsored products">
-        {% for product in featured_products|slice:":8" %}
-          <div class="flex-shrink-0 w-52 bg-white rounded-xl shadow-md border border-purple-200 mx-2 overflow-hidden hover:shadow-lg transition product-card" role="article" aria-label="{{ product.name }}">
-            <div class="relative">
-              <a href="{% url 'product_detail' product.id %}" aria-label="Open {{ product.name }}">
-                {% if product.images.first %}
-                  <img src="{{ product.images.first.image.url }}" srcset="{{ product.images.first.image.url }} 1x, {{ product.images.first.image.url }} 2x" loading="lazy" alt="{{ product.name }}" class="w-full h-32 object-cover">
-                {% else %}
-                  <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-32 flex items-center justify-center">
-                    <i class="fas fa-image text-gray-400 text-3xl" aria-hidden="true"></i>
-                  </div>
-                {% endif %}
-                <span class="absolute top-2 right-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white text-[10px] px-2 py-0.5 rounded">Sponsored</span>
-              </a>
-            </div>
-            <div class="p-3">
-              <h3 class="font-semibold text-sm truncate text-purple-800">{{ product.name }}</h3>
-              <div class="flex items-center mt-2 text-xs">
-                <span class="font-bold text-pink-500">${{ product.price }}</span>
-                <span class="ml-auto text-gray-500">
-                  <i class="fas fa-eye mr-1" aria-hidden="true"></i>{{ product.views }}
-                </span>
-              </div>
-            </div>
-          </div>
-        {% endfor %}
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<section class="categories-section py-6 -mt-4 px-4 bg-gradient-to-b from-purple-50 to-white relative z-0">
-  <div class="container mx-auto max-w-6xl">
-    <div class="text-center mb-5">
-      <h2 class="text-xl font-bold text-gray-900 mb-1">Browse by Category</h2>
-      <p class="text-gray-600 text-sm max-w-2xl mx-auto">Explore products in our categories</p>
-    </div>
-
-    {% for category in categories %}
-      {% if category.approved_ads %}
-      <div class="mb-5">
-        <div class="flex justify-between items-center mb-3">
-          <h3 class="text-lg font-bold text-gray-900">{{ category.name }}</h3>
-          <div class="flex space-x-1">
-            <button class="scroll-btn prev-btn p-1.5 rounded-full shadow-sm bg-white text-purple-800 hover:bg-purple-100 border border-gray-200" data-category="{{ category.id }}" aria-label="Previous {{ category.name }}">
-              <i class="fas fa-chevron-left text-xs" aria-hidden="true"></i>
-            </button>
-            <button class="scroll-btn next-btn p-1.5 rounded-full shadow-sm bg-white text-purple-800 hover:bg-purple-100 border border-gray-200" data-category="{{ category.id }}" aria-label="Next {{ category.name }}">
-              <i class="fas fa-chevron-right text-xs" aria-hidden="true"></i>
-            </button>
-          </div>
-        </div>
-
-        <div class="relative -mt-1">
-          <div class="product-container flex overflow-x-auto pb-3 space-x-3" data-category="{{ category.id }}" aria-label="{{ category.name }} products">
-            {% for product in category.approved_ads %}
-            <div class="bg-white rounded-lg shadow overflow-hidden border border-gray-200 hover:shadow-md transition flex-shrink-0 w-56 product-card" role="article" aria-label="{{ product.name }}">
-              <div class="relative">
-                {% if product.images.first %}
-                <a href="{% url 'product_detail' product.id %}">
-                  <img src="{{ product.images.first.image.url }}" srcset="{{ product.images.first.image.url }} 1x, {{ product.images.first.image.url }} 2x" loading="lazy" alt="{{ product.name }}" class="w-full h-40 object-cover">
-                </a>
-                {% else %}
-                <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-40 flex items-center justify-center">
-                  <i class="fas fa-image text-gray-400 text-3xl" aria-hidden="true"></i>
-                </div>
-                {% endif %}
-
-                {% if product.is_featured %}
-                <span class="absolute top-1 left-1 bg-pink-500 text-white text-xs font-bold px-1.5 py-0.5 rounded">Featured</span>
-                {% endif %}
-
-                <span class="absolute top-1 right-1 bg-black bg-opacity-70 text-white text-xs font-bold px-1.5 py-0.5 rounded">${{ product.price }}</span>
-              </div>
-
-              <div class="p-3">
-                <h3 class="font-bold text-sm mb-1 truncate">{{ product.name }}</h3>
-                <div class="flex items-center text-gray-600 text-xs mb-1">
-                  <i class="fas fa-map-marker-alt mr-1 text-xs" aria-hidden="true"></i>
-                  <span class="truncate">{{ product.location }}</span>
-                </div>
-                <div class="flex items-center text-gray-600 text-xs">
-                  <i class="far fa-clock mr-1 text-xs" aria-hidden="true"></i>
-                  <span>{{ product.created_at|timesince }} ago</span>
-                </div>
-                <div class="flex justify-between items-center mt-2">
-                  <span class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">{{ product.category.name }}</span>
-                  <a href="{% url 'product_detail' product.id %}" class="text-pink-600 hover:text-pink-800 font-medium text-xs">View Details</a>
-                </div>
-              </div>
-            </div>
-            {% empty %}
-            <p class="text-gray-600 text-xs italic py-2">No approved ads in this category.</p>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
-      {% endif %}
-    {% endfor %}
-
-  </div>
-</section>
-
-{% include 'footer.html' %}
-
-<script>
-// ------------------------
-// Robust client JS for index page
-// - Guards against missing selectors
-// - Smooth, pausable auto-scroll for sponsor strip
-// - Scroll buttons for category scrollers
-// - Respects reduced-motion
-// ------------------------
-
-document.addEventListener('DOMContentLoaded', () => {
-  const q = (sel, ctx = document) => ctx.querySelector(sel);
-  const qa = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
-
-  // --- Auto-scroll for mobile sponsor strip ---
-  const adContainer = q('.ad-container');
-  if (adContainer) {
-    let running = false;
-    let rafId = null;
-    const speed = 0.35; // px per frame
-    let pos = adContainer.scrollLeft;
-
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!prefersReduced && adContainer.scrollWidth > adContainer.clientWidth) {
-      function step() {
-        const max = adContainer.scrollWidth - adContainer.clientWidth;
-        pos = pos + speed;
-        if (pos >= max) pos = 0;
-        adContainer.scrollLeft = pos;
-        rafId = requestAnimationFrame(step);
-      }
-      function start() {
-        if (running) return;
-        running = true;
-        rafId = requestAnimationFrame(step);
-      }
-      function stop() {
-        running = false;
-        if (rafId) cancelAnimationFrame(rafId);
-      }
-
-      // start
-      start();
-      ['mouseenter', 'focusin', 'touchstart'].forEach(e => adContainer.addEventListener(e, stop, { passive: true }));
-      ['mouseleave', 'focusout', 'touchend'].forEach(e => adContainer.addEventListener(e, start, { passive: true }));
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Media Library — Navbar with Category/Keyword/Location Search (fixed mobile panel)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root{
+      --sidebar-bg:#0f1720;
+      --panel:#0b1220;
+      --muted:#9ca3af;
+      --chip:#1f2937;
+      --accent:#06b6d4;
+      --tile-bg:#2b3440;
     }
-  }
+    body { background: var(--panel); color: #e6eef8; -webkit-font-smoothing:antialiased; }
+    .sidebar-narrow { width:72px; min-width:72px; position:fixed; left:0; top:0; bottom:0; z-index:40; display:flex; flex-direction:column; align-items:center; padding-top:24px; gap:12px; background:var(--sidebar-bg); border-right:1px solid rgba(255,255,255,0.03); }
+    .main-with-offset { margin-left:72px; min-height:100vh; }
+    .side-icon { width:36px; height:36px; display:block; }
+    .util-icon { width:28px; height:28px; display:block; }
+    .label { font-size:12px; margin-top:6px; line-height:1; text-align:center; }
+    .tile { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; padding:10px; width:100%; box-sizing:border-box; }
+    .scrollbar-thin::-webkit-scrollbar{height:8px;width:8px}
+    .scrollbar-thin::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.05);border-radius:8px}
+    .asset-card { box-shadow: 0 2px 0 rgba(255,255,255,0.02); }
+    button.icon-btn { transition: transform .12s ease, background-color .12s ease; }
+    button.icon-btn:active { transform: translateY(1px); }
 
-  // --- Scroll buttons for category lists ---
-  qa('.scroll-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const catId = btn.getAttribute('data-category');
-      if (!catId) return;
-      const container = document.querySelector(`.product-container[data-category="${catId}"]`);
-      if (!container) return;
-      const isPrev = btn.classList.contains('prev-btn');
-      const card = container.querySelector('.product-card');
-      const cardRect = card ? card.getBoundingClientRect() : null;
-      const scrollAmount = cardRect ? Math.round(cardRect.width + 12) : 288;
-      container.scrollBy({ left: isPrev ? -scrollAmount : scrollAmount, behavior: 'smooth' });
-    });
-  });
+    /* Mobile search panel */
+    .mobile-search-wrap { position: relative; display: inline-block; }
+    .mobile-search-panel {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      width: 320px;
+      max-width: calc(100vw - 32px);
+      background: #0b1220;
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 10px;
+      padding: 12px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+      opacity: 0;
+      transform: translateY(-6px) scale(.98);
+      pointer-events: none;
+      transition: opacity .15s ease, transform .15s ease;
+      z-index: 80;
+      display: block; /* ensure not hidden by Tailwind 'hidden' */
+    }
+    /* show on hover or .open (toggled by JS) */
+    .mobile-search-wrap:hover .mobile-search-panel,
+    .mobile-search-wrap.open .mobile-search-panel {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
 
-  // --- Advertise CTA fallback ---
-  const advertiseBtn = q('.advertise-btn');
-  if (advertiseBtn) {
-    advertiseBtn.addEventListener('click', (e) => {
-      // Let the link navigate normally. Optional: open a lightweight modal instead.
-      // Example: if you want modal behavior, preventDefault() and show modal.
-    });
-  }
+    /* small arrow */
+    .mobile-search-panel:before {
+      content: "";
+      position: absolute;
+      top: -8px;
+      right: 18px;
+      width: 12px;
+      height: 12px;
+      transform: rotate(45deg);
+      background: #0b1220;
+      border-left: 1px solid rgba(255,255,255,0.04);
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
 
-  // --- Keyboard accessibility for horizontal scrollers (left/right) ---
-  qa('.product-container').forEach(container => {
-    container.setAttribute('tabindex', '0');
-    container.addEventListener('keydown', (ev) => {
-      if (ev.key === 'ArrowRight') {
-        container.scrollBy({ left: 280, behavior: 'smooth' });
-        ev.preventDefault();
-      } else if (ev.key === 'ArrowLeft') {
-        container.scrollBy({ left: -280, behavior: 'smooth' });
-        ev.preventDefault();
+    /* responsive tweaks */
+    @media (max-width:420px) {
+      .mobile-search-panel { width: 92vw; right: 6px; left: 6px; top: calc(100% + 6px); }
+      .mobile-search-panel:before { right: 28px; }
+    }
+
+    /* Grid responsiveness */
+    @media (max-width: 767px) {
+      .grid-cols-responsive { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    }
+    @media (min-width: 768px) {
+      .grid-cols-responsive { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1024px) {
+      .grid-cols-responsive { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1280px) {
+      .grid-cols-responsive { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+
+    /* Desktop inline search controls layout */
+    .desktop-search-row { display:flex; gap:8px; align-items:center; }
+    .desktop-search-row select,
+    .desktop-search-row input { background: #0f1724; border: 1px solid rgba(255,255,255,0.04); color: white; }
+    .desktop-search-row .search-field { padding:8px 10px; border-radius:8px; min-width:0; }
+    .desktop-search-row .search-btn { padding:8px 10px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; }
+    .desktop-search-row .flexible { min-width:0; flex:1; }
+    @media (max-width: 1024px) { .desktop-search-row { gap:6px; } }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- Fixed skinny left sidebar (visible on all sizes) -->
+  <aside class="sidebar-narrow bg-[color:var(--sidebar-bg)] scrollbar-thin" aria-label="Main sidebar">
+    <!-- Home -->
+    <button class="flex flex-col items-center focus:outline-none icon-btn" aria-label="Home" tabindex="0">
+      <svg class="side-icon" viewBox="0 0 24 24" fill="none"><path d="M3 10.5L12 4l9 6.5V20a1 1 0 0 1-1 1h-5V13H9v8H4a1 1 0 0 1-1-1V10.5z" fill="#3b82f6"/></svg>
+      <div class="label text-white/90 font-semibold">Home</div>
+    </button>
+
+    <!-- Assets (selected) -->
+    <div class="tile flex flex-col items-center" style="width:56px;">
+      <button class="flex flex-col items-center focus:outline-none" aria-current="true" aria-label="Assets" tabindex="0">
+        <svg class="side-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:32px;height:32px;">
+          <g fill="#aaf36b">
+            <circle cx="12" cy="6.5" r="1.6"/>
+            <circle cx="8" cy="11.5" r="1.6"/>
+            <circle cx="16" cy="11.5" r="1.6"/>
+          </g>
+        </svg>
+        <div class="label text-white font-bold" style="font-size:13px;">Assets</div>
+      </button>
+    </div>
+
+    <!-- other icons -->
+    <div class="flex-1 flex flex-col items-center justify-start mt-2 space-y-3 overflow-auto w-full pt-2">
+      <button class="flex flex-col items-center focus:outline-none icon-btn" aria-label="Image" tabindex="0">
+        <svg class="side-icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="6.5" width="18" height="11" rx="1.2" stroke="#4ea2ff" stroke-width="1.1"/><path d="M7 11l3 3 5-5 3 4.5" stroke="#4ea2ff" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="label text-[color:var(--muted)]">Image</div>
+      </button>
+
+      <button class="flex flex-col items-center focus:outline-none icon-btn" aria-label="Video" tabindex="0">
+        <svg class="side-icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="6.5" width="10" height="11" rx="1.2" stroke="#3b82f6" stroke-width="1.1"/><path d="M15 10l4.5-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14v-4z" fill="#3b82f6"/></svg>
+        <div class="label text-[color:var(--muted)]">Video</div>
+      </button>
+
+      <button class="flex flex-col items-center focus:outline-none icon-btn" aria-label="MediaFlows" tabindex="0">
+        <svg class="side-icon" viewBox="0 0 24 24" fill="none"><rect x="4.5" y="6.5" width="15" height="11" rx="1.2" stroke="#22c55e" stroke-width="1.1"/><path d="M8 10h8" stroke="#22c55e" stroke-width="1.1" stroke-linecap="round"/></svg>
+        <div class="label text-[color:var(--muted)]">MediaFlows</div>
+      </button>
+
+      <button class="flex flex-col items-center focus:outline-none icon-btn" aria-label="3D" tabindex="0">
+        <svg class="side-icon" viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4.5v8L12 21 4 15.5v-8L12 3z" stroke="#60a5fa" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"/></svg>
+        <div class="label text-[color:var(--muted)]">3D</div>
+      </button>
+
+      <button class="flex flex-col items-center focus:outline-none icon-btn" aria-label="FinalTouch" tabindex="0">
+        <svg class="side-icon" viewBox="0 0 24 24" fill="none"><path d="M12 3l2 4 4 2-4 2-2 4-2-4-4-2 4-2 2-4z" stroke="#7c3aed" stroke-width="1.1" stroke-linejoin="round"/></svg>
+        <div class="label text-[color:var(--muted)]">FinalTouch</div>
+      </button>
+    </div>
+
+    <!-- bottom utilities -->
+    <div class="flex flex-col items-center gap-3 mb-4">
+      <button class="p-1 rounded-md" aria-label="Invite" tabindex="0">
+        <svg class="util-icon" viewBox="0 0 24 24" fill="none"><path d="M15 14a3 3 0 100-6 3 3 0 000 6zM6 20v-1a4 4 0 014-4h4" stroke="#cbd5e1" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <button class="p-1 rounded-md" aria-label="App Marketplace" tabindex="0">
+        <svg class="util-icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#cbd5e1" stroke-width="1.2"/></svg>
+      </button>
+
+      <button class="p-1 rounded-md" aria-label="Help" tabindex="0">
+        <svg class="util-icon" viewBox="0 0 24 24" fill="none"><path d="M12 17v.01M12 7a4 4 0 00-1 7.874V15" stroke="#cbd5e1" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <button class="p-1 rounded-md" aria-label="Settings" tabindex="0">
+        <svg class="util-icon" viewBox="0 0 24 24" fill="none"><path d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7z" stroke="#cbd5e1" stroke-width="0.9"/></svg>
+      </button>
+
+      <div class="mt-1 rounded-full w-10 h-10 flex items-center justify-center bg-[#2fe1dd] text-slate-900 font-semibold">SS</div>
+    </div>
+  </aside>
+
+  <!-- Main content area (offset to the right to accommodate fixed sidebar) -->
+  <div class="main-with-offset flex-1 flex flex-col">
+    <!-- HEADER: desktop has inline Category/Keyword/Location + Search button; mobile has icon+panel -->
+    <header class="flex items-center justify-between px-4 md:px-6 py-3 bg-[color:var(--panel)] border-b border-white/6">
+      <div class="flex items-center gap-3">
+        <button id="mobileToggle" class="p-2 rounded-md bg-slate-800/30 md:hidden" title="Menu">
+          <svg class="w-5 h-5 text-[color:var(--muted)]" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <div class="text-lg md:text-xl font-semibold">Media Library</div>
+        <nav class="text-xs md:text-sm text-[color:var(--muted)] hidden sm:block">› Assets</nav>
+      </div>
+
+      <!-- DESKTOP: inline 3-field search (visible md+) -->
+      <div class="hidden md:flex flex-1 mx-3 md:mx-6">
+        <form id="desktopSearchForm" class="desktop-search-row w-full" onsubmit="return false;">
+          <select id="desktopCategory" class="search-field" style="width:140px;">
+            <option value="all">All categories</option>
+            <option value="Portrait">Portrait</option>
+            <option value="Sport">Sport</option>
+            <option value="Food">Food</option>
+            <option value="Product">Product</option>
+            <option value="Event">Event</option>
+          </select>
+
+          <input id="desktopKeyword" class="search-field flexible" type="search" placeholder="Keyword" />
+
+          <input id="desktopLocation" class="search-field" type="text" placeholder="Location" style="width:160px;" />
+
+          <button id="desktopSearchBtn" class="search-btn bg-sky-500 text-white rounded-md" title="Search" aria-label="Search">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><circle cx="11" cy="11" r="5" stroke="#fff" stroke-width="1.6"/></svg>
+          </button>
+
+          <button id="desktopUpload" class="ml-2 px-3 md:px-4 py-1 md:py-2 bg-slate-800 text-white rounded-md text-sm whitespace-nowrap">Upload</button>
+        </form>
+      </div>
+
+      <!-- MOBILE: icon + panel -->
+      <div class="md:hidden flex items-center gap-3">
+        <div id="mobileSearchWrap" class="mobile-search-wrap" aria-haspopup="true">
+          <button id="mobileSearchBtn" class="p-2 rounded-md bg-slate-800/40" title="Search">
+            <svg class="w-5 h-5 text-[color:var(--muted)]" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="#cbd5e1" stroke-width="1.6" stroke-linecap="round"/><circle cx="11" cy="11" r="5" stroke="#cbd5e1" stroke-width="1.6"/></svg>
+          </button>
+
+          <!-- Panel: removed 'hidden' so CSS/JS control its visibility -->
+          <div id="mobileSearchPanel" class="mobile-search-panel">
+            <form id="mobileSearchForm" class="space-y-3" autocomplete="off">
+              <div>
+                <label class="block text-xs text-[color:var(--muted)] mb-1">Category</label>
+                <select id="mobileCategory" class="w-full rounded-md bg-slate-800 px-3 py-2 text-sm">
+                  <option value="all">All</option>
+                  <option value="Portrait">Portrait</option>
+                  <option value="Sport">Sport</option>
+                  <option value="Food">Food</option>
+                  <option value="Product">Product</option>
+                  <option value="Event">Event</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs text-[color:var(--muted)] mb-1">Keyword</label>
+                <input id="mobileKeyword" type="search" placeholder="Search keywords" class="w-full rounded-md bg-slate-800 px-3 py-2 text-sm" />
+              </div>
+
+              <div>
+                <label class="block text-xs text-[color:var(--muted)] mb-1">Location</label>
+                <input id="mobileLocation" type="text" placeholder="e.g. New York" class="w-full rounded-md bg-slate-800 px-3 py-2 text-sm" />
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button type="submit" class="flex-1 px-3 py-2 rounded-md bg-sky-500 text-white text-sm">Search</button>
+                <button id="mobileClearBtn" type="button" class="px-3 py-2 rounded-md bg-slate-800 text-[color:var(--muted)] text-sm">Clear</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- keep Upload on mobile right side -->
+        <button id="mobileUpload" class="px-3 py-1 bg-sky-500 rounded-md text-white text-sm whitespace-nowrap">Upload</button>
+      </div>
+
+      <!-- Right side (sort + avatar) -->
+      <div class="hidden md:flex items-center gap-3">
+        <div class="text-xs md:text-sm text-[color:var(--muted)]">Sort by:
+          <select id="sort" class="bg-transparent text-xs md:text-sm ml-1 focus:outline-none">
+            <option>Relevance</option>
+            <option>Newest</option>
+          </select>
+        </div>
+        <div class="rounded-full bg-slate-800 w-8 h-8 flex items-center justify-center text-sm">SS</div>
+      </div>
+    </header>
+
+    <!-- content -->
+    <main class="flex-1 overflow-auto p-3 md:p-6 scrollbar-thin">
+      <section class="mb-4 md:mb-6">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg md:text-2xl font-semibold">Advanced Search</h2>
+          <div class="flex items-center gap-2 text-[color:var(--muted)]">
+            <div class="hidden sm:block text-xs md:text-sm">Sort by: <strong>Relevance</strong></div>
+            <div class="flex items-center gap-1">
+              <button id="viewBtn" class="px-2 py-1 rounded-md hover:bg-white/3 text-xs md:text-sm">View</button>
+              <button id="previewBtn" class="px-2 py-1 rounded-md hover:bg-white/3 text-xs md:text-sm">Preview</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-3 md:mt-4 flex flex-wrap gap-2 items-center">
+          <input id="filterInput" class="rounded-md bg-slate-800 px-2 py-2 w-48 md:w-64 placeholder:text-[color:var(--muted)] text-sm" placeholder="Type to filter" />
+          <div class="flex gap-2 flex-wrap">
+            <button class="px-2 py-1 rounded-full bg-[color:var(--chip)] text-[color:var(--muted)] text-xs md:text-sm">Display name ▾</button>
+          </div>
+
+          <div class="ml-auto text-xs md:text-sm text-[color:var(--muted)] flex items-center gap-3">
+            <span>Showing <strong id="assetCount">64</strong> assets</span>
+            <button id="refresh" class="px-2 py-1 rounded-md bg-slate-800 text-xs">⟳ Refresh</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- grid -->
+      <section>
+        <div id="grid" class="grid gap-4 grid-cols-responsive">
+          <template id="cardTpl">
+            <article class="asset-card bg-slate-800 rounded-md overflow-hidden cursor-pointer" data-category="Portrait" data-location="New York">
+              <img class="w-full h-44 object-cover" alt="asset image">
+              <div class="p-3">
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <div class="font-semibold text-sm">Asset Title</div>
+                    <div class="text-xs text-[color:var(--muted)]">Uploaded • 2.1 MB</div>
+                  </div>
+                  <div class="text-[color:var(--muted)]">⋯</div>
+                </div>
+              </div>
+            </article>
+          </template>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- mobile slide-over -->
+  <div id="mobileSidebar" class="fixed inset-0 z-50 hidden md:hidden">
+    <div id="mobileOverlay" class="absolute inset-0 bg-black/50"></div>
+    <aside class="absolute left-0 top-0 bottom-0 w-64 bg-[color:var(--sidebar-bg)] p-4">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="rounded-full bg-slate-700 w-10 h-10 flex items-center justify-center">DH</div>
+        <div>
+          <div class="text-sm font-semibold">dhccwakm8</div>
+          <div class="text-xs text-[color:var(--muted)]">Welcome!</div>
+        </div>
+      </div>
+      <nav class="space-y-2">
+        <a class="block px-3 py-2 rounded bg-slate-800 text-sky-300">Assets</a>
+        <a class="block px-3 py-2 rounded text-[color:var(--muted)] hover:bg-white/3">Collections</a>
+        <a class="block px-3 py-2 rounded text-[color:var(--muted)] hover:bg-white/3">Moderation</a>
+      </nav>
+    </aside>
+  </div>
+
+  <!-- PREVIEW modal -->
+  <div id="previewModal" class="fixed inset-0 z-50 hidden items-center justify-center px-4">
+    <div id="previewBackdrop" class="absolute inset-0 bg-black/70"></div>
+    <div class="relative max-w-5xl w-full z-10">
+      <div class="bg-slate-800 rounded-lg overflow-hidden">
+        <div class="flex items-center justify-between p-3 border-b border-white/5">
+          <div>
+            <div id="modalTitle" class="font-semibold text-lg">Asset Title</div>
+            <div id="modalMeta" class="text-xs text-[color:var(--muted)]">Uploaded • size</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="prevBtn" class="p-2 rounded-md hover:bg-white/5">◀</button>
+            <button id="nextBtn" class="p-2 rounded-md hover:bg-white/5">▶</button>
+            <button id="closeBtn" class="p-2 rounded-md hover:bg-white/5">✕</button>
+          </div>
+        </div>
+        <div class="p-4 flex items-center justify-center bg-slate-900">
+          <img id="modalImage" src="" alt="" class="max-h-[70vh] object-contain"/>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- floating help -->
+  <button class="fixed right-4 bottom-4 z-50 w-12 h-12 rounded-full bg-indigo-600 shadow-lg flex items-center justify-center">
+    <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 10-12 0c0 4 6 7 6 7s6-3 6-7z" fill="#fff"/></svg>
+  </button>
+
+  <script>
+    /* Populate grid with sample images + categories/locations */
+    const samples = [
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1400&auto=format&fit=crop&crop=faces",
+      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=1400&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1400&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=1400&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1517816743773-6e0fd518b4a6?q=80&w=1400&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=1400&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=1400&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1400&auto=format&fit=crop"
+    ];
+    const categories = ["Portrait","Sport","Food","Product","Event"];
+    const locations = ["New York","London","Los Angeles","Tokyo","Berlin"];
+    const grid = document.getElementById('grid');
+    const tpl = document.getElementById('cardTpl').content;
+
+    for (let i=0;i<64;i++){
+      const node = document.importNode(tpl,true);
+      const article = node.querySelector('article');
+      const img = node.querySelector('img');
+      const title = node.querySelector('.font-semibold');
+      const meta = node.querySelector('.text-xs');
+
+      const cat = categories[i % categories.length];
+      const loc = locations[i % locations.length];
+
+      article.setAttribute('data-category', cat);
+      article.setAttribute('data-location', loc);
+
+      img.src = samples[i % samples.length] + "&s=" + i;
+      img.alt = cat + " Asset " + (i+1);
+      title.textContent = cat + " — Asset " + (i+1);
+      meta.textContent = ["Uploaded 3 days ago","Uploaded 2 weeks ago","Uploaded 8 days ago","Uploaded 1 mo ago"][i%4] + " • " + (1 + (i%5)) + " MB";
+      grid.appendChild(node);
+    }
+
+    /* Utilities */
+    function allCards(){ return Array.from(grid.querySelectorAll('.asset-card')); }
+    function updateCount(){ const visible = allCards().filter(c=>!c.classList.contains('hidden')).length; document.getElementById('assetCount').textContent = visible; }
+
+    /* Filtering logic used by desktop & mobile search */
+    function filterGrid(keyword = '', category = 'all', location = '') {
+      const k = (keyword || '').trim().toLowerCase();
+      const cat = (category || 'all').toLowerCase();
+      const loc = (location || '').trim().toLowerCase();
+
+      allCards().forEach(card => {
+        const title = (card.querySelector('.font-semibold')?.textContent || '').toLowerCase();
+        const c = (card.getAttribute('data-category') || '').toLowerCase();
+        const l = (card.getAttribute('data-location') || '').toLowerCase();
+
+        let visible = true;
+        if (cat !== 'all' && c !== cat) visible = false;
+        if (k && !title.includes(k)) visible = false;
+        if (loc && !l.includes(loc)) visible = false;
+
+        card.classList.toggle('hidden', !visible);
+      });
+      updateCount();
+    }
+
+    /* DESKTOP hookups */
+    const desktopCategory = document.getElementById('desktopCategory');
+    const desktopKeyword = document.getElementById('desktopKeyword');
+    const desktopLocation = document.getElementById('desktopLocation');
+    const desktopSearchBtn = document.getElementById('desktopSearchBtn');
+    const desktopSearchForm = document.getElementById('desktopSearchForm');
+
+    if (desktopSearchBtn) {
+      desktopSearchBtn.addEventListener('click', () => {
+        filterGrid(desktopKeyword.value, desktopCategory.value, desktopLocation.value);
+      });
+    }
+    // submit with Enter from any desktop field
+    desktopSearchForm.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        filterGrid(desktopKeyword.value, desktopCategory.value, desktopLocation.value);
       }
     });
-  });
-});
-</script>
 
-{% endblock %}
+    /* MOBILE: panel toggle and form handling */
+    const mobileWrap = document.getElementById('mobileSearchWrap');
+    const mobileBtn = document.getElementById('mobileSearchBtn');
+    const mobileForm = document.getElementById('mobileSearchForm');
+    const mobileClearBtn = document.getElementById('mobileClearBtn');
+
+    mobileBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      mobileWrap.classList.toggle('open');
+      if (mobileWrap.classList.contains('open')) {
+        setTimeout(()=>document.getElementById('mobileKeyword').focus(), 100);
+      }
+    });
+
+    // Close panel when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!mobileWrap.contains(e.target)) {
+        mobileWrap.classList.remove('open');
+      }
+    });
+    // Close on escape
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        mobileWrap.classList.remove('open');
+        const pm = document.getElementById('previewModal');
+        if (pm && !pm.classList.contains('hidden')) pm.classList.add('hidden');
+      }
+    });
+
+    mobileClearBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      mobileForm.reset();
+      filterGrid('', 'all', '');
+      mobileWrap.classList.remove('open');
+    });
+
+    mobileForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const cat = document.getElementById('mobileCategory').value;
+      const kw = document.getElementById('mobileKeyword').value;
+      const loc = document.getElementById('mobileLocation').value;
+      filterGrid(kw, cat, loc);
+      mobileWrap.classList.remove('open');
+    });
+
+    /* small inline filter box */
+    const filterInput = document.getElementById('filterInput');
+    if (filterInput) filterInput.addEventListener('input', (e) => filterGrid(e.target.value, 'all', ''));
+
+    /* Refresh button visual */
+    document.getElementById('refresh').addEventListener('click', ()=>{ document.getElementById('refresh').classList.add('opacity-50'); setTimeout(()=>document.getElementById('refresh').classList.remove('opacity-50'),400); });
+
+    /* mobile sidebar toggle */
+    const mobileToggle = document.getElementById('mobileToggle');
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    const mobileOverlay = document.getElementById('mobileOverlay');
+    if (mobileToggle){
+      mobileToggle.addEventListener('click', ()=> mobileSidebar.classList.toggle('hidden'));
+      if (mobileOverlay) mobileOverlay.addEventListener('click', ()=> mobileSidebar.classList.add('hidden'));
+    }
+
+    /* preview modal */
+    const previewModal = document.getElementById('previewModal');
+    const previewBackdrop = document.getElementById('previewBackdrop');
+    const modalImage = document.getElementById('modalImage');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMeta = document.getElementById('modalMeta');
+    const closeBtn = document.getElementById('closeBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    let visibleList = [], currentIndex = -1;
+    function refreshVisible(){ visibleList = allCards().filter(c=>!c.classList.contains('hidden')); }
+    function openAt(index){
+      refreshVisible();
+      if (!visibleList.length) return;
+      currentIndex = Math.max(0, Math.min(index, visibleList.length-1));
+      const card = visibleList[currentIndex];
+      const img = card.querySelector('img');
+      modalImage.src = img.src;
+      modalImage.alt = img.alt;
+      modalTitle.textContent = card.querySelector('.font-semibold').textContent;
+      modalMeta.textContent = card.querySelector('.text-xs').textContent;
+      previewModal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      closeBtn && closeBtn.focus();
+    }
+    function closeModal(){ previewModal.classList.add('hidden'); modalImage.src=''; document.body.style.overflow=''; currentIndex=-1; }
+
+    grid.addEventListener('click', (e)=>{
+      const article = e.target.closest('.asset-card');
+      if (!article) return;
+      refreshVisible();
+      openAt(visibleList.indexOf(article));
+    });
+
+    prevBtn && prevBtn.addEventListener('click', ()=>{ if (!visibleList.length) return; openAt((currentIndex-1+visibleList.length) % visibleList.length); });
+    nextBtn && nextBtn.addEventListener('click', ()=>{ if (!visibleList.length) return; openAt((currentIndex+1) % visibleList.length); });
+    previewBackdrop && previewBackdrop.addEventListener('click', closeModal);
+    closeBtn && closeBtn.addEventListener('click', closeModal);
+    window.addEventListener('keydown', (e)=>{ if (previewModal.classList.contains('hidden')) return; if (e.key === 'Escape') closeModal(); if (e.key === 'ArrowLeft') prevBtn && prevBtn.click(); if (e.key === 'ArrowRight') nextBtn && nextBtn.click(); });
+
+    /* accessibility: make cards focusable */
+    function setFocusable(){ allCards().forEach(c=>c.setAttribute('tabindex','0')); }
+    setFocusable();
+    updateCount();
+  </script>
+</body>
+</html>

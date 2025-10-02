@@ -5,8 +5,12 @@ from django.urls import path, reverse_lazy
 urlpatterns = [
    # Ads
 path('ad/redirect/<int:subcategory_id>/', views.handle_ad_redirect, name='handle_ad_redirect'),
+path('ad/create/', views.create_ad_form, name='create_ad_form'),
 path('ad/create/<int:category_id>/', views.create_ad_form, name='create_ad_form'),
+
 path('ad/free/<int:category_id>/', views.ad_form, name='ad_form'),
+path('ad/free/', views.ad_form, name='ad_form'),
+
 path('delete-ad/<int:ad_id>/', views.delete_ad, name='delete_ad'),
 
 # Product

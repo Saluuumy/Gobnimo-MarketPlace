@@ -11,17 +11,30 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <style>
+    :root{
+      --sidebar-bg:#0f1720;
+      --panel:#0b1220;
+      --muted:#9ca3af;
+      --chip:#1f2937;
+      --accent:#06b6d4;
+      --tile-bg:#2b3440;
+    }
+    
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      background: var(--panel);
+      color: #e6eef8;
+      -webkit-font-smoothing: antialiased;
     }
     
     .card {
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       transition: all 0.3s ease;
       border-radius: 12px;
+      background: var(--tile-bg);
+      border: 1px solid rgba(255,255,255,0.05);
     }
     
     .gallery-main {
@@ -40,7 +53,7 @@
     
     .gallery-thumb:hover, .gallery-thumb.active {
       transform: translateY(-2px);
-      border-color: #8b5cf6;
+      border-color: var(--accent);
     }
     
     .attribute-item {
@@ -49,7 +62,7 @@
     }
     
     .attribute-item:hover {
-      background-color: #f8fafc;
+      background-color: rgba(255,255,255,0.05);
       transform: translateY(-1px);
     }
     
@@ -69,12 +82,12 @@
     
     .attribute-value {
       font-weight: 500;
-      color: #1e293b;
+      color: #e6eef8;
       font-size: 0.9rem;
     }
     
     .attribute-label {
-      color: #64748b;
+      color: var(--muted);
       font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -83,7 +96,7 @@
     
     .attribute-icon {
       font-size: 1.1rem;
-      color: #7c3aed;
+      color: var(--accent);
       margin-bottom: 2px;
     }
     
@@ -97,7 +110,7 @@
       margin-right: 8px;
       width: 18px;
       text-align: center;
-      color: #7c3aed;
+      color: var(--accent);
       font-size: 0.85rem;
     }
     
@@ -109,10 +122,11 @@
     
     .comment-card {
       transition: all 0.2s ease;
+      background: var(--tile-bg);
     }
     
     .comment-card:hover {
-      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.1);
     }
     
     .reply-form {
@@ -126,14 +140,14 @@
     }
     
     .gradient-btn {
-      background: linear-gradient(to right, #7c3aed, #6d28d9);
+      background: linear-gradient(to right, var(--accent), #0d9488);
       transition: all 0.3s ease;
     }
     
     .gradient-btn:hover {
-      background: linear-gradient(to right, #6d28d9, #5b21b6);
+      background: linear-gradient(to right, #0d9488, #0f766e);
       transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(123, 97, 255, 0.3);
+      box-shadow: 0 4px 8px rgba(6, 182, 212, 0.3);
     }
     
     .comment-header {
@@ -158,29 +172,29 @@
       transform: scale(1.1);
     }
     
-    .purple-accent {
-      color: #7c3aed;
+    .accent-color {
+      color: var(--accent);
     }
     
-    .purple-bg-accent {
-      background-color: #f5f3ff;
+    .accent-bg {
+      background-color: rgba(6, 182, 212, 0.1);
     }
     
-    .purple-border {
-      border-color: #ddd6fe;
+    .accent-border {
+      border-color: rgba(6, 182, 212, 0.3);
     }
     
     /* Share section styles */
     .share-section {
       margin-top: 1.5rem;
       padding-top: 1rem;
-      border-top: 1px solid #e2e8f0;
+      border-top: 1px solid rgba(255,255,255,0.1);
     }
     
     .share-title {
       font-size: 0.95rem;
       font-weight: 600;
-      color: #4b5563;
+      color: var(--muted);
       margin-bottom: 0.75rem;
       display: flex;
       align-items: center;
@@ -202,12 +216,12 @@
       justify-content: center;
       transition: all 0.2s ease;
       cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     
     .share-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
     
     .facebook-btn {
@@ -231,7 +245,7 @@
     }
     
     .copy-btn {
-      background-color: #7c3aed;
+      background-color: var(--accent);
       color: white;
     }
     
@@ -241,7 +255,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background-color: rgba(0,0,0,0.5);
+      background-color: rgba(0,0,0,0.7);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -257,14 +271,15 @@
     }
     
     .share-modal-content {
-      background-color: white;
+      background-color: var(--tile-bg);
       border-radius: 12px;
       padding: 1.5rem;
       max-width: 90%;
       width: 400px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
       transform: translateY(20px);
       transition: transform 0.3s ease;
+      border: 1px solid rgba(255,255,255,0.05);
     }
     
     .share-modal.active .share-modal-content {
@@ -281,7 +296,7 @@
     .share-modal-title {
       font-weight: 600;
       font-size: 1.2rem;
-      color: #1e293b;
+      color: #e6eef8;
     }
     
     .share-modal-close {
@@ -289,7 +304,7 @@
       border: none;
       font-size: 1.5rem;
       cursor: pointer;
-      color: #64748b;
+      color: var(--muted);
     }
     
     .share-input-group {
@@ -300,13 +315,15 @@
     .share-input {
       flex-grow: 1;
       padding: 0.75rem;
-      border: 1px solid #cbd5e1;
+      border: 1px solid rgba(255,255,255,0.1);
       border-radius: 8px 0 0 8px;
       font-size: 0.9rem;
+      background: var(--chip);
+      color: #e6eef8;
     }
     
     .copy-button {
-      background: #7c3aed;
+      background: var(--accent);
       color: white;
       border: none;
       padding: 0 1rem;
@@ -316,16 +333,17 @@
     }
     
     .copy-button:hover {
-      background: #6d28d9;
+      background: #0891b2;
     }
     
     .share-success {
-      background: #f0fdf4;
-      color: #16a34a;
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
       padding: 0.75rem;
       border-radius: 8px;
       text-align: center;
       display: none;
+      border: 1px solid rgba(16, 185, 129, 0.2);
     }
     
     .share-success.active {
@@ -410,6 +428,7 @@
     .attribute-grid {
       gap: 0.75rem;
       padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
     }
 
     @media (min-width: 1024px) {
@@ -418,15 +437,77 @@
         top: -190px;
       }
     }
+    
+    /* Additional dark theme adjustments */
+    .bg-gray-50 {
+      background: var(--panel) !important;
+    }
+    
+    .text-gray-800, .text-gray-900 {
+      color: #e6eef8 !important;
+    }
+    
+    .text-gray-600, .text-gray-700 {
+      color: var(--muted) !important;
+    }
+    
+    .bg-white {
+      background: var(--tile-bg) !important;
+    }
+    
+    .border-gray-200 {
+      border-color: rgba(255,255,255,0.05) !important;
+    }
+    
+    .bg-gray-100 {
+      background: var(--chip) !important;
+    }
+    
+    .bg-purple-50 {
+      background: rgba(6, 182, 212, 0.05) !important;
+    }
+    
+    .border-purple-200, .border-purple-300 {
+      border-color: rgba(6, 182, 212, 0.3) !important;
+    }
+    
+    .bg-purple-600 {
+      background: var(--accent) !important;
+    }
+    
+    .from-purple-600 {
+      --tw-gradient-from: var(--accent) !important;
+    }
+    
+    .to-indigo-600 {
+      --tw-gradient-to: #0d9488 !important;
+    }
+    
+    .hover\:from-purple-700:hover {
+      --tw-gradient-from: #0891b2 !important;
+    }
+    
+    .hover\:to-indigo-700:hover {
+      --tw-gradient-to: #0f766e !important;
+    }
+    
+    .bg-gradient-to-b {
+      background-image: linear-gradient(to bottom, rgba(6, 182, 212, 0.05), transparent) !important;
+    }
+    
+    .bg-gray-300 {
+      background: var(--chip) !important;
+      color: var(--muted) !important;
+    }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
   <main class="container mx-auto px-4 py-5 flex-grow">
     <!-- Fixed grid structure with proper mobile ordering -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
       <!-- Gallery Section -->
       <div class="lg:col-span-7 mobile-order-1 compact-section">
-        <div class="bg-white rounded-xl card p-3">
+        <div class="rounded-xl card p-3">
           {% if ad.images.all %}
             <img id="mainImage" src="{{ ad.images.first.image.url }}" 
                  alt="{{ ad.name }}" class="gallery-main w-full">
@@ -456,18 +537,18 @@
 
       <!-- Details Section -->
       <div class="lg:col-span-5 mobile-order-2">
-        <div class="bg-white rounded-xl card compact-card">
+        <div class="rounded-xl card compact-card">
           <div class="flex justify-between items-start mb-3">
             <div>
-              <h1 class="text-2xl font-bold text-gray-900 mb-1">{{ ad.name }}</h1>
-              <div class="flex items-center text-gray-600 text-sm mb-2">
+              <h1 class="text-2xl font-bold mb-1">{{ ad.name }}</h1>
+              <div class="flex items-center text-sm mb-2">
                 <div class="flex items-center mr-3">
                   <i class="fas fa-eye mr-1"></i> {{ ad.views|default:0 }} views
                 </div>
                 <div class="flex items-center">
-                  <i class="fas fa-map-marker-alt text-red-500 mr-1"></i> 
+                  <i class="fas fa-map-marker-alt accent-color mr-1"></i> 
                   <span>{{ ad.location }}</span>
-                  <span class="mx-2 text-gray-400">•</span>
+                  <span class="mx-2 opacity-50">•</span>
                   <span class="font-medium">{{ ad.get_ad_type_display }}</span>
                 </div>
               </div>
@@ -488,14 +569,14 @@
 
           <!-- Price -->
           <div class="flex items-center mb-4">
-            <span class="text-2xl font-bold text-gray-900 mr-2">${{ ad.price }}</span>
+            <span class="text-2xl font-bold mr-2">${{ ad.price }}</span>
             {% if ad.ad_type == 'rent' %}
-            <span class="text-gray-600 text-sm">per month</span>
+            <span class="text-sm">per month</span>
             {% endif %}
           </div>
           
           <!-- Attributes Grid -->
-          <div class="grid grid-cols-4 gap-3 mb-4 border-b border-gray-200 pb-4 attribute-grid">
+          <div class="grid grid-cols-4 gap-3 mb-4 pb-4 attribute-grid">
             <div class="flex flex-col items-center text-center">
               <i class="fas fa-tag attribute-icon"></i>
               <div class="attribute-label">Category</div>
@@ -591,7 +672,7 @@
 
           {% if ad.vehicle_type %}
           <div class="mb-4">
-            <h3 class="text-lg font-semibold text-gray-900 mb-3">Vehicle Details</h3>
+            <h3 class="text-lg font-semibold mb-3">Vehicle Details</h3>
             <div class="feature-grid">
               <div class="property-feature">
                 <i class="fas fa-car attribute-icon"></i>
@@ -634,7 +715,7 @@
 
           {% if ad.property_type and ad.furnishing_type %}
           <div class="mb-4">
-            <div class="flex items-center bg-gray-50 rounded-lg p-3">
+            <div class="flex items-center bg-gray-100 rounded-lg p-3">
               <i class="fas fa-couch attribute-icon text-xl mr-3"></i>
               <div>
                 <div class="attribute-label">Furnishing</div>
@@ -646,7 +727,7 @@
 
           {% if ad.property_type %}
           <div class="mb-4">
-            <h3 class="text-lg font-semibold text-gray-900 mb-3">Property Features</h3>
+            <h3 class="text-lg font-semibold mb-3">Property Features</h3>
             
             <div class="feature-grid">
               <div class="property-feature">
@@ -695,7 +776,7 @@
           <!-- Job Details Section -->
           {% if ad.job_type %}
           <div class="mb-4">
-            <h3 class="text-lg font-semibold text-gray-900 mb-3">Job Details</h3>
+            <h3 class="text-lg font-semibold mb-3">Job Details</h3>
             <div class="feature-grid">
               <div class="property-feature">
                 <i class="fas fa-briefcase attribute-icon"></i>
@@ -741,7 +822,7 @@
           <!-- Service Details Section -->
           {% if ad.service_type %}
           <div class="mb-4">
-            <h3 class="text-lg font-semibold text-gray-900 mb-3">Service Details</h3>
+            <h3 class="text-lg font-semibold mb-3">Service Details</h3>
             <div class="feature-grid">
               <div class="property-feature">
                 <i class="fas fa-concierge-bell attribute-icon"></i>
@@ -777,7 +858,7 @@
           <!-- Fashion Details Section -->
           {% if ad.fashion_type %}
           <div class="mb-4">
-            <h3 class="text-lg font-semibold text-gray-900 mb-3">Fashion Details</h3>
+            <h3 class="text-lg font-semibold mb-3">Fashion Details</h3>
             <div class="feature-grid">
               <div class="property-feature">
                 <i class="fas fa-tshirt attribute-icon"></i>
@@ -822,30 +903,30 @@
 
           <!-- Description -->
           <div class="mb-4">
-            <h3 class="text-lg font-semibold text-gray-900 mb-3">Description</h3>
-            <p class="text-gray-700">{{ ad.description|default:"This meticulously maintained property combines style, comfort, and reliability in one exceptional package." }}</p>
+            <h3 class="text-lg font-semibold mb-3">Description</h3>
+            <p class="">{{ ad.description|default:"This meticulously maintained property combines style, comfort, and reliability in one exceptional package." }}</p>
           </div>
 
         <!-- Advertiser Card (Enhanced) -->
-<div class="bg-white rounded-xl shadow-md p-4 flex flex-col sm:flex-row items-center gap-4 border border-gray-200 hover:shadow-lg transition-shadow">
+<div class="rounded-xl shadow-md p-4 flex flex-col sm:flex-row items-center gap-4 border border-gray-200 hover:shadow-lg transition-shadow">
   <!-- Avatar -->
   <img src="{{ ad.advertiser.avatar.url|default:'/static/images/default-avatar.jpg' }}" 
-       alt="{{ ad.advertiser.username }}" class="w-16 h-16 rounded-full object-cover border-2 border-purple-300 shadow">
+       alt="{{ ad.advertiser.username }}" class="w-16 h-16 rounded-full object-cover border-2 border-accent-border shadow">
 
   <!-- Info -->
   <div class="flex-grow text-center sm:text-left">
-    <h3 class="text-xl font-bold text-gray-900 mb-1">{{ ad.advertiser.full_name|default:ad.advertiser.username }}</h3>
-    <p class="text-gray-600 text-sm">{{ ad.advertiser.bio|default:"No bio available" }}</p>
+    <h3 class="text-xl font-bold mb-1">{{ ad.advertiser.full_name|default:ad.advertiser.username }}</h3>
+    <p class="text-sm">{{ ad.advertiser.bio|default:"No bio available" }}</p>
   </div>
 
   <!-- Contact Button -->
   {% if ad.advertiser.phone_number %}
   <a href="https://wa.me/{{ ad.advertiser.phone_number }}" 
-     class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-5 py-2 rounded-full font-medium hover:from-purple-700 hover:to-indigo-700 transition flex items-center gap-2">
+     class="gradient-btn text-white px-5 py-2 rounded-full font-medium transition flex items-center gap-2">
     <i class="fab fa-whatsapp"></i> Contact Seller
   </a>
   {% else %}
-  <button class="bg-gray-300 text-gray-600 px-5 py-2 rounded-full font-medium cursor-not-allowed" disabled>
+  <button class="bg-gray-300 px-5 py-2 rounded-full font-medium cursor-not-allowed" disabled>
     Contact Seller
   </button>
   {% endif %}
@@ -880,13 +961,13 @@
       
       <!-- Comments Section -->
       <div class="lg:col-span-7 mobile-order-3">
-        <div class="bg-white rounded-xl card compact">
+        <div class="rounded-xl card compact">
           <div>
       
       <!-- Comment Form -->
-<div class="mb-4 purple-bg-accent p-3 rounded-xl purple-border border">
-  <h3 class="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-    <i class="fas fa-comment-dots purple-accent"></i>
+<div class="mb-4 accent-bg p-3 rounded-xl accent-border border">
+  <h3 class="text-sm font-medium mb-2 flex items-center gap-2">
+    <i class="fas fa-comment-dots accent-color"></i>
     Add a Comment
   </h3>
 
@@ -898,7 +979,7 @@
       <textarea
         name="text"
         rows="3"
-        class="w-full p-3 pr-28 bg-white text-gray-800 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300 placeholder-gray-500 resize-none" style="height: 73px;"
+        class="w-full p-3 pr-28 bg-chip text-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-border placeholder-gray-500 resize-none" style="height: 73px;"
         placeholder="Write your comment..."
       ></textarea>
 
@@ -914,22 +995,22 @@
   </form>
 
   {% else %}
-  <p class="text-gray-600 text-sm">Please <a href="{% url 'login' %}" class="purple-accent font-medium hover:underline">log in</a> to post a comment.</p>
+  <p class="text-sm">Please <a href="{% url 'login' %}" class="accent-color font-medium hover:underline">log in</a> to post a comment.</p>
   {% endif %}
 </div>
 
             <!-- Comment List -->
             <div class="space-y-3">
               {% for comment in comments %}
-              <div class="comment-card bg-white rounded-xl p-3 border border-gray-200" data-comment-id="{{ comment.id }}">
+              <div class="comment-card rounded-xl p-3 border border-gray-200" data-comment-id="{{ comment.id }}">
                 <div class="flex items-start gap-3">
                   <img src="{{ comment.user.avatar.url|default:'/static/images/avatar.svg' }}" 
-                       class="w-10 h-10 rounded-full object-cover border-2 border-purple-200">
+                       class="w-10 h-10 rounded-full object-cover border-2 border-accent-border">
                   <div class="flex-1">
                     <div class="comment-header">
                       <div>
-                        <p class="text-base font-semibold text-gray-800">@{{ comment.user.username }}</p>
-                        <p class="text-xs purple-accent">{{ comment.timestamp|timesince }} ago</p>
+                        <p class="text-base font-semibold">@{{ comment.user.username }}</p>
+                        <p class="text-xs accent-color">{{ comment.timestamp|timesince }} ago</p>
                       </div>
                       <div class="comment-actions">
                         {% if comment.user == request.user %}
@@ -938,7 +1019,7 @@
                           <i class="fas fa-trash-alt"></i>
                         </button>
                         {% endif %}
-                        <a href="#" class="text-xs purple-accent hover:text-purple-700 flex items-center gap-1 reply-link" 
+                        <a href="#" class="text-xs accent-color hover:opacity-80 flex items-center gap-1 reply-link" 
                            data-comment-id="{{ comment.id }}">
                           <i class="fas fa-reply"></i>
                     
@@ -946,16 +1027,16 @@
                       </div>
                     </div>
                     
-                    <p class="text-gray-700 text-sm mt-2">{{ comment.text }}</p>
+                    <p class="text-sm mt-2">{{ comment.text }}</p>
                     
-                    <div class="reply-form mt-2 ml-3 pl-3 border-l-2 border-purple-200" id="reply-form-{{ comment.id }}" style="display: none;">
+                    <div class="reply-form mt-2 ml-3 pl-3 border-l-2 border-accent-border" id="reply-form-{{ comment.id }}" style="display: none;">
                       <form method="post" action="{% url 'reply_to_comment' comment.id %}" class="flex flex-col sm:flex-row sm:items-center gap-2 mt-2 max-w-[90%]">
                         {% csrf_token %}
                          <div class="relative">
       <textarea
         name="text"
         rows="3"
-        class="w-full p-3 pr-28 bg-white text-gray-800 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300 placeholder-gray-500 resize-none" style="height: 73px;"
+        class="w-full p-3 pr-28 bg-chip text-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-border placeholder-gray-500 resize-none" style="height: 73px;"
         placeholder="Write your comment..."
       ></textarea>
 
@@ -974,15 +1055,15 @@
                     
                     <!-- Replies -->
                     {% for reply in comment.replies.all %}
-                    <div class="bg-purple-50 rounded-xl p-2 mt-2 ml-3 pl-3 border-l-2 border-purple-300 reply" data-reply-id="{{ reply.id }}" style="margin-right: 30px;">
+                    <div class="accent-bg rounded-xl p-2 mt-2 ml-3 pl-3 border-l-2 border-accent-border reply" data-reply-id="{{ reply.id }}" style="margin-right: 30px;">
                       <div class="flex items-start gap-2">
                         <img src="{{ reply.user.avatar.url|default:'/static/images/avatar.svg' }}" 
-                             class="w-8 h-8 rounded-full object-cover border border-purple-200">
+                             class="w-8 h-8 rounded-full object-cover border border-accent-border">
                         <div class="flex-1">
                           <div class="comment-header">
                             <div>
-                              <p class="text-sm font-semibold text-gray-800">@{{ reply.user.username }}</p>
-                              <p class="text-xs purple-accent">{{ reply.timestamp|timesince }} ago</p>
+                              <p class="text-sm font-semibold">@{{ reply.user.username }}</p>
+                              <p class="text-xs accent-color">{{ reply.timestamp|timesince }} ago</p>
                             </div>
                             {% if reply.user == request.user %}
                             <button class="delete-btn text-sm flex items-center gap-1" 
@@ -991,7 +1072,7 @@
                             </button>
                             {% endif %}
                           </div>
-                          <p class="text-gray-700 text-sm mt-1">{{ reply.text }}</p>
+                          <p class="text-sm mt-1">{{ reply.text }}</p>
                         </div>
                       </div>
                     </div>
@@ -1002,7 +1083,7 @@
               {% empty %}
               <div class="text-center py-5">
                 <i class="fas fa-comment-slash text-gray-300 text-4xl mb-2"></i>
-                <p class="text-gray-600">No comments yet. Be the first to comment!</p>
+                <p class="">No comments yet. Be the first to comment!</p>
               </div>
               {% endfor %}
             </div>
@@ -1013,17 +1094,17 @@
 
       <!-- NEW: Similar Items Section -->
     <div class="mt-8 mobile-order-4" style="position: relative; top: -175px;">
-      <div class="bg-gradient-to-b from-purple-50 to-white rounded-xl p-4 mb-6">
+      <div class="bg-gradient-to-b from-purple-50 to-transparent rounded-xl p-4 mb-6">
         <div class="text-center mb-5">
-          <h2 class="text-2xl font-bold text-gray-900 mb-1">You Might Also Like</h2>
-          <p class="text-gray-600 text-sm max-w-2xl mx-auto">Browse similar items based on your interests</p>
+          <h2 class="text-2xl font-bold mb-1">You Might Also Like</h2>
+          <p class="text-sm max-w-2xl mx-auto">Browse similar items based on your interests</p>
         </div>
         
         <div class="relative -mt-1">
           <div class="product-container flex overflow-x-auto pb-3 space-x-3 scroll-container">
             {% for item in similar_items %}
             <!-- Compact Product Card -->
-            <div class="bg-white rounded-lg shadow overflow-hidden border border-gray-200 hover:shadow-md transition flex-shrink-0 w-56">
+            <div class="rounded-lg shadow overflow-hidden border border-gray-200 hover:shadow-md transition flex-shrink-0 w-56">
               <div class="relative">
                 {% if item.images.first %}
                 <a href="{% url 'product_detail' item.id %}">
@@ -1048,27 +1129,27 @@
               
               <div class="p-3">
                 <h3 class="font-bold text-sm mb-1 truncate">
-                  <a href="{% url 'product_detail' item.id %}" class="text-gray-900 hover:text-purple-600 transition">
+                  <a href="{% url 'product_detail' item.id %}" class="hover:accent-color transition">
                     {{ item.name }}
                   </a>
                 </h3>
                 
-                <div class="flex items-center text-gray-600 text-xs mb-1">
-                  <i class="fas fa-map-marker-alt mr-1 text-xs"></i>
+                <div class="flex items-center text-xs mb-1">
+                  <i class="fas fa-map-marker-alt mr-1 text-xs accent-color"></i>
                   <span class="truncate">{{ item.location }}</span>
                 </div>
                 
-                <div class="flex items-center text-gray-600 text-xs">
-                  <i class="far fa-clock mr-1 text-xs"></i>
+                <div class="flex items-center text-xs">
+                  <i class="far fa-clock mr-1 text-xs accent-color"></i>
                   <span>{{ item.created_at|timesince }} ago</span>
                 </div>
                 
                 <div class="flex justify-between items-center mt-2">
-                  <span class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">
+                  <span class="text-xs bg-chip px-1.5 py-0.5 rounded">
                     {{ item.category.name }}
                   </span>
                   <a href="{% url 'product_detail' item.id %}" 
-                     class="text-purple-600 hover:text-purple-800 font-medium text-xs">
+                     class="accent-color hover:opacity-80 font-medium text-xs">
                     View Details
                   </a>
                 </div>
@@ -1077,7 +1158,7 @@
             {% empty %}
             <div class="flex flex-col items-center justify-center w-full py-6">
               <i class="fas fa-box-open text-gray-300 text-4xl mb-3"></i>
-              <p class="text-gray-600 text-sm">No similar items found</p>
+              <p class="text-sm">No similar items found</p>
             </div>
             {% endfor %}
           </div>
@@ -1088,14 +1169,14 @@
   
   <!-- Delete Confirmation Modal -->
   <div id="delete-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-    <div class="bg-white rounded-xl p-5 shadow-lg max-w-sm w-full border border-gray-200">
+    <div class="rounded-xl p-5 shadow-lg max-w-sm w-full border border-gray-200">
       <div class="text-center mb-3">
-        <i class="fas fa-exclamation-circle text-purple-500 text-4xl mb-2"></i>
-        <h3 class="text-lg font-semibold text-gray-800">Delete Comment</h3>
-        <p class="text-gray-600 text-sm mt-1">Are you sure you want to delete this comment?</p>
+        <i class="fas fa-exclamation-circle accent-color text-4xl mb-2"></i>
+        <h3 class="text-lg font-semibold">Delete Comment</h3>
+        <p class="text-sm mt-1">Are you sure you want to delete this comment?</p>
       </div>
       <div class="flex justify-center gap-2">
-        <button id="cancel-delete" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors">
+        <button id="cancel-delete" class="bg-chip px-4 py-2 rounded-lg text-sm font-medium hover:opacity-80 transition-colors">
           Cancel
         </button>
         <button id="confirm-delete" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 transition-colors">
@@ -1138,6 +1219,8 @@
       </div>
     </div>
   </div>
+
+
 
   <script>
     // Image gallery functionality

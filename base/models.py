@@ -78,10 +78,22 @@ class User(AbstractUser):
         if self.full_name:
             return self.full_name.split()[0]
         return self.email.split('@')[0]
-
 class Category(models.Model):
+    ICON_CHOICES = [
+        ('building', 'Property'),
+        ('land', 'Lands'),
+        ('electronics', 'Electronics'),
+        ('fashion', 'Fashion'),
+        ('car', 'Vehicles'),
+        ('wrench', 'Services'),
+        ('briefcase', 'Jobs'),
+        ('scissors', 'Beauty & Salons'),
+        ('paint-brush', 'Decoration'),
+    ]
+    
     name = models.CharField(max_length=100, unique=True)
-    image = models.ImageField(upload_to='category_images/')
+    icon = models.CharField(max_length=20, choices=ICON_CHOICES, default='tag')
+    # Keep image field for backward compatibility if needed
 
     def __str__(self):
         return self.name

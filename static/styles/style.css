@@ -1,15 +1,123 @@
-@import "tailwindcss";
-
-
-body{
-  background-color: #f8fafc;
-  margin: 0;
-  padding: 0;
-    font-family: 'Poppins', sans-serif;
-          
-
-    
+    :root{
+      --sidebar-bg:#0f1720;
+      --panel:#0b1220;
+      --muted:#9ca3af;
+      --chip:#1f2937;
+      --accent:#06b6d4;
+      --tile-bg:#2b3440;
+    }
+    body { background: var(--panel); color: #e6eef8; -webkit-font-smoothing:antialiased; }
+    .sidebar-narrow { width:72px;height:1000px;min-width:72px; position:fixed; left:0; top:0; bottom:0; z-index:40; display:flex; flex-direction:column; align-items:center; padding-top:24px; gap:12px; background:var(--sidebar-bg); border-right:1px solid rgba(255,255,255,0.03); }
+    .main-with-offset { margin-left:72px; min-height:100vh; }
+    .side-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+    .util-icon { width:28px; height:28px; display:block; }
+    .label { font-size:12px; margin-top:6px; line-height:1; text-align:center; }
+    .tile { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; padding:10px; width:100%; box-sizing:border-box; }
+    .scrollbar-thin::-webkit-scrollbar{height:8px;width:8px}
+    .scrollbar-thin::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.05);border-radius:8px}
+    .asset-card { box-shadow: 0 2px 0 rgba(255,255,255,0.02); }
+    button.icon-btn { transition: transform .12s ease, background-color .12s ease; }
+    button.icon-btn:active { transform: translateY(1px); }
+
+    /* Image styling fixes */
+    .product-image-container {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #1a2230;
+    }
+    
+    .product-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .product-placeholder {
+      font-size: 2.5rem;
+      color: #4a5568;
+    }
+
+    /* Mobile search panel */
+    .mobile-search-wrap { position: relative; display: inline-block; }
+    .mobile-search-panel {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      width: 320px;
+      max-width: calc(100vw - 32px);
+      background: #0b1220;
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 10px;
+      padding: 12px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+      opacity: 0;
+      transform: translateY(-6px) scale(.98);
+      pointer-events: none;
+      transition: opacity .15s ease, transform .15s ease;
+      z-index: 80;
+      display: block; /* ensure not hidden by Tailwind 'hidden' */
+    }
+    /* show on hover or .open (toggled by JS) */
+    .mobile-search-wrap:hover .mobile-search-panel,
+    .mobile-search-wrap.open .mobile-search-panel {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    /* small arrow */
+    .mobile-search-panel:before {
+      content: "";
+      position: absolute;
+      top: -8px;
+      right: 18px;
+      width: 12px;
+      height: 12px;
+      transform: rotate(45deg);
+      background: #0b1220;
+      border-left: 1px solid rgba(255,255,255,0.04);
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+
+    /* responsive tweaks */
+    @media (max-width:420px) {
+      .mobile-search-panel { width: 92vw; right: 6px; left: 6px; top: calc(100% + 6px); }
+      .mobile-search-panel:before { right: 28px; }
+    }
+
+    /* Grid responsiveness */
+    @media (max-width: 767px) {
+      .grid-cols-responsive { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    }
+    @media (min-width: 768px) {
+      .grid-cols-responsive { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1024px) {
+      .grid-cols-responsive { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1280px) {
+      .grid-cols-responsive { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+
+    /* Desktop inline search controls layout */
+    .desktop-search-row { display:flex; gap:8px; align-items:center; }
+    .desktop-search-row select,
+    .desktop-search-row input { background: #0f1724; border: 1px solid rgba(255,255,255,0.04); color: white; }
+    .desktop-search-row .search-field { padding:8px 10px; border-radius:8px; min-width:0; }
+    .desktop-search-row .search-btn { padding:8px 10px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; }
+    .desktop-search-row .flexible { min-width:0; flex:1; }
+    @media (max-width: 1024px) { .desktop-search-row { gap:6px; } }
 .signup-form input:focus:not([type="checkbox"]):not([type="radio"]),
         .signup-form textarea:focus,
         .signup-form select:focus {
@@ -80,19 +188,11 @@ body{
             font-family: 'Poppins', sans-serif;
         }
         
-      
-        .text-sm {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  height: 44px !important;
-}
+    
      .to-\[\#8a0a36\]\/10 {
   --tw-gradient-to: rgb(0, 0, 0) var(--tw-gradient-to-position);
      }   
-     select  {
-  background-color: #fff !important;
-  width:160px;
-}
+ 
 
 .w-28 {
   width: 12rem !important;
@@ -143,13 +243,7 @@ body{
   --tw-text-opacity: 1;
   color: rgb(210, 86, 86);
 }
-           .sidebar {
-            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-            scrollbar-width: thin;
-            scrollbar-color: #8b5cf6 #1e293b;
-            box-shadow: 0 0 30px rgba(139, 92, 246, 0.2);
-        }
+         
         
         .menu-item {
             position: relative;
@@ -250,11 +344,7 @@ body{
     .gallery-next {
         right: 20px;
     }
-    .flex-1 {
-        flex: 1 1 0%;
-        width: 400px;
-    }
-
+   
     /* Modern Indicators with Progress Animation */
     .gallery-indicators {
         position: absolute;
@@ -425,11 +515,7 @@ body{
 .pt-6 {
   padding-top: 10.5rem !important;
 }
-.text-sm {
-  font-size: 0.765rem;
-  line-height: 1.25rem;
-}
-         
+     
             .hero-section {
                 height: 607px;
             }

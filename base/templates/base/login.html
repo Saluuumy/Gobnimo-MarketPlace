@@ -7,17 +7,33 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    :root {
+      --sidebar-bg: #0f1720;
+      --panel: #0b1220;
+      --muted: #9ca3af;
+      --chip: #1f2937;
+      --accent: #06b6d4;
+      --tile-bg: #2b3440;
+    }
+
+    body {
+      background: var(--panel);
+      color: #e6eef8;
+    }
+
     /* Enhanced focus styles */
     input, select, textarea {
-      color: #111827;
-      background-color: #f9fafb;
+      color: #e6eef8;
+      background-color: var(--chip);
       transition: all 0.2s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
+    
     input:focus, select:focus, textarea:focus {
       outline: none;
-      border-color: #7e22ce;
-      box-shadow: 0 0 0 3px rgba(126, 34, 206, 0.2);
-      background-color: #ffffff;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
+      background-color: var(--chip);
     }
     
     /* Form input styling */
@@ -25,7 +41,11 @@
       padding-left: 2.5rem;
       height: 3rem;
       border-radius: 0.5rem;
-      border: 1px solid #e5e7eb;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .form-input::placeholder {
+      color: var(--muted);
     }
     
     /* Smooth transitions */
@@ -36,28 +56,94 @@
     /* Button hover effect */
     .btn-gradient:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 15px rgba(126, 34, 206, 0.3);
+      box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+    }
+
+    /* Dark theme adjustments */
+    .bg-white {
+      background: var(--tile-bg) !important;
+      border-color: rgba(255, 255, 255, 0.05) !important;
+    }
+    
+    .bg-gray-50 {
+      background: var(--chip) !important;
+      border-color: rgba(255, 255, 255, 0.05) !important;
+    }
+    
+    .text-gray-900, .text-gray-800 {
+      color: #e6eef8 !important;
+    }
+    
+    .text-gray-700, .text-gray-600, .text-gray-500 {
+      color: var(--muted) !important;
+    }
+    
+    .border-gray-100 {
+      border-color: rgba(255, 255, 255, 0.05) !important;
+    }
+    
+    .text-purple-500, .text-purple-600 {
+      color: var(--accent) !important;
+    }
+    
+    .bg-gradient-to-r.from-purple-600.to-pink-500 {
+      background: linear-gradient(to right, var(--accent), #0d9488) !important;
+    }
+    
+    .hover\:text-purple-500:hover {
+      color: #0891b2 !important;
+    }
+    
+    .focus\:ring-purple-500:focus {
+      --tw-ring-color: var(--accent) !important;
+    }
+    
+    .text-red-500 {
+      color: #f43f5e !important;
+    }
+    
+    .text-purple-800 {
+      color: var(--accent) !important;
+    }
+    
+    .bg-purple-50 {
+      background: rgba(6, 182, 212, 0.1) !important;
+    }
+    
+    .border-purple-200 {
+      border-color: rgba(6, 182, 212, 0.3) !important;
+    }
+    
+    input[type="checkbox"] {
+      accent-color: var(--accent);
+    }
+    
+    .shadow-xl {
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .hover\:text-gray-600:hover {
+      color: var(--muted) !important;
     }
   </style>
 </head>
-<body class="flex items-center justify-center min-h-screen bg-gray-50 text-gray-900">
-  <div class="w-full max-w-md p-8 rounded-2xl bg-white shadow-xl border border-gray-100">
+<body class="flex items-center justify-center min-h-screen">
+  <div class="w-full max-w-md p-8 rounded-2xl shadow-xl border">
     <div class="flex justify-center mb-8">
       <a href="/" class="flex items-center">
-        
-        <span class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">
+        <span class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-500">
           Gobonimo Marketplace
         </span>
       </a>
     </div>
-    <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">Welcome back</h2>
-    <p class="text-center text-gray-500 mb-8">Sign in to access your account</p>
+    <h2 class="text-2xl font-bold text-center mb-6">Welcome back</h2>
+    <p class="text-center mb-8">Sign in to access your account</p>
     
-    <form method="post" class="space-y-6 bg-gray-50 p-6 rounded-xl border border-gray-100">
+    <form method="post" class="space-y-6 p-6 rounded-xl border">
       {% csrf_token %}
       {% if form.non_field_errors %}
-        <div class="text-purple-800 bg-purple-50 p-3 rounded-lg border border-purple-200 text-sm flex items-start">
-          <i class="fas fa-exclamation-circle mr-2 mt-0.5 text-purple-500"></i>
+        <div class="p-3 rounded-lg border text-sm flex items-start" style="background: rgba(6, 182, 212, 0.1); border-color: rgba(6, 182, 212, 0.3);">
+          <i class="fas fa-exclamation-circle mr-2 mt-0.5" style="color: var(--accent);"></i>
           <div>
             {% for error in form.non_field_errors %}
               <p>{{ error }}</p>
@@ -67,15 +153,15 @@
       {% endif %}
 
       <div>
-        <label for="id_email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+        <label for="id_email" class="block text-sm font-medium mb-2">Email Address</label>
         <div class="relative">
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <i class="fas fa-envelope text-purple-500"></i>
+            <i class="fas fa-envelope" style="color: var(--accent);"></i>
           </div>
           <input type="email" id="id_email" name="email" required class="form-input w-full pl-10" placeholder="you@example.com">
         </div>
         {% if form.email.errors %}
-          <div class="text-red-500 text-sm mt-1 flex items-start">
+          <div class="text-sm mt-1 flex items-start" style="color: #f43f5e;">
             <i class="fas fa-exclamation-circle mr-1.5 mt-0.5"></i>
             <div>
               {% for error in form.email.errors %}
@@ -87,18 +173,18 @@
       </div>
 
       <div>
-        <label for="id_password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+        <label for="id_password" class="block text-sm font-medium mb-2">Password</label>
         <div class="relative">
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <i class="fas fa-lock text-purple-500"></i>
+            <i class="fas fa-lock" style="color: var(--accent);"></i>
           </div>
           <input type="password" id="id_password" name="password" required class="form-input w-full pl-10 pr-10" placeholder="••••••••">
           <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-            <i class="fas fa-eye-slash text-gray-400 hover:text-gray-600 cursor-pointer transition-smooth" id="togglePassword"></i>
+            <i class="fas fa-eye-slash cursor-pointer transition-smooth" id="togglePassword" style="color: var(--muted);"></i>
           </div>
         </div>
         {% if form.password.errors %}
-          <div class="text-red-500 text-sm mt-1 flex items-start">
+          <div class="text-sm mt-1 flex items-start" style="color: #f43f5e;">
             <i class="fas fa-exclamation-circle mr-1.5 mt-0.5"></i>
             <div>
               {% for error in form.password.errors %}
@@ -111,26 +197,23 @@
 
       <div class="flex items-center justify-between">
         <div class="flex items-center">
-          <input type="checkbox" id="id_remember_me" name="remember_me" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
-          <label for="id_remember_me" class="ml-2 block text-sm text-gray-700">Remember me</label>
+          <input type="checkbox" id="id_remember_me" name="remember_me" class="h-4 w-4 border-gray-300 rounded" style="accent-color: var(--accent);">
+          <label for="id_remember_me" class="ml-2 block text-sm">Remember me</label>
         </div>
         <div class="text-sm">
-          <a href="{% url 'password_reset' %}" class="font-medium text-purple-600 hover:text-purple-500 transition-smooth">Forgot password?</a>
+          <a href="{% url 'password_reset' %}" class="font-medium transition-smooth" style="color: var(--accent);">Forgot password?</a>
         </div>
       </div>
 
-      <button type="submit" class="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-pink-500 text-white font-bold rounded-xl shadow-md btn-gradient transition-smooth">
+      <button type="submit" class="w-full py-3 px-4 text-white font-bold rounded-xl shadow-md btn-gradient transition-smooth" style="background: linear-gradient(to right, var(--accent), #0d9488);">
         <i class="fas fa-sign-in-alt mr-2"></i> Log In
       </button>
     </form>
 
- 
-
-    <p class="mt-8 text-center text-sm text-gray-600">
-      Don't have an account? <a href="{% url 'signup' %}" class="font-bold text-purple-600 hover:text-purple-500 transition-smooth">Sign up now</a>
+    <p class="mt-8 text-center text-sm">
+      Don't have an account? <a href="{% url 'signup' %}" class="font-bold transition-smooth" style="color: var(--accent);">Sign up now</a>
     </p>
   </div>
-
   <script>
     // Toggle password visibility
     document.getElementById('togglePassword').addEventListener('click', function() {

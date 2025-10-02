@@ -1,453 +1,375 @@
 {% load static %}
 
-<!-- Top Bar: Icons -->
-<nav class="bg-white border-b border-gray-200 shadow-sm">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-end h-10 space-x-4">
-      <!-- Notifications -->
-      <a href="{% url 'notification_center' %}" class="relative flex items-center justify-center h-full px-1 text-gray-500 hover:text-gray-700 transition-colors">
-        <i class="fas fa-bell text-lg"></i>
+<!-- Fixed skinny left sidebar (visible on all sizes) -->
+<aside class="sidebar-narrow bg-[color:var(--sidebar-bg)] scrollbar-thin" aria-label="Main sidebar">
+  <!-- Home -->
+<a class="flex flex-col items-center focus:outline-none icon-btn" aria-label="Post Ad" tabindex="0">
+  <svg class="side-icon" viewBox="0 0 24 24" fill="none">
+    <rect x="3" y="3" width="18" height="18" rx="2" stroke="#3b82f6" stroke-width="1.2" fill="none"/>
+    <path d="M12 7v10M7 12h10" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>
+  <div class="label text-white/90 font-semibold">Post Free Ad</div>
+</a>
+  <!-- Categories -->
+  <div class="tile flex flex-col items-center" style="width:56px;">
+    <a href="#" class="flex flex-col items-center focus:outline-none" aria-current="true" aria-label="Categories" tabindex="0">
+      <svg class="side-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:32px;height:32px;">
+        <g fill="#aaf36b">
+          <circle cx="12" cy="6.5" r="1.6"/>
+          <circle cx="8" cy="11.5" r="1.6"/>
+          <circle cx="16" cy="11.5" r="1.6"/>
+        </g>
+      </svg>
+      <div class="label text-white font-bold" style="font-size:13px;">Categories</div>
+    </a>
+  </div>
+
+  <!-- Categories List with Correct Icons -->
+  <div class="flex-1 flex flex-col items-center justify-start mt-2 space-y-3 overflow-auto w-full pt-2">
+    {% for category in categories|slice:":8" %}
+    <a href="{% url 'handle_ad_redirect' category.id %}" class="flex flex-col items-center focus:outline-none icon-btn" aria-label="{{ category.name }}" tabindex="0">
+      <!-- Icon based on category icon field - matching your model's values -->
+      {% if category.icon == 'building' %}
+        <!-- Property - Blue -->
+        <svg class="side-icon" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="6.5" width="18" height="11" rx="1.2" stroke="#4ea2ff" stroke-width="1.1"/>
+          <path d="M9 10h1m-1 3h1m3-3h1m-1 3h1m3-3h1m-1 3h1" stroke="#4ea2ff" stroke-width="1.1" stroke-linecap="round"/>
+        </svg>
+      {% elif category.icon == 'land' %}
+        <!-- Lands - Green -->
+        <svg class="side-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M3 10l9-9 9 9M6 10v9a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-9" stroke="#22c55e" stroke-width="1.1"/>
+          <rect x="8" y="12" width="2" height="2" rx="0.5" fill="#22c55e"/>
+          <rect x="12" y="12" width="2" height="2" rx="0.5" fill="#22c55e"/>
+          <rect x="16" y="12" width="2" height="2" rx="0.5" fill="#22c55e"/>
+          <rect x="8" y="16" width="2" height="2" rx="0.5" fill="#22c55e"/>
+          <rect x="12" y="16" width="2" height="2" rx="0.5" fill="#22c55e"/>
+          <rect x="16" y="16" width="2" height="2" rx="0.5" fill="#22c55e"/>
+        </svg>
+      {% elif category.icon == 'electronics' %}
+        <!-- Electronics - Purple -->
+        <svg class="side-icon" viewBox="0 0 24 24" fill="none">
+          <rect x="4" y="4" width="16" height="16" rx="2" stroke="#a855f7" stroke-width="1.1"/>
+          <circle cx="12" cy="10" r="1" fill="#a855f7"/>
+          <rect x="8" y="13" width="8" height="2" rx="1" fill="#a855f7"/>
+        </svg>
+      {% elif category.icon == 'fashion' %}
+        <!-- Fashion - Pink -->
+        <svg class="side-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M12 12h4.5a3.5 3.5 0 1 1 0 7H12V12z" stroke="#ec4899" stroke-width="1.1"/>
+          <path d="M12 12H7.5a3.5 3.5 0 1 0 0 7H12V12z" stroke="#ec4899" stroke-width="1.1"/>
+          <circle cx="12" cy="9" r="1.5" fill="#ec4899"/>
+        </svg>
+      {% elif category.icon == 'car' %}
+        <!-- Vehicles - Orange -->
+        <svg class="side-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M5 13l1.5-4.5A2 2 0 0 1 8.5 7h7a2 2 0 0 1 2 1.5L19 13M5 13h14M5 13v5a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-1m8 1v1a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-1m0 0H9" stroke="#f97316" stroke-width="1.1"/>
+          <circle cx="8" cy="17" r="1" fill="#f97316"/>
+          <circle cx="16" cy="17" r="1" fill="#f97316"/>
+        </svg>
+      {% elif category.icon == 'wrench' %}
+        <!-- Services - Yellow -->
+        <svg class="side-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" stroke="#eab308" stroke-width="1.1"/>
+        </svg>
+      {% elif category.icon == 'briefcase' %}
+        <!-- Jobs - Indigo -->
+        <svg class="side-icon" viewBox="0 0 24 24" fill="none">
+          <rect x="2" y="7" width="20" height="14" rx="2" stroke="#6366f1" stroke-width="1.1"/>
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" stroke="#6366f1" stroke-width="1.1"/>
+          <path d="M8 12h8" stroke="#6366f1" stroke-width="1.1" stroke-linecap="round"/>
+        </svg>
+      {% elif category.icon == 'scissors' %}
+        <!-- Beauty & Salons - Red -->
+        <svg class="side-icon" viewBox="0 0 24 24" fill="none">
+          <circle cx="6" cy="6" r="3" stroke="#ef4444" stroke-width="1.1"/>
+          <circle cx="6" cy="18" r="3" stroke="#ef4444" stroke-width="1.1"/>
+          <path d="M20 4L8.12 15.88M14.47 14.48L20 20M8.12 8.12L12 12" stroke="#ef4444" stroke-width="1.1"/>
+        </svg>
+      {% elif category.icon == 'paint-brush' %}
+        <!-- Decoration - Teal -->
+        <svg class="side-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M21 7v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#14b8a6" stroke-width="1.1"/>
+          <path d="M12 5v6" stroke="#14b8a6" stroke-width="1.1"/>
+          <path d="M8 5v6" stroke="#14b8a6" stroke-width="1.1"/>
+          <path d="M16 5v6" stroke="#14b8a6" stroke-width="1.1"/>
+        </svg>
+      {% else %}
+        <!-- Default tag icon - Gray -->
+        <svg class="side-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M7 7h10m-5 0v10M5 12a7 7 0 1 0 14 0 7 7 0 0 0-14 0z" stroke="#9ca3af" stroke-width="1.1" stroke-linecap="round"/>
+        </svg>
+      {% endif %}
+      <div class="label text-[color:var(--muted)] text-xs mt-1">{{ category.name|truncatechars:10 }}</div>
+    </a>
+    {% endfor %}
+  </div>
+
+  <!-- bottom utilities -->
+  <div class="flex flex-col items-center gap-3 mb-4">
+    <button class="p-1 rounded-md" aria-label="Invite" tabindex="0">
+      <svg class="util-icon" viewBox="0 0 24 24" fill="none"><path d="M15 14a3 3 0 100-6 3 3 0 000 6zM6 20v-1a4 4 0 014-4h4" stroke="#cbd5e1" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+
+    <button class="p-1 rounded-md" aria-label="App Marketplace" tabindex="0">
+      <svg class="util-icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#cbd5e1" stroke-width="1.2"/></svg>
+    </button>
+
+    <button class="p-1 rounded-md" aria-label="Help" tabindex="0">
+      <svg class="util-icon" viewBox="0 0 24 24" fill="none"><path d="M12 17v.01M12 7a4 4 0 00-1 7.874V15" stroke="#cbd5e1" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+
+    <button class="p-1 rounded-md" aria-label="Settings" tabindex="0">
+      <svg class="util-icon" viewBox="0 0 24 24" fill="none"><path d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7z" stroke="#cbd5e1" stroke-width="0.9"/></svg>
+    </button>
+
+    <div class="mt-1 rounded-full w-10 h-10 flex items-center justify-center bg-[#2fe1dd] text-slate-900 font-semibold">SS</div>
+  </div>
+</aside>
+
+<!-- Main content area (offset to the right to accommodate fixed sidebar) -->
+<div class="main-with-offset flex-1 flex flex-col">
+  <!-- HEADER: desktop has inline Category/Keyword/Location + Search button; mobile has icon+panel -->
+  <header class="flex items-center justify-between px-4 md:px-6 py-3 bg-[color:var(--panel)] border-b border-white/6">
+    <div class="flex items-center gap-3">
+      <button id="mobileToggle" class="p-2 rounded-md bg-slate-800/30 md:hidden" title="Menu">
+        <svg class="w-5 h-5 text-[color:var(--muted)]" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <div class="text-lg md:text-xl font-semibold">Gobonimo Marketplace</div>
+    </div>
+
+    <!-- DESKTOP: inline 3-field search (visible md+) -->
+    <div class="hidden md:flex flex-1 mx-3 md:mx-6">
+      <form id="desktopSearchForm" method="GET" action="{% url 'search_ads' %}" class="desktop-search-row w-full">
+        <select id="desktopCategory" name="category" class="search-field" style="width:140px;" required>
+          <option value="" disabled selected>Select category</option>
+          {% for category in categories %}
+            <option value="{{ category.id }}"{% if request.GET.category|stringformat:"s" == category.id|stringformat:"s" %} selected{% endif %}>{{ category.name }}</option>
+          {% endfor %}
+        </select>
+
+        <input id="desktopKeyword" name="q" class="search-field flexible" type="search" placeholder="Keyword" value="{{ request.GET.q|default:'' }}" required />
+
+        <input id="desktopLocation" name="location" class="search-field" type="text" placeholder="Location" style="width:160px;" value="{{ request.GET.location|default:'' }}" required />
+
+        <button id="desktopSearchBtn" type="submit" class="search-btn bg-sky-500 text-white rounded-md" title="Search" aria-label="Search">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><circle cx="11" cy="11" r="5" stroke="#fff" stroke-width="1.6"/></svg>
+        </button>
+
+        <a href="{% url 'ad_form' %}" class="ml-2 px-3 md:px-4 py-1 md:py-2 bg-slate-800 text-white rounded-md text-sm whitespace-nowrap">Post Free Ad</a>
+      </form>
+    </div>
+
+    <!-- MOBILE: icon + panel -->
+    <div class="md:hidden flex items-center gap-3">
+      <!-- Notification bell for mobile (only show if authenticated) -->
+      {% if user.is_authenticated %}
+      <a href="{% url 'notification_center' %}" class="p-2 rounded-md bg-slate-800/40 relative" aria-label="Notifications" tabindex="0">
+        <svg class="w-5 h-5 text-[color:var(--muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+        </svg>
         {% if unread_count > 0 %}
-          <span class="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center h-4 w-4 rounded-full bg-red-500 text-[9px] text-white font-medium">
+          <span class="absolute -top-1 -right-1 inline-flex items-center justify-center h-4 w-4 rounded-full bg-red-500 text-[9px] text-white font-medium">
             {{ unread_count }}
           </span>
-        {% else %}
-          <span class="absolute top-0 right-0 inline-flex h-1.5 w-1.5 rounded-full bg-gray-300"></span>
         {% endif %}
       </a>
 
-      <!-- Favorites -->
-      <a href="{% url 'my_favorites' %}" class="relative flex items-center justify-center h-full px-1 text-gray-500 hover:text-gray-700 transition-colors">
-        <i class="fas fa-heart text-lg"></i>
+      <!-- Favorites for mobile (only show if authenticated) -->
+      <a href="{% url 'my_favorites' %}" class="p-2 rounded-md bg-slate-800/40 relative" aria-label="Favorites" tabindex="0">
+        <svg class="w-5 h-5 text-[color:var(--muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+        </svg>
         {% if favorites_count > 0 %}
-          <span class="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center h-4 w-4 rounded-full bg-red-500 text-[9px] text-white font-medium">
+          <span class="absolute -top-1 -right-1 inline-flex items-center justify-center h-4 w-4 rounded-full bg-red-500 text-[9px] text-white font-medium">
             {{ favorites_count }}
           </span>
-        {% else %}
-          <span class="absolute top-0 right-0 inline-flex h-1.5 w-1.5 rounded-full bg-gray-300"></span>
+        {% endif %}
+      </a>
+      {% endif %}
+
+      <div id="mobileSearchWrap" class="mobile-search-wrap" aria-haspopup="true">
+        <button id="mobileSearchBtn" class="p-2 rounded-md bg-slate-800/40" title="Search">
+          <svg class="w-5 h-5 text-[color:var(--muted)]" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="#cbd5e1" stroke-width="1.6" stroke-linecap="round"/><circle cx="11" cy="11" r="5" stroke="#cbd5e1" stroke-width="1.6"/></svg>
+        </button>
+
+        <!-- Panel: removed 'hidden' so CSS/JS control its visibility -->
+        <div id="mobileSearchPanel" class="mobile-search-panel">
+          <form id="mobileSearchForm" method="GET" action="{% url 'search_ads' %}" class="space-y-3" autocomplete="off">
+            <div>
+              <label class="block text-xs text-[color:var(--muted)] mb-1">Category</label>
+              <select id="mobileCategory" name="category" class="w-full rounded-md bg-slate-800 px-3 py-2 text-sm" required>
+                <option value="" disabled selected>Select category</option>
+                {% for category in categories %}
+                  <option value="{{ category.id }}"{% if request.GET.category|stringformat:"s" == category.id|stringformat:"s" %} selected{% endif %}>{{ category.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs text-[color:var(--muted)] mb-1">Keyword</label>
+              <input id="mobileKeyword" name="q" type="search" placeholder="Search keywords" class="w-full rounded-md bg-slate-800 px-3 py-2 text-sm" value="{{ request.GET.q|default:'' }}" required />
+            </div>
+
+            <div>
+              <label class="block text-xs text-[color:var(--muted)] mb-1">Location</label>
+              <input id="mobileLocation" name="location" type="text" placeholder="e.g. New York" class="w-full rounded-md bg-slate-800 px-3 py-2 text-sm" value="{{ request.GET.location|default:'' }}" required />
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button type="submit" class="flex-1 px-3 py-2 rounded-md bg-sky-500 text-white text-sm">Search</button>
+              <button id="mobileClearBtn" type="button" class="px-3 py-2 rounded-md bg-slate-800 text-[color:var(--muted)] text-sm">Clear</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- keep Post Ad on mobile right side -->
+      <a href="{% url 'ad_form' %}" class="px-3 py-1 bg-sky-500 rounded-md text-white text-sm whitespace-nowrap">Post Ad</a>
+    </div>
+
+    <!-- Right side (user menu) -->
+    <div class="hidden md:flex items-center gap-3">
+      <!-- Notification bell for desktop (only show if authenticated) -->
+      {% if user.is_authenticated %}
+      <a href="{% url 'notification_center' %}" class="p-2 rounded-md bg-slate-800/40 relative" aria-label="Notifications" tabindex="0">
+        <svg class="w-5 h-5 text-[color:var(--muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+        </svg>
+        {% if unread_count > 0 %}
+          <span class="absolute -top-1 -right-1 inline-flex items-center justify-center h-4 w-4 rounded-full bg-red-500 text-[9px] text-white font-medium">
+            {{ unread_count }}
+          </span>
         {% endif %}
       </a>
 
-      <!-- Other Icons -->
-      <button id="mobile-search-button" class="text-gray-600 hover:text-gray-800 md:hidden">
-        <i class="fas fa-search fa-lg"></i>
-      </button>
-      <a href="https://facebook.com" class="text-gray-600 hover:text-gray-800"><i class="fab fa-facebook fa-lg"></i></a>
-      <a href="https://twitter.com" class="text-gray-600 hover:text-gray-800"><i class="fab fa-twitter fa-lg"></i></a>
-      <a href="https://instagram.com" class="text-gray-600 hover:text-gray-800"><i class="fab fa-instagram fa-lg"></i></a>
-    </div>
-  </div>
-</nav>
+      <!-- Favorites for desktop (only show if authenticated) -->
+      <a href="{% url 'my_favorites' %}" class="p-2 rounded-md bg-slate-800/40 relative" aria-label="Favorites" tabindex="0">
+        <svg class="w-5 h-5 text-[color:var(--muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+        </svg>
+        {% if favorites_count > 0 %}
+          <span class="absolute -top-1 -right-1 inline-flex items-center justify-center h-4 w-4 rounded-full bg-red-500 text-[9px] text-white font-medium">
+            {{ favorites_count }}
+          </span>
+        {% endif %}
+      </a>
+      {% endif %}
 
-<!-- Main Navbar -->
-<nav class="bg-white shadow sticky top-0 z-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-16">
-      
-      <!-- Logo -->
-      <div class="flex-shrink-0">
-        <a href="{% url 'index' %}" class="flex items-center space-x-2">
-          <img
-            src="{% static 'images/logo.png' %}"
-            alt="Gobonimo-MarketPlace"
-            class="h-10 w-auto sm:h-12 md:h-10 lg:h-12"
-          />
-        </a>
-      </div>
-
-      <!-- Desktop Search - Improved layout -->
-      <div class="hidden md:flex md:flex-1 md:justify-center relative">
-        <form method="GET" action="{% url 'search_ads' %}" id="desktop-search-form" class="flex items-center bg-white rounded-lg border border-gray-200 w-full max-w-xl">
-          
-          <!-- Category dropdown -->
-          <div class="relative flex-1 border-r border-gray-200">
-            <button
-              type="button"
-              id="category-button"
-              class="w-full text-left py-2 pl-4 pr-8 text-gray-700 focus:outline-none flex items-center"
-            >
-              <i class="fas fa-tag text-gray-500 mr-2"></i>
-              <span id="category-label" class="truncate">Qaybaha</span>
-              <i class="fas fa-chevron-down ml-auto text-gray-400"></i>
-            </button>
-            
-            <!-- Category panel -->
-            <div
-              id="category-panel"
-              class="hidden absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
-              {% for category in categories %}
-                <a
-                  href="#"
-                  class="flex items-center px-3 py-2 hover:bg-gray-100 transition-colors border-b border-gray-100 last:border-b-0"
-                  data-id="{{ category.id }}"
-                  data-name="{{ category.name }}"
-                >
-                  <img src="{{ category.image.url }}"
-                       class="h-6 w-6 rounded-full object-cover mr-2" />
-                  <span class="text-gray-700">{{ category.name }}</span>
-                </a>
-              {% endfor %}
-            </div>
-            <input type="hidden" name="category" id="category-input" value="" required>
-            <!-- invisible constraint input so HTML5 will mark category as required (browser validation) -->
-            <input type="text" id="desktop-category-constraint" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;border:0;padding:0;margin:0;pointer-events:none;" tabindex="-1" aria-hidden="true" required>
-          </div>
-
-          <!-- Keywords -->
-          <div class="relative flex-1 border-r border-gray-200">
-            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-            <input name="q" type="text" placeholder="Erey" class="w-full py-2 pl-10 pr-3 focus:outline-none" value="{{ request.GET.q }}" required aria-required="true" />
-          </div>
-
-          <!-- Location -->
-          <div class="relative flex-1">
-            <i class="fas fa-map-marker-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-            <input name="location" type="text" placeholder="Goob" class="w-full py-2 pl-10 pr-3 focus:outline-none" value="{{ request.GET.location }}" required aria-required="true" />
-          </div>
-
-          <button type="submit" class="px-4 py-2 bg-pink-500 text-white hover:bg-pink-600 rounded-r-lg">
-            <i class="fas fa-search"></i>
-          </button>
-        </form>
-      </div>
-
-      <!-- Right: Links & Post Ad -->
-      <div class="flex items-center space-x-2">
-        <ul class="hidden md:flex md:items-center md:space-x-6">
-          <li><a href="{% url 'about_us' %}" class="text-gray-700 hover:text-gray-900">Nagu Saabsan</a></li>
-          {% if user.is_authenticated %}
-            <li class="relative">
-              <button id="account-toggle" class="flex items-center text-gray-700 hover:text-gray-900">
-                <i class="fas fa-user-circle fa-lg mr-1"></i> {{ user.full_name }}
-              </button>
-              <div id="account-menu" class="hidden absolute top-full right-0 mt-1 z-50 w-48 bg-white border rounded-md shadow-lg py-1">
-                <a href="{% url 'dashboard' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
-                <form method="post" action="{% url 'logout' %}">{% csrf_token %}
-                  <button type="submit" class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</button>
-                </form>
-              </div>
-            </li>
-          {% else %}
-            <li><a href="{% url 'login' %}" class="text-gray-700 hover:text-gray-900">Login</a></li>
-          {% endif %}
-        </ul>
-
-        <a href="{% url 'menu' %}?is_paid=false"
-           class="px-3 py-2 text-sm sm:text-base bg-gradient-to-r from-pink-500 to-indigo-500 text-white font-semibold rounded-lg hover:from-indigo-600 hover:to-pink-600">
-          Post Ad <i class="fas fa-arrow-right ml-1"></i>
-        </a>
-
-        <!-- Mobile menu button -->
-        <button id="mobile-menu-button" class="text-gray-600 hover:text-gray-800 md:hidden">
-          <i class="fas fa-bars fa-lg"></i>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Mobile Menu - COMPLETELY REDESIGNED -->
-  <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
-    <div class="px-4 py-3 space-y-3">
-      <!-- Mobile Search Form - Collapsible Sections -->
-      <form method="GET" action="{% url 'search_ads' %}" id="mobile-search-form" class="space-y-3">
-        <!-- Category dropdown -->
-        <div class="border border-gray-300 rounded-lg overflow-hidden">
-          <button type="button" id="mobile-category-toggle" class="w-full flex justify-between items-center p-3 bg-gray-50">
-            <div class="flex items-center">
-              <i class="fas fa-tag text-gray-500 mr-2"></i>
-              <span id="mobile-category-label">Select Category</span>
-            </div>
-            <i class="fas fa-chevron-down text-gray-400"></i>
-          </button>
-          <div id="mobile-category-panel" class="hidden bg-white border-t border-gray-200" aria-hidden="true">
-            {% for category in categories %}
-              <button type="button" class="mobile-category-option w-full text-left flex items-center p-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
-                      data-id="{{ category.id }}" data-name="{{ category.name }}">
-                <img src="{{ category.image.url }}" 
-                     class="h-6 w-6 rounded-full object-cover mr-2" />
-                <span class="text-gray-700">{{ category.name }}</span>
-              </button>
-            {% endfor %}
-          </div>
-          <input type="hidden" name="category" id="mobile-category-input" value="" required>
-          <!-- invisible constraint input for mobile form -->
-          <input type="text" id="mobile-category-constraint" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;border:0;padding:0;margin:0;pointer-events:none;" tabindex="-1" aria-hidden="true" required>
-          <!-- inline error (visible) for mobile category -->
-          <p id="mobile-category-error" class="text-red-500 text-sm mt-1 hidden">Please select a category</p>
-        </div>
-
-        <!-- Keywords -->
-        <div class="border border-gray-300 rounded-lg overflow-hidden">
-          <div class="flex items-center p-3">
-            <i class="fas fa-search text-gray-500 mr-2"></i>
-            <input name="q" type="text" placeholder="Enter keywords" class="w-full focus:outline-none bg-transparent" value="{{ request.GET.q }}" required aria-required="true" />
-            <!-- invisible constraint input for mobile keywords (anchors validation bubble to this field) -->
-            <input type="text" id="mobile-q-constraint" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;border:0;padding:0;margin:0;pointer-events:none;" tabindex="-1" aria-hidden="true" required>
-            <!-- inline error for mobile keywords -->
-            <p id="mobile-q-error" class="text-red-500 text-sm mt-1 hidden">Please enter keywords</p>
-          </div>
-        </div>
-
-        <!-- Location -->
-        <div class="border border-gray-300 rounded-lg overflow-hidden">
-          <div class="flex items-center p-3">
-            <i class="fas fa-map-marker-alt text-gray-500 mr-2"></i>
-            <input name="location" type="text" placeholder="Enter location" class="w-full focus:outline-none bg-transparent" value="{{ request.GET.location }}" required aria-required="true" />
-            <!-- invisible constraint input for mobile location (anchors validation bubble to this field) -->
-            <input type="text" id="mobile-location-constraint" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;border:0;padding:0;margin:0;pointer-events:none;" tabindex="-1" aria-hidden="true" required>
-            <!-- inline error for mobile location -->
-            <p id="mobile-location-error" class="text-red-500 text-sm mt-1 hidden">Fadlan geli goob</p>
-          </div>
-        </div>
-
-        <button type="submit" class="w-full py-3 bg-pink-500 text-white rounded-lg font-medium">
-          Search Now
-        </button>
-      </form>
-
-      <a href="{% url 'about_us' %}" class="block px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md">Nagu Saabsan</a>
       {% if user.is_authenticated %}
-        <a href="{% url 'dashboard' %}" class="block px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md">Profile</a>
-        <form method="post" action="{% url 'logout' %}">{% csrf_token %}
-          <button type="submit" class="w-full text-left px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md">Logout</button>
-        </form>
+        <div class="relative" id="user-menu-container">
+          <button id="account-toggle" class="flex items-center text-[color:var(--muted)] text-sm gap-2 px-3 py-2 rounded-md hover:bg-slate-800/40 transition-colors">
+            <div class="rounded-full bg-gradient-to-r from-cyan-400 to-teal-500 w-8 h-8 flex items-center justify-center text-sm font-semibold text-slate-900">
+              {{ user.full_name|first|default:user.username|first|upper }}
+            </div>
+            <span class="max-w-[120px] truncate">{{ user.full_name|default:user.username }}</span>
+            <svg class="w-4 h-4 transition-transform" id="dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+
+          <div id="account-menu" class="hidden absolute right-0 mt-2 w-48 bg-slate-800 border border-slate-700 rounded-md shadow-lg py-1 z-50">
+            <div class="px-4 py-2 border-b border-slate-700">
+              <p class="text-sm font-medium text-white truncate">{{ user.full_name|default:user.username }}</p>
+              <p class="text-xs text-[color:var(--muted)] truncate">{{ user.email }}</p>
+            </div>
+            <a href="{% url 'dashboard' %}" class="flex items-center px-4 py-2 text-sm text-[color:var(--muted)] hover:bg-slate-700 transition-colors">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
+              Profile
+            </a>
+            <a href="" class="flex items-center px-4 py-2 text-sm text-[color:var(--muted)] hover:bg-slate-700 transition-colors">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+              </svg>
+              My Ads
+            </a>
+            <a href="{% url 'my_favorites' %}" class="flex items-center px-4 py-2 text-sm text-[color:var(--muted)] hover:bg-slate-700 transition-colors">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+              </svg>
+              Favorites
+            </a>
+            <div class="border-t border-slate-700 my-1"></div>
+            <form method="post" action="{% url 'logout' %}" class="block">
+              {% csrf_token %}
+              <button type="submit" class="flex items-center w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-slate-700 transition-colors">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                Logout
+              </button>
+            </form>
+          </div>
+        </div>
       {% else %}
-        <a href="{% url 'login' %}" class="block px-3 py-2 text-base text-gray-700 hover:bg-gray-100 rounded-md">Login</a>
+        <a href="{% url 'login' %}" class="text-sm text-[color:var(--muted)] hover:text-white px-3 py-2 rounded-md hover:bg-slate-800/40 transition-colors">Login</a>
       {% endif %}
     </div>
-  </div>
-</nav>
+  </header>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // ===== DESKTOP FUNCTIONALITY =====
-  const catBtn = document.getElementById('category-button');
-  const catPanel = document.getElementById('category-panel');
-  const catInput = document.getElementById('category-input');
-  const catLabel = document.getElementById('category-label');
-  const desktopCategoryConstraint = document.getElementById('desktop-category-constraint');
-
-  // Ensure panels are hidden on load (fix for small-screen auto-expanding)
-  if (catPanel) catPanel.classList.add('hidden');
-
-  if (catBtn && catPanel) {
-    catBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      catPanel.classList.toggle('hidden');
-    });
-
-    catPanel.querySelectorAll('a[data-name]').forEach(option => {
-      option.addEventListener('click', e => {
-        e.preventDefault();
-        catLabel.textContent = option.dataset.name;
-        catInput.value = option.dataset.id;
-        // satisfy the constraint input so browser validation passes
-        if (desktopCategoryConstraint) desktopCategoryConstraint.value = option.dataset.id;
-        catPanel.classList.add('hidden');
-      });
-    });
-
-    document.addEventListener('click', e => {
-      if (!catBtn.contains(e.target) && !catPanel.contains(e.target)) {
-        catPanel.classList.add('hidden');
-      }
-    });
-  }
-
-  // If category preselected from server, set the constraint value so validation is satisfied
-  if (catInput && desktopCategoryConstraint && catInput.value) {
-    desktopCategoryConstraint.value = catInput.value;
-  }
-
-  // Account menu toggle
-  const accountToggle = document.getElementById('account-toggle');
-  const accountMenu = document.getElementById('account-menu');
-  
-  if (accountToggle && accountMenu) {
-    accountToggle.addEventListener('click', e => {
-      e.stopPropagation();
-      accountMenu.classList.toggle('hidden');
-    });
-
-    document.addEventListener('click', e => {
-      if (!accountToggle.contains(e.target) && !accountMenu.contains(e.target)) {
-        accountMenu.classList.add('hidden');
-      }
-    });
-  }
-
-  // ===== MOBILE FUNCTIONALITY =====
-  const mobileMenuButton = document.getElementById('mobile-menu-button');
-  const mobileMenu = document.getElementById('mobile-menu');
-  
-  if (mobileMenuButton && mobileMenu) {
-    mobileMenuButton.addEventListener('click', () => {
-      mobileMenu.classList.toggle('hidden');
-    });
-  }
-
-  const mobileCatToggle = document.getElementById('mobile-category-toggle');
-  const mobileCatPanel = document.getElementById('mobile-category-panel');
-  const mobileCatLabel = document.getElementById('mobile-category-label');
-  const mobileCatInput = document.getElementById('mobile-category-input');
-  const mobileCategoryConstraint = document.getElementById('mobile-category-constraint');
-  // constraints for mobile keywords and location
-  const mobileQConstraint = document.getElementById('mobile-q-constraint');
-  const mobileLocationConstraint = document.getElementById('mobile-location-constraint');
-
-  // sync visible mobile inputs to the hidden constraint inputs so native validation anchors correctly
-  const mobileQInput = document.querySelector('#mobile-search-form input[name="q"]');
-  const mobileLocationInput = document.querySelector('#mobile-search-form input[name="location"]');
-  if (mobileQInput && mobileQConstraint) {
-    mobileQInput.addEventListener('input', () => {
-      mobileQConstraint.value = mobileQInput.value;
-    });
-    // prefill if server provided value
-    if (mobileQInput.value) mobileQConstraint.value = mobileQInput.value;
-  }
-  if (mobileLocationInput && mobileLocationConstraint) {
-    mobileLocationInput.addEventListener('input', () => {
-      mobileLocationConstraint.value = mobileLocationInput.value;
-    });
-    if (mobileLocationInput.value) mobileLocationConstraint.value = mobileLocationInput.value;
-  }
-
-  // Ensure mobile panel is hidden on load (fixes the issue where it shows without clicking)
-  if (mobileCatPanel) {
-    mobileCatPanel.classList.add('hidden');
-    mobileCatPanel.setAttribute('aria-hidden', 'true');
-  }
-
-  if (mobileCatToggle && mobileCatPanel) {
-    mobileCatToggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      mobileCatPanel.classList.toggle('hidden');
-      mobileCatPanel.setAttribute('aria-hidden', mobileCatPanel.classList.contains('hidden'));
-
-      const ico = mobileCatToggle.querySelector('i');
-      if (ico) {
-        ico.classList.toggle('fa-chevron-down');
-        ico.classList.toggle('fa-chevron-up');
-      }
-    });
-
-    // Close when clicking outside mobile category panel
-    document.addEventListener('click', e => {
-      if (!mobileCatToggle.contains(e.target) && !mobileCatPanel.contains(e.target)) {
-        mobileCatPanel.classList.add('hidden');
-        mobileCatPanel.setAttribute('aria-hidden', 'true');
-        const ico = mobileCatToggle.querySelector('i');
-        if (ico) {
-          ico.classList.remove('fa-chevron-up');
-          ico.classList.add('fa-chevron-down');
-        }
-      }
-    });
-
-    document.querySelectorAll('.mobile-category-option').forEach(option => {
-      option.addEventListener('click', () => {
-        mobileCatLabel.textContent = option.dataset.name;
-        mobileCatInput.value = option.dataset.id;
-        // satisfy the constraint input so browser validation passes
-        if (mobileCategoryConstraint) mobileCategoryConstraint.value = option.dataset.id;
-        mobileCatPanel.classList.add('hidden');
-        mobileCatPanel.setAttribute('aria-hidden', 'true');
-        const ico = mobileCatToggle.querySelector('i');
-        if (ico) {
-          ico.classList.remove('fa-chevron-up');
-          ico.classList.add('fa-chevron-down');
-        }
-      });
-    });
-  }
-
-  // If mobile category preselected from server, set value
-  if (mobileCatInput && mobileCategoryConstraint && mobileCatInput.value) {
-    mobileCategoryConstraint.value = mobileCatInput.value;
-  }
-
-  // ===== FORM SUBMIT: ensure category constraint is enforced using HTML5 validation (no alerts) =====
-  document.getElementById('desktop-search-form')?.addEventListener('submit', function(e) {
-    if (desktopCategoryConstraint && !desktopCategoryConstraint.value) {
-      // will show native browser validation message
-      desktopCategoryConstraint.reportValidity();
-      e.preventDefault();
-    }
-  });
-
-  document.getElementById('mobile-search-form')?.addEventListener('submit', function(e) {
-    // hide previous inline errors
-    const mobileCategoryError = document.getElementById('mobile-category-error');
-    const mobileQError = document.getElementById('mobile-q-error');
-    const mobileLocationError = document.getElementById('mobile-location-error');
-    if (mobileCategoryError) mobileCategoryError.classList.add('hidden');
-    if (mobileQError) mobileQError.classList.add('hidden');
-    if (mobileLocationError) mobileLocationError.classList.add('hidden');
-
-    let invalid = false;
-
-    // Category
-    if (!mobileCatInput || !mobileCatInput.value) {
-      if (mobileCategoryError) mobileCategoryError.classList.remove('hidden');
-      invalid = true;
+  <style>
+    /* Dropdown animation */
+    #account-menu {
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
     }
 
-    // Keywords
-    if (!mobileQInput || !mobileQInput.value.trim()) {
-      if (mobileQError) mobileQError.classList.remove('hidden');
-      invalid = true;
+    #account-menu:not(.hidden) {
+      opacity: 1;
+      transform: translateY(0);
     }
 
-    // Location
-    if (!mobileLocationInput || !mobileLocationInput.value.trim()) {
-      if (mobileLocationError) mobileLocationError.classList.remove('hidden');
-      invalid = true;
+    /* Rotate dropdown arrow when menu is open */
+    #account-toggle[aria-expanded="true"] #dropdown-arrow {
+      transform: rotate(180deg);
     }
+  </style>
 
-    if (invalid) {
-      e.preventDefault();
-      // focus first invalid field (category button, then q, then location)
-      if (!mobileCatInput || !mobileCatInput.value) {
-        mobileCatToggle.focus();
-        return;
+  <script>
+    // User dropdown functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const accountToggle = document.getElementById('account-toggle');
+      const accountMenu = document.getElementById('account-menu');
+
+      if (accountToggle && accountMenu) {
+        // Toggle dropdown
+        accountToggle.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const isExpanded = accountToggle.getAttribute('aria-expanded') === 'true';
+          accountToggle.setAttribute('aria-expanded', !isExpanded);
+          accountMenu.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function() {
+          accountToggle.setAttribute('aria-expanded', 'false');
+          accountMenu.classList.add('hidden');
+        });
+
+        // Prevent dropdown from closing when clicking inside
+        accountMenu.addEventListener('click', function(e) {
+          e.stopPropagation();
+        });
+
+        // Close dropdown when pressing Escape key
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+            accountToggle.setAttribute('aria-expanded', 'false');
+            accountMenu.classList.add('hidden');
+          }
+        });
       }
-      if (!mobileQInput || !mobileQInput.value.trim()) {
-        mobileQInput.focus();
-        return;
-      }
-      if (!mobileLocationInput || !mobileLocationInput.value.trim()) {
-        mobileLocationInput.focus();
-        return;
-      }
-    }
-  });
 
-  // hide inline errors when user interacts
-  if (mobileQInput) {
-    mobileQInput.addEventListener('input', () => {
-      const e = document.getElementById('mobile-q-error'); if (e) e.classList.add('hidden');
+      // Mobile menu toggle (if needed)
+      const mobileToggle = document.getElementById('mobileToggle');
+      if (mobileToggle) {
+        mobileToggle.addEventListener('click', function() {
+          // Add your mobile menu toggle logic here
+          console.log('Mobile menu toggle clicked');
+        });
+      }
     });
-  }
-  if (mobileLocationInput) {
-    mobileLocationInput.addEventListener('input', () => {
-      const e = document.getElementById('mobile-location-error'); if (e) e.classList.add('hidden');
-    });
-  }
-  if (document.querySelectorAll('.mobile-category-option')) {
-    document.querySelectorAll('.mobile-category-option').forEach(opt => {
-      opt.addEventListener('click', () => {
-        const e = document.getElementById('mobile-category-error'); if (e) e.classList.add('hidden');
-      });
-    });
-  }
-
-  // Hide panels on resize to avoid leftover open panels when switching sizes
-  window.addEventListener('resize', () => {
-    if (catPanel) catPanel.classList.add('hidden');
-    if (mobileCatPanel) {
-      mobileCatPanel.classList.add('hidden');
-      mobileCatPanel.setAttribute('aria-hidden', 'true');
-    }
-  });
-});
-</script>
+  </script>

@@ -204,40 +204,56 @@ def about_us(request):
     })
 logger = logging.getLogger(__name__)
 @login_required(login_url='login')
-def ad_form(request, category_id):
-    category = get_object_or_404(Category, id=category_id)
+def ad_form(request, category_id=None):   # <-- make category_id optional
+       # If a category_id was provided in the URL, load that Category
+    category = None
+    if category_id is not None:
+        category = get_object_or_404(Category, id=category_id)
+
     categories = Category.objects.all()
-    show_success = False
+    show_success = False  # Default to False
 
     if request.method == 'POST':
         form = AdForm(request.POST, request.FILES)
+
+        # If no category from the URL, try to read from hidden input in POST
+        if category is None:
+            posted_cat = request.POST.get('category')
+            if posted_cat:
+                try:
+                    category = Category.objects.get(id=posted_cat)
+                except Category.DoesNotExist:
+                    category = None
+
+        # If still no category, attach a non-field error so the template shows it
+        if category is None:
+            form.add_error(None, 'Please select a category for your ad.')
+
         if form.is_valid():
             try:
+                # Save Ad
                 ad = form.save(commit=False)
                 ad.category = category
                 ad.advertiser = request.user
                 ad.is_approved = False
                 ad.save()
 
+                # Save images
                 images = request.FILES.getlist('images')
-                if not images:
-                    logger.warning("No images selected for upload")
-                    messages.error(request, "No images selected")
-                else:
+                if images:
                     for img in images:
-                        logger.info(f"Uploading image: {img.name}, size: {img.size} bytes")
                         AdImage.objects.create(ad=ad, image=img)
-                    messages.success(request, "Your digital masterpiece is now soaring through our approval cosmos!")
-                    show_success = True
-                    form = AdForm()
+
+                # Create PendingFeaturedAd
+               
+
+                messages.success(request, "Your digital masterpiece is now soaring through our approval cosmos!")
+                show_success = True  # Set to True on success
+                form = AdForm()  # Reset form
             except Exception as e:
-                logger.error(f"Error saving ad or images: {str(e)}", exc_info=True)
                 messages.error(request, f"Error: {str(e)}")
-                form = AdForm(request.POST, request.FILES)
         else:
-            logger.error(f"Form errors: {form.errors}")
             messages.error(request, "Invalid form data. Please check fields.")
-            form = AdForm(request.POST, request.FILES)
     else:
         form = AdForm()
 
@@ -249,13 +265,31 @@ def ad_form(request, category_id):
     })
 
 @login_required(login_url='login')
-def create_ad_form(request, category_id):
-    category = get_object_or_404(Category, id=category_id)
+def create_ad_form(request, category_id=None):   # <-- make category_id optional
+    # If a category_id was provided in the URL, load that Category
+    category = None
+    if category_id is not None:
+        category = get_object_or_404(Category, id=category_id)
+
     categories = Category.objects.all()
     show_success = False  # Default to False
 
     if request.method == 'POST':
         form = AdPaidForm(request.POST, request.FILES)
+
+        # If no category from the URL, try to read from hidden input in POST
+        if category is None:
+            posted_cat = request.POST.get('category')
+            if posted_cat:
+                try:
+                    category = Category.objects.get(id=posted_cat)
+                except Category.DoesNotExist:
+                    category = None
+
+        # If still no category, attach a non-field error so the template shows it
+        if category is None:
+            form.add_error(None, 'Please select a category for your ad.')
+
         if form.is_valid():
             try:
                 # Save Ad
@@ -650,6 +684,7 @@ def reply_to_comment(request, comment_id):
 @login_required
 def dashboard(request):
     user = request.user
+    categories = Category.objects.all()
     ads = Ad.objects.filter(advertiser=user).order_by('-created_at')
 
     if request.method == 'POST':
@@ -668,8 +703,8 @@ def dashboard(request):
         'ads': ads,
         'form': form,
     }
-    return render(request, 'base/dashboard.html', context)
-
+    return render(request, 'base/dashboard.html', {
+    'categories': categories})
 @login_required
 def delete_ad(request, ad_id):
     ad = get_object_or_404(Ad, id=ad_id, advertiser=request.user)

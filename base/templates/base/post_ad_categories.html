@@ -2,348 +2,390 @@
 {% load static %}
 
 {% block content %}
-<body class="bg-gradient-to-br from-slate-50 to-indigo-50 min-h-screen">
-<div class="flex flex-col md:flex-row min-h-screen">
-    <!-- Sidebar -->
-    <div class="sidebar w-full md:w-64 lg:w-72 md:h-screen overflow-y-auto py-6 z-50 bg-gradient-to-b from-purple-900 to-indigo-900">
-        <!-- Logo -->
-        <div class="px-5 flex items-center justify-between mb-10">
-            <div class="flex items-center">
-                <div class="bg-gradient-to-br from-purple-600 to-pink-500 w-12 h-12 rounded-xl flex items-center justify-center shadow-lg">
-                    <i class="fas fa-shopping-bag text-white text-xl"></i>
-                </div>
-                <span class="text-white text-xl ml-3 font-bold">Gobonimo<span class="text-pink-400"></span></span>
-            </div>
-            <div class="md:hidden cursor-pointer text-white" id="mobile-menu-toggle">
-                <i class="fas fa-bars text-2xl"></i>
-            </div>
-        </div>
-        
-        <!-- Main Menu -->
-        <div class="mb-10">
-            <ul class="space-y-2 px-3">
-                <!-- All Categories Link -->
-                <li>
-                    <a href="" class="menu-item flex items-center p-4 rounded-xl text-white hover:bg-purple-700/30">
-                        <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-purple-600 to-pink-500">
-                            <i class="fas fa-home text-lg"></i>
-                        </div>
-                        <span class="ml-4 font-medium">All Categories</span>
-                    </a>
-                </li>
-                
-                <!-- Categories List -->
-                {% for category in categories %}
-                <li>
-                    <a href="{% url 'handle_ad_redirect' category.id %}" 
-                       class="menu-item flex items-center p-4 rounded-xl text-white hover:bg-purple-700/30">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-purple-600/30">
-                                {% if category.image %}
-                                <img src="{{ category.image.url }}"
-                                     class="h-7 w-7 object-contain">
-                                {% else %}
-                                <i class="fas fa-tag text-lg text-white"></i>
-                                {% endif %}
-                            </div>
-                            <span class="ml-3 font-medium">{{ category.name }}</span>
-                        </div>
-                    </a>
-                </li>
-                {% endfor %}
-            </ul>
+<div class="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white">
+  <div class="container mx-auto px-4 py-8 max-w-6xl">
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Post Your Ad on Gobonimo</h1>
+      <p class="text-slate-300 text-lg max-w-2xl mx-auto">Reach thousands of potential buyers instantly. Post your ad in just a few simple steps.</p>
+    </div>
+
+    {% if messages %}
+      <div class="mb-4">
+        {% for message in messages %}
+          <div class="rounded-md p-3 mb-2 {% if message.tags == 'error' %}bg-red-600{% else %}bg-emerald-600{% endif %}">
+            <p class="text-sm">{{ message }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-1">
+        <!-- Sidebar content remains the same -->
+        <div class="bg-slate-800 rounded-xl p-6 mb-6 border border-slate-700">
+          <h3 class="text-xl font-semibold mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+              <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path>
+            </svg>
+            Marketplace Stats
+          </h3>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center"><span class="text-slate-400">Active Users</span><span class="font-semibold text-blue-400">15,000+</span></div>
+            <div class="flex justify-between items-center"><span class="text-slate-400">Daily Visits</span><span class="font-semibold text-green-400">2,500+</span></div>
+            <div class="flex justify-between items-center"><span class="text-slate-400">Success Rate</span><span class="font-semibold text-purple-400">85%</span></div>
+          </div>
         </div>
 
-        <!-- Sidebar Footer -->
-        <div class="px-5 py-6">
-            <div class="bg-gradient-to-r from-purple-700/30 to-pink-600/30 backdrop-blur-sm rounded-2xl p-4 border border-purple-500/20">
-                <div class="text-white font-medium mb-2 flex items-center">
-                    <i class="fas fa-gift mr-2 text-pink-300"></i>
-                    Special Offers
-                </div>
-                <p class="text-xs text-purple-200 mb-3">Get up to 50% off</p>
-                <button class="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white py-2 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center">
-                    <i class="fas fa-eye mr-2"></i> View Deals
-                </button>
-            </div>
+        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+          <h3 class="text-xl font-semibold mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            Why Choose Gobonimo?
+          </h3>
+          <ul class="space-y-3">
+            <li class="flex items-start"><span class="text-green-400 mr-2">✓</span><span>Free to post with no hidden fees</span></li>
+            <li class="flex items-start"><span class="text-green-400 mr-2">✓</span><span>Reach local buyers instantly</span></li>
+            <li class="flex items-start"><span class="text-green-400 mr-2">✓</span><span>Secure messaging system</span></li>
+            <li class="flex items-start"><span class="text-green-400 mr-2">✓</span><span>Mobile-friendly platform</span></li>
+          </ul>
         </div>
-    </div>
-    <!-- Main Content Area -->
-    <div class="flex-1 min-h-screen">
-        <div class="p-4 md:p-6">
-            <!-- Enhanced Gallery Container -->
-            <div class="gallery-container relative mb-8 md:mb-12 h-[400px] sm:h-[350px] md:h-[400px] lg:h-[450px] rounded-xl overflow-hidden shadow-lg">
-                <div class="gallery-track h-full w-full flex" id="gallery-track">
-                    {% with products=featured_products|slice:":9" %}
-                    {% for product in products %}
-                        <div class="gallery-item h-full w-full flex-shrink-0 flex flex-col md:flex-row">
-                            <!-- Text Content -->
-                            <div class="md:w-1/2 p-4 md:p-8 flex flex-col justify-center bg-gradient-to-br from-purple-700/90 to-indigo-800/90">
-                                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 leading-tight tracking-tight">
-                                    {{ product.name }}
-                                </h2>
-                                <p class="text-white/90 mb-5 text-sm sm:text-base md:text-lg max-w-md">
-                                    Discover premium quality with our featured products
-                                </p>
-                                <div class="flex flex-col sm:flex-row gap-3">
-                                    <a href="{% url 'menu' %}?is_paid=true" 
-                                       class="bg-white text-purple-700 px-5 py-2.5 rounded-lg font-bold hover:bg-purple-50 transition-all text-sm md:text-base text-center shadow-md hover:shadow-lg">
-                                        Advertise Here
-                                    </a>
-                                    <a href="{% url 'product_detail' product.id %}" 
-                                       class="bg-transparent border-2 border-white text-white px-5 py-2.5 rounded-lg font-bold hover:bg-white/10 transition-all text-sm md:text-base text-center">
-                                        View Details
-                                    </a>
-                                </div>
-                            </div>
-                            
-                            <!-- Image Content -->
-<div class="md:w-1/2 h-[140px] max-sm:h-[400px] sm:h-[200px] md:h-full w-full relative">                                <img src="{% if product.images.first %}{{ product.images.first.image.url }}{% else %}{% static 'placeholder.jpg' %}{% endif %}" 
-                                     alt="{{ product.name }}"
-                                     class="w-full h-full object-cover object-center">
-                                <!-- Price Tag -->
-                                <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-md">
-                                    <span class="font-bold text-purple-700 text-sm md:text-base">
-                                        ${{ product.price|floatformat:2 }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                    {% endwith %}
-                </div>
-                
-                <!-- Gallery Navigation -->
-                <button class="gallery-nav gallery-prev" id="gallery-prev" aria-label="Previous slide">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                </button>
-                <button class="gallery-nav gallery-next" id="gallery-next" aria-label="Next slide">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-                
-                <!-- Gallery Indicators -->
-                <div class="gallery-indicators" id="gallery-indicators">
-                    {% with products=featured_products|slice:":5" %}
-                    {% for _ in products %}
-                        <button class="indicator {% if forloop.first %}active{% endif %}" 
-                                data-index="{{ forloop.counter0 }}"
-                                aria-label="Go to slide {{ forloop.counter }}">
-                            <span class="indicator-progress"></span>
-                        </button>
-                    {% endfor %}
-                    {% endwith %}
-                </div>
-            </div>
-            
-            <!-- Featured Products -->
-            <div class="container mx-auto px-4 py-8">
-                {% for parent in parent_categories %}
-                    {% for subcategory in parent.subcategories_list %}
-                        {% if subcategory.approved_ads %}
-                            <!-- Subcategory Heading -->
-                            <h2 class="text-2xl font-bold text-gray-900 mb-5 pb-2 border-b border-gray-200">{{ subcategory.name }}</h2>
-                            
-                            <!-- Product Grid -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
-                                {% for product in subcategory.approved_ads %}
-                                    <!-- Professional Product Card -->
-                                    <div class="bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-md transition-all duration-300">
-                                        <div class="relative">
-                                            <a href="{% url 'product_detail' product.id %}">
-                                                <img src="{% if product.images.first %}{{ product.images.first.image.url }}{% else %}{% static 'placeholder.jpg' %}{% endif %}" 
-                                                     class="w-full h-48 object-cover" 
-                                                     alt="{{ product.name }}">
-                                            </a>
-                                            
-                                            <!-- Badge -->
-                                            {% if product.is_featured %}
-                                            <span class="absolute top-3 left-3 bg-gradient-to-r from-purple-600 to-pink-500 text-white text-xs font-bold px-2 py-1 rounded">
-                                                <i class="fas fa-star mr-1"></i> Featured
-                                            </span>
-                                            {% endif %}
-                                            
-                                            <!-- Price -->
-                                            <span class="absolute top-3 right-3 bg-gray-900/90 text-white text-sm font-bold px-3 py-1 rounded">
-                                                ${{ product.price }}
-                                            </span>
-                                        </div>
-                                        
-                                        <div class="p-4">
-                                            <!-- Product Name -->
-                                            <h3 class="font-bold text-gray-900 mb-2 truncate">{{ product.name }}</h3>
-                                            
-                                            <!-- Location -->
-                                            <div class="flex items-center text-gray-600 text-sm mb-2">
-                                                <i class="fas fa-map-marker-alt mr-2 text-purple-600"></i>
-                                                <span class="truncate">{{ product.location }}</span>
-                                            </div>
-                                            
-                                            <!-- Time -->
-                                            <div class="flex items-center text-gray-500 text-xs mb-3">
-                                                <i class="far fa-clock mr-1"></i>
-                                                <span>{{ product.created_at|timesince }} ago</span>
-                                            </div>
-                                            
-                                            <div class="flex justify-between items-center mt-3">
-                                                <!-- Category Tag -->
-                                                <span class="text-xs bg-gray-100 px-2 py-1 rounded">
-                                                    {{ product.category.name }}
-                                                </span>
-                                                
-                                                <!-- View Details Button -->
-                                                <a href="{% url 'product_detail' product.id %}" 
-                                                   class="text-sm font-medium bg-purple-700 hover:bg-purple-800 text-white px-3 py-1.5 rounded-lg transition">
-                                                    Details
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% empty %}
-                                    <!-- Empty State -->
-                                    <div class="col-span-4 text-center py-8">
-                                        <div class="bg-gray-50 rounded-xl py-10 border-2 border-dashed border-gray-200">
-                                            <i class="fas fa-box-open text-gray-300 text-4xl mb-3"></i>
-                                            <p class="text-gray-500">No approved ads in this category</p>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    {% endfor %}
+      </div>
+
+      <div class="lg:col-span-2">
+        <div class="bg-slate-800 rounded-xl p-6 border border-slate-700">
+          <h2 class="text-2xl font-semibold mb-6">Post Your Paid Ad</h2>
+
+          <form method="POST" enctype="multipart/form-data" id="adForm" class="space-y-6">
+            {% csrf_token %}
+
+            <!-- CATEGORY PICKERS - FIXED -->
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Select Category *</label>
+              <div id="categoryGrid" class="flex flex-wrap gap-3">
+                {% for c in categories %}
+                  <button type="button" class="category-picker-btn px-4 py-2 rounded-lg border border-slate-600 bg-slate-700 hover:bg-slate-600 text-sm transition-colors"
+                          data-cat-id="{{ c.id }}" data-cat-name="{{ c.name|escapejs }}">
+                    {{ c.name }}
+                  </button>
                 {% endfor %}
+              </div>
+              
+              <!-- This is the critical fix - use Django form field for category -->
+              {{ form.category }}
+              
+              {% if form.category.errors %}
+                <div class="text-red-400 text-xs mt-1">{{ form.category.errors }}</div>
+              {% endif %}
+              
+              <p class="text-xs text-slate-400 mt-2">You can also open this form from a category link — the form will pre-select it.</p>
             </div>
+
+            <!-- Core fields using Django form -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-slate-300 mb-2">Ad Title *</label>
+                <input type="text" name="name" value="{{ form.name.value|default:'' }}" required 
+                       class="w-full bg-slate-700 border {% if form.name.errors %}border-red-500{% else %}border-slate-600{% endif %} rounded-lg px-4 py-3" 
+                       placeholder="What are you selling?">
+                {% if form.name.errors %}
+                  <div class="text-red-400 text-xs mt-1">{{ form.name.errors }}</div>
+                {% endif %}
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-300 mb-2">Price ($)</label>
+                <input type="number" step="0.01" name="price" value="{{ form.price.value|default:'' }}"
+                       class="w-full bg-slate-700 border {% if form.price.errors %}border-red-500{% else %}border-slate-600{% endif %} rounded-lg px-4 py-3" 
+                       placeholder="0.00">
+                {% if form.price.errors %}
+                  <div class="text-red-400 text-xs mt-1">{{ form.price.errors }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Description *</label>
+              <textarea name="description" rows="4" required 
+                        class="w-full bg-slate-700 border {% if form.description.errors %}border-red-500{% else %}border-slate-600{% endif %} rounded-lg px-4 py-3" 
+                        placeholder="Describe your item in detail...">{{ form.description.value|default:'' }}</textarea>
+              {% if form.description.errors %}
+                <div class="text-red-400 text-xs mt-1">{{ form.description.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-slate-300 mb-2">Location *</label>
+                <input type="text" name="location" value="{{ form.location.value|default:'' }}" required 
+                       class="w-full bg-slate-700 border {% if form.location.errors %}border-red-500{% else %}border-slate-600{% endif %} rounded-lg px-4 py-3" 
+                       placeholder="City, State">
+                {% if form.location.errors %}
+                  <div class="text-red-400 text-xs mt-1">{{ form.location.errors }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Category-specific sections (updated with correct field names) -->
+            <!-- Vehicles Section -->
+            <div class="category-section" data-cat="Vehicles" style="display:none; margin-top:1rem;">
+              <h3 class="text-lg font-semibold mb-3">Vehicle Details</h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-sm text-slate-300 mb-2">Motor Type</label>
+                  <input type="text" name="motortype" value="{{ form.motortype.value|default:'' }}"
+                         class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2">
+                </div>
+                <div>
+                  <label class="block text-sm text-slate-300 mb-2">Year</label>
+                  <input type="number" name="year" value="{{ form.year.value|default:'' }}" min="1900" max="2100"
+                         class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2">
+                </div>
+                <div>
+                  <label class="block text-sm text-slate-300 mb-2">Transmission</label>
+                  <input type="text" name="geartype" value="{{ form.geartype.value|default:'' }}"
+                         class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2" placeholder="Automatic, Manual, etc.">
+                </div>
+
+                <div>
+                  <label class="block text-sm text-slate-300 mb-2">Color</label>
+                  <input type="text" name="color" value="{{ form.color.value|default:'' }}"
+                         class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2">
+                </div>
+
+                <div>
+                  <label class="block text-sm text-slate-300 mb-2">Vehicle Type</label>
+                  <select name="vehicle_type" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2">
+                    <option value="">Select Type</option>
+                    <option value="car" {% if form.vehicle_type.value == "car" %}selected{% endif %}>Car</option>
+                    <option value="motorcycle" {% if form.vehicle_type.value == "motorcycle" %}selected{% endif %}>Motorcycle</option>
+                    <option value="bus" {% if form.vehicle_type.value == "bus" %}selected{% endif %}>Bus</option>
+                    <option value="truck" {% if form.vehicle_type.value == "truck" %}selected{% endif %}>Truck</option>
+                  </select>
+                </div>
+
+                <div class="flex items-center">
+                  <input type="checkbox" id="is_automatic" name="is_automatic" value="true" 
+                         {% if form.is_automatic.value %}checked{% endif %} class="h-4 w-4">
+                  <label for="is_automatic" class="ml-2 text-slate-300">Automatic?</label>
+                </div>
+
+                <div>
+                  <label class="block text-sm text-slate-300 mb-2">Condition</label>
+                  <select name="electronics_condition" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2">
+                    <option value="">Select Condition</option>
+                    <option value="new" {% if form.electronics_condition.value == "new" %}selected{% endif %}>New</option>
+                    <option value="second_hand" {% if form.electronics_condition.value == "second_hand" %}selected{% endif %}>Second Hand</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Property Section -->
+            <div class="category-section" data-cat="Property" style="display:none; margin-top:1rem;">
+              <h3 class="text-lg font-semibold mb-3">Property Details</h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-sm text-slate-300 mb-2">Number of Rooms</label>
+                  <input type="number" name="num_rooms" value="{{ form.num_rooms.value|default:'' }}" min="0"
+                         class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2">
+                </div>
+                <div>
+                  <label class="block text-sm text-slate-300 mb-2">Number of Bathrooms</label>
+                  <input type="number" name="num_baths" value="{{ form.num_baths.value|default:'' }}" min="0"
+                         class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2">
+                </div>
+                <div>
+                  <label class="block text-sm text-slate-300 mb-2">Area Size (sq ft/m)</label>
+                  <input type="number" name="area_size" value="{{ form.area_size.value|default:'' }}" min="0"
+                         class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2">
+                </div>
+
+                <div>
+                  <label class="block text-sm text-slate-300 mb-2">Furnishing Type</label>
+                  <select name="furnishing_type" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2">
+                    <option value="">Select Type</option>
+                    <option value="fully_furnished" {% if form.furnishing_type.value == "fully_furnished" %}selected{% endif %}>Fully Furnished</option>
+                    <option value="semi_furnished" {% if form.furnishing_type.value == "semi_furnished" %}selected{% endif %}>Semi Furnished</option>
+                    <option value="unfurnished" {% if form.furnishing_type.value == "unfurnished" %}selected{% endif %}>Unfurnished</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-sm text-slate-300 mb-2">Property Type</label>
+                  <select name="property_type" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2">
+                    <option value="">Select Type</option>
+                    <option value="apartment" {% if form.property_type.value == "apartment" %}selected{% endif %}>Apartment</option>
+                    <option value="house" {% if form.property_type.value == "house" %}selected{% endif %}>House</option>
+                    <option value="villa" {% if form.property_type.value == "villa" %}selected{% endif %}>Villa</option>
+                    <option value="commercial" {% if form.property_type.value == "commercial" %}selected{% endif %}>Commercial</option>
+                  </select>
+                </div>
+
+                <div class="flex gap-4 items-center">
+                  <label class="flex items-center">
+                    <input type="checkbox" name="has_parking" {% if form.has_parking.value %}checked{% endif %} class="h-4 w-4">
+                    <span class="ml-2 text-slate-300">Has Parking</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" name="has_pool" {% if form.has_pool.value %}checked{% endif %} class="h-4 w-4">
+                    <span class="ml-2 text-slate-300">Has Pool</span>
+                  </label>
+                </div>
+
+                <div class="flex gap-4 items-center">
+                  <label class="flex items-center">
+                    <input type="checkbox" name="has_water" {% if form.has_water.value %}checked{% endif %} class="h-4 w-4">
+                    <span class="ml-2 text-slate-300">Has Water</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" name="has_electricity" {% if form.has_electricity.value %}checked{% endif %} class="h-4 w-4">
+                    <span class="ml-2 text-slate-300">Has Electricity</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Continue with other category sections (Lands, Electronics, Jobs, Service, Fashion) -->
+            <!-- Make sure to use the exact field names from your model -->
+
+            <!-- Featured + Payment + Images -->
+            <div class="mt-6 bg-gradient-to-r from-violet-600 to-pink-500 p-6 rounded-lg">
+              <div class="flex items-center mb-6">
+                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mr-3"><i class="fas fa-crown text-white"></i></div>
+                <h2 class="text-xl font-semibold text-white">Featured Dates</h2>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label class="date-label text-white/90 mb-2 block">Start Date</label>
+                  <input type="date" name="featured_start_date" value="{{ form.featured_start_date.value|default:'' }}" 
+                         min="{% now 'Y-m-d' %}" required class="w-full px-4 py-3 bg-white rounded-lg border border-white/80">
+                </div>
+                <div>
+                  <label class="date-label text-white/90 mb-2 block">Expiry Date</label>
+                  <input type="date" name="featured_expiry_date" value="{{ form.featured_expiry_date.value|default:'' }}" 
+                         min="{% now 'Y-m-d' %}" required class="w-full px-4 py-3 bg-white rounded-lg border border-white/80">
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 bg-white p-6 rounded-lg">
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">Payment Verification</h3>
+              <label class="block text-sm text-gray-700 mb-2">Payment Screenshot/Photo (JPG, PNG, PDF)</label>
+              <input type="file" name="payment_screenshot" accept="image/*,.pdf" required 
+                     class="w-full px-4 py-3 border rounded-lg">
+              <p class="text-gray-500 text-xs mt-2">Accepted formats: JPG, PNG, PDF (Max 5MB)</p>
+            </div>
+
+            <div class="mt-4 bg-slate-800 p-6 rounded-lg border border-slate-700">
+              <h3 class="text-lg font-semibold mb-3">Product Gallery</h3>
+              <p class="text-slate-400 mb-3">Upload up to 10 images. First image will be the cover.</p>
+
+              <div id="imageInputContainer" class="space-y-3">
+                <input type="file" id="imagesInput" name="images" accept="image/*" multiple 
+                       class="w-full">
+              </div>
+
+              <div id="previewContainer" class="grid grid-cols-3 gap-4 mt-4">
+                <div class="preview-placeholder p-4 text-center border-2 border-dashed rounded">
+                  <i class="fas fa-cloud-upload-alt text-3xl text-slate-400"></i>
+                  <p class="text-slate-400 text-sm mt-2">Upload Preview</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-4">
+              <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition-all">
+                Submit for Review
+              </button>
+            </div>
+          </form>
         </div>
+      </div>
     </div>
+  </div>
 </div>
 
-
 <script>
-    // Enhanced Gallery Functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        // Mobile menu toggle
-        document.getElementById('mobile-menu-toggle').addEventListener('click', function() {
-            const sidebar = document.querySelector('.sidebar');
-            sidebar.classList.toggle('hidden');
-            sidebar.classList.toggle('md:block');
-        });
-        
-        // Gallery functionality with touch support
-        const galleryTrack = document.getElementById('gallery-track');
-        const indicators = document.querySelectorAll('.indicator');
-        const totalItems = document.querySelectorAll('.gallery-item').length;
-        let currentIndex = 0;
-        let autoSlideInterval;
-        let startX, moveX;
-        let isDragging = false;
-        
-        // Touch event handlers for mobile swipe
-        galleryTrack.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
-            isDragging = true;
-            stopAutoSlide();
-        });
-        
-        galleryTrack.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            moveX = e.touches[0].clientX;
-            const diff = moveX - startX;
-            galleryTrack.style.transform = `translateX(calc(-${currentIndex * 100}% + ${diff}px)`;
-            galleryTrack.style.transition = 'none';
-        });
-        
-        galleryTrack.addEventListener('touchend', () => {
-            if (!isDragging) return;
-            isDragging = false;
-            
-            const threshold = 50;
-            const diff = moveX - startX;
-            
-            if (diff > threshold) {
-                prevSlide();
-            } else if (diff < -threshold) {
-                nextSlide();
-            } else {
-                updateGallery();
-            }
-            
-            startAutoSlide();
-        });
-        
-        function updateGallery() {
-            galleryTrack.style.transform = `translateX(-${currentIndex * 100}%)`;
-            galleryTrack.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-            
-            // Update indicators
-            indicators.forEach((indicator, index) => {
-                if (index === currentIndex) {
-                    indicator.classList.add('active');
-                    indicator.querySelector('.indicator-progress').style.animation = 'progress 5s linear';
-                } else {
-                    indicator.classList.remove('active');
-                    indicator.querySelector('.indicator-progress').style.animation = 'none';
-                }
-            });
-        }
-        
-        function nextSlide() {
-            currentIndex = (currentIndex + 1) % totalItems;
-            updateGallery();
-        }
-        
-        function prevSlide() {
-            currentIndex = (currentIndex - 1 + totalItems) % totalItems;
-            updateGallery();
-        }
-        
-        function goToSlide(index) {
-            currentIndex = index;
-            updateGallery();
-        }
-        
-        // Navigation
-        document.getElementById('gallery-next').addEventListener('click', nextSlide);
-        document.getElementById('gallery-prev').addEventListener('click', prevSlide);
-        
-        // Indicator clicks
-        indicators.forEach(indicator => {
-            indicator.addEventListener('click', function() {
-                const index = parseInt(this.getAttribute('data-index'));
-                goToSlide(index);
-            });
-        });
-        
-        // Auto slide with progress indicator
-        function startAutoSlide() {
-            // Reset all indicator animations
-            indicators.forEach(indicator => {
-                indicator.querySelector('.indicator-progress').style.animation = 'none';
-            });
-            
-            // Start new animation
-            if (indicators[currentIndex]) {
-                indicators[currentIndex].querySelector('.indicator-progress').style.animation = 'progress 5s linear';
-            }
-            
-            autoSlideInterval = setInterval(nextSlide, 5000);
-        }
-        
-        function stopAutoSlide() {
-            clearInterval(autoSlideInterval);
-        }
-        
-        // Start auto slide
-        startAutoSlide();
-        
-        // Pause auto slide on hover
-        const galleryContainer = document.querySelector('.gallery-container');
-        galleryContainer.addEventListener('mouseenter', stopAutoSlide);
-        galleryContainer.addEventListener('mouseleave', startAutoSlide);
+document.addEventListener('DOMContentLoaded', function() {
+  // Category selection logic
+  const categoryButtons = document.querySelectorAll('.category-picker-btn');
+  const categoryInput = document.querySelector('#id_category'); // Django form field
+  const categorySections = document.querySelectorAll('.category-section');
+  
+  function hideAllCategorySections() {
+    categorySections.forEach(section => {
+      section.style.display = 'none';
     });
+  }
+  
+  function showCategorySection(categoryName) {
+    hideAllCategorySections();
+    const section = document.querySelector(`.category-section[data-cat="${categoryName}"]`);
+    if (section) {
+      section.style.display = 'block';
+    }
+  }
+  
+  categoryButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const categoryId = this.getAttribute('data-cat-id');
+      const categoryName = this.getAttribute('data-cat-name');
+      
+      // Update the hidden input
+      if (categoryInput) {
+        categoryInput.value = categoryId;
+      }
+      
+      // Remove active class from all buttons
+      categoryButtons.forEach(btn => {
+        btn.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-600');
+      });
+      
+      // Add active class to clicked button
+      this.classList.add('ring-2', 'ring-blue-500', 'bg-blue-600');
+      
+      // Show the appropriate category section
+      showCategorySection(categoryName);
+    });
+  });
+  
+  // Initialize category if pre-selected
+
+  
+  // Image preview functionality
+  const imagesInput = document.getElementById('imagesInput');
+  const previewContainer = document.getElementById('previewContainer');
+  
+  if (imagesInput) {
+    imagesInput.addEventListener('change', function(e) {
+      const files = e.target.files;
+      previewContainer.innerHTML = '';
+      
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+          const preview = document.createElement('div');
+          preview.className = 'relative';
+          preview.innerHTML = `
+            <img src="${e.target.result}" class="w-full h-32 object-cover rounded">
+            <button type="button" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 text-xs">×</button>
+          `;
+          
+          preview.querySelector('button').addEventListener('click', function() {
+            preview.remove();
+          });
+          
+          previewContainer.appendChild(preview);
+        };
+        
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+});
 </script>
-
-
 {% endblock %}

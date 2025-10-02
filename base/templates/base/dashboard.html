@@ -2,37 +2,41 @@
 {% load static %}
 
 {% block content %}
-<div class="min-h-screen bg-white text-gray-900">
+<div class="min-h-screen" style="background: var(--panel); color: #e6eef8;">
   <main class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
 
     <!-- Sidebar / Profile Card -->
-    <aside class="col-span-1 bg-white rounded-xl p-6 shadow-lg flex flex-col items-center">
+    <aside class="col-span-1 rounded-xl p-6 shadow-lg flex flex-col items-center" style="background: var(--tile-bg);">
       {% if user.avatar %}
-      <img src="{{ user.avatar.url }}" alt="Avatar" class="w-24 h-24 rounded-full border-2 border-gray-200 object-cover mb-4">
+      <img src="{{ user.avatar.url }}" alt="Avatar" class="w-24 h-24 rounded-full border-2 object-cover mb-4" style="border-color: rgba(255,255,255,0.1);">
       {% else %}
-      <div class="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-        <span class="text-gray-400 text-2xl">?</span>
+      <div class="w-24 h-24 rounded-full flex items-center justify-center mb-4" style="background: var(--chip);">
+        <span class="text-2xl" style="color: var(--muted);">?</span>
       </div>
       {% endif %}
-      <h2 class="text-xl font-semibold mb-2 text-pink-500">{{ user.full_name }}</h2>
-      <p class="text-gray-600 text-sm mb-4">{{ user.email }}</p>
+      <h2 class="text-xl font-semibold mb-2" style="color: var(--accent);">{{ user.full_name }}</h2>
+      <p class="text-sm mb-4" style="color: var(--muted);">{{ user.email }}</p>
       <nav class="w-full space-y-2">
-        <button class="w-full text-left px-4 py-2 bg-gradient-to-r from-pink-500 to-indigo-500 hover:from-indigo-500 hover:to-pink-500 rounded-lg font-medium text-white">Profile Settings</button>
-        <button class="w-full text-left px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium">Your Ads</button>
+        <button class="w-full text-left px-4 py-2 rounded-lg font-medium text-white transition-colors" style="background: linear-gradient(to right, var(--accent), #0d9488);">
+          Profile Settings
+        </button>
+        <button class="w-full text-left px-4 py-2 rounded-lg font-medium transition-colors" style="background: var(--chip); color: var(--muted);">
+          Your Ads
+        </button>
       </nav>
     </aside>
 
     <!-- Content Area -->
     <section class="col-span-2 space-y-8">
       <!-- Profile Settings -->
-      <div class="bg-gray-50 rounded-xl p-6 shadow-lg">
-        <h1 class="text-2xl font-bold mb-4 border-b border-gray-200 pb-3 text-pink-500">Profile Settings</h1>
-        <form method="POST" enctype="multipart/form-data" class="space-y-6 bg-white" p-6 rounded-lg border border-gray-200">
+      <div class="rounded-xl p-6 shadow-lg" style="background: var(--tile-bg);">
+        <h1 class="text-2xl font-bold mb-4 pb-3" style="color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.1);">Profile Settings</h1>
+        <form method="POST" enctype="multipart/form-data" class="space-y-6 p-6 rounded-lg" style="background: var(--chip); border: 1px solid rgba(255,255,255,0.05);">
           {% csrf_token %}
           {% if messages %}
-          <div class="bg-green-100 p-4 rounded-lg border border-green-300">
+          <div class="p-4 rounded-lg border" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3);">
             {% for message in messages %}
-            <p class="text-green-700 text-sm">{{ message }}</p>
+            <p class="text-sm" style="color: #10b981;">{{ message }}</p>
             {% endfor %}
           </div>
           {% endif %}
@@ -41,79 +45,84 @@
             <!-- Left Column -->
             <div class="space-y-4">
               <div>
-                <label for="id_full_name" class="block text-sm font-medium mb-1">Full Name</label>
-                <input type="text" name="full_name" id="id_full_name" value="{{ form.full_name.value }}" class="block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500" />
-                {% for err in form.full_name.errors %}<p class="text-red-500 text-xs mt-1">{{ err }}</p>{% endfor %}
+                <label for="id_full_name" class="block text-sm font-medium mb-1" style="color: var(--muted);">Full Name</label>
+                <input type="text" name="full_name" id="id_full_name" value="{{ form.full_name.value }}" class="block w-full border rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-2" style="background: var(--panel); border-color: rgba(255,255,255,0.1); color: #e6eef8; --tw-ring-color: var(--accent);" />
+                {% for err in form.full_name.errors %}<p class="text-xs mt-1" style="color: #f43f5e;">{{ err }}</p>{% endfor %}
               </div>
               <div>
-                <label for="id_email" class="block text-sm font-medium mb-1">Email</label>
-                <input type="email" name="email" id="id_email" value="{{ form.email.value }}" class="block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500" />
-                {% for err in form.email.errors %}<p class="text-red-500 text-xs mt-1">{{ err }}</p>{% endfor %}
+                <label for="id_email" class="block text-sm font-medium mb-1" style="color: var(--muted);">Email</label>
+                <input type="email" name="email" id="id_email" value="{{ form.email.value }}" class="block w-full border rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-2" style="background: var(--panel); border-color: rgba(255,255,255,0.1); color: #e6eef8; --tw-ring-color: var(--accent);" />
+                {% for err in form.email.errors %}<p class="text-xs mt-1" style="color: #f43f5e;">{{ err }}</p>{% endfor %}
               </div>
               <div>
-                <label for="id_phone_number" class="block text-sm font-medium mb-1">Phone</label>
-                <input type="text" name="phone_number" id="id_phone_number" value="{{ form.phone_number.value }}" class="block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500" />
-                {% for err in form.phone_number.errors %}<p class="text-red-500 text-xs mt-1">{{ err }}</p>{% endfor %}
+                <label for="id_phone_number" class="block text-sm font-medium mb-1" style="color: var(--muted);">Phone</label>
+                <input type="text" name="phone_number" id="id_phone_number" value="{{ form.phone_number.value }}" class="block w-full border rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-2" style="background: var(--panel); border-color: rgba(255,255,255,0.1); color: #e6eef8; --tw-ring-color: var(--accent);" />
+                {% for err in form.phone_number.errors %}<p class="text-xs mt-1" style="color: #f43f5e;">{{ err }}</p>{% endfor %}
               </div>
             </div>
             <!-- Right Column -->
             <div class="space-y-4">
               <div>
-                <label for="id_location" class="block text-sm font-medium mb-1">Location</label>
-                <input type="text" name="location" id="id_location" value="{{ form.location.value }}" class="block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500" />
-                {% for err in form.location.errors %}<p class="text-red-500 text-xs mt-1">{{ err }}</p>{% endfor %}
+                <label for="id_location" class="block text-sm font-medium mb-1" style="color: var(--muted);">Location</label>
+                <input type="text" name="location" id="id_location" value="{{ form.location.value }}" class="block w-full border rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-2" style="background: var(--panel); border-color: rgba(255,255,255,0.1); color: #e6eef8; --tw-ring-color: var(--accent);" />
+                {% for err in form.location.errors %}<p class="text-xs mt-1" style="color: #f43f5e;">{{ err }}</p>{% endfor %}
               </div>
               <div>
-                <label for="id_avatar" class="block text-sm font-medium mb-1">Profile Picture</label>
+                <label for="id_avatar" class="block text-sm font-medium mb-1" style="color: var(--muted);">Profile Picture</label>
                 <div class="flex items-center gap-4">
                   <div class="shrink-0">
                     {% if user.avatar %}
-                    <img src="{{ user.avatar.url }}" alt="Avatar" class="w-16 h-16 rounded-full border-2 border-gray-200 object-cover">
+                    <img src="{{ user.avatar.url }}" alt="Avatar" class="w-16 h-16 rounded-full border-2 object-cover" style="border-color: rgba(255,255,255,0.1);">
                     {% else %}
-                    <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
-                      <span class="text-gray-400 text-xl">?</span>
+                    <div class="w-16 h-16 rounded-full flex items-center justify-center" style="background: var(--chip);">
+                      <span class="text-xl" style="color: var(--muted);">?</span>
                     </div>
                     {% endif %}
                   </div>
                   <div class="flex-1">
-                    <input type="file" name="avatar" id="id_avatar" class="block w-full text-sm text-gray-600 border border-gray-300 rounded-md cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500" />
+                    <input type="file" name="avatar" id="id_avatar" class="block w-full text-sm border rounded-md cursor-pointer shadow-sm focus:outline-none focus:ring-2" style="background: var(--panel); border-color: rgba(255,255,255,0.1); color: #e6eef8; --tw-ring-color: var(--accent);" />
                   </div>
                 </div>
-                {% for err in form.avatar.errors %}<p class="text-red-500 text-xs mt-1">{{ err }}</p>{% endfor %}
+                {% for err in form.avatar.errors %}<p class="text-xs mt-1" style="color: #f43f5e;">{{ err }}</p>{% endfor %}
               </div>
             </div>
           </div>
 
           <div>
-            <label for="id_bio" class="block text-sm font-medium mb-1">Bio</label>
-            <textarea name="bio" id="id_bio" class="block w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500" rows="4">{{ form.bio.value }}</textarea>
-            {% for err in form.bio.errors %}<p class="text-red-500 text-xs mt-1">{{ err }}</p>{% endfor %}
+            <label for="id_bio" class="block text-sm font-medium mb-1" style="color: var(--muted);">Bio</label>
+            <textarea name="bio" id="id_bio" class="block w-full border rounded-md px-3 py-2 shadow-sm focus:outline-none focus:ring-2" rows="4" style="background: var(--panel); border-color: rgba(255,255,255,0.1); color: #e6eef8; --tw-ring-color: var(--accent);">{{ form.bio.value }}</textarea>
+            {% for err in form.bio.errors %}<p class="text-xs mt-1" style="color: #f43f5e;">{{ err }}</p>{% endfor %}
           </div>
 
           <div class="text-right">
-            <button type="submit" class="px-6 py-2 bg-gradient-to-r from-pink-500 to-indigo-500 hover:from-indigo-500 hover:to-pink-500 rounded-lg font-medium text-white shadow">Save Changes</button>
+            <button type="submit" class="px-6 py-2 rounded-lg font-medium text-white shadow transition-colors" style="background: linear-gradient(to right, var(--accent), #0d9488);">
+              Save Changes
+            </button>
           </div>
         </form>
       </div>
 
       <!-- User Ads -->
-      <div class="bg-gray-50 rounded-xl p-6 shadow-lg">
-        <h1 class="text-2xl font-bold mb-4 border-b border-gray-200 pb-3 text-pink-500">Your Ads</h1>
+      <div class="rounded-xl p-6 shadow-lg" style="background: var(--tile-bg);">
+        <h1 class="text-2xl font-bold mb-4 pb-3" style="color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.1);">Your Ads</h1>
         {% if ads.exists %}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {% for ad in ads %}
-          <div class="bg-white rounded-lg overflow-hidden hover:shadow-xl transition-shadow">
+          <div class="rounded-lg overflow-hidden transition-shadow hover:shadow-xl" style="background: var(--chip);">
             <a href="{% url 'product_detail' ad.id %}" class="block relative">
               <img src="{% if ad.images.first %}{{ ad.images.first.image.url }}{% else %}{% static 'images/placeholder.png' %}{% endif %}" class="w-full h-40 object-cover">
-              <div class="absolute inset-0 bg-gradient-to-t from-white/70"></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             </a>
             <div class="p-4">
-              <h3 class="text-lg font-semibold truncate text-gray-900">{{ ad.name }}</h3>
+              <h3 class="text-lg font-semibold truncate" style="color: #e6eef8;">{{ ad.name }}</h3>
               <div class="flex justify-between items-center mt-2">
-                <span class="text-pink-500 font-bold">${{ ad.price }}</span>
-                <button onclick="showDeleteModal('{{ ad.id }}', '{{ ad.name }}')" class="text-pink-500 hover:text-pink-400">Delete</button>
+                <span class="font-bold" style="color: var(--accent);">${{ ad.price }}</span>
+                <button onclick="showDeleteModal('{{ ad.id }}', '{{ ad.name }}')" class="px-3 py-1 rounded-md text-sm transition-colors flex items-center gap-1" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);">
+                  <i class="fas fa-trash text-xs"></i>
+                  Delete
+                </button>
               </div>
-              <div class="flex justify-between text-xs text-gray-600 mt-2">
+              <div class="flex justify-between text-xs mt-2" style="color: var(--muted);">
                 <span>{{ ad.views }} views</span>
                 <span>{{ ad.created_at|date:"M d, Y" }}</span>
               </div>
@@ -122,8 +131,8 @@
           {% endfor %}
         </div>
         {% else %}
-        <div class="text-center py-12 border-2 border-dashed border-gray-200 rounded-lg">
-          <p class="text-gray-600">You have no active ads.</p>
+        <div class="text-center py-12 rounded-lg border-2 border-dashed" style="border-color: rgba(255,255,255,0.1);">
+          <p style="color: var(--muted);">You have no active ads.</p>
         </div>
         {% endif %}
       </div>
@@ -131,15 +140,18 @@
   </main>
 
   <!-- Delete Modal -->
-  <div id="delete-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-lg">
-      <h3 class="text-xl font-bold mb-3 text-pink-500">Confirm Delete</h3>
-      <p class="text-gray-600 mb-5">Are you sure you want to delete "<span id="ad-name"></span>"?</p>
+  <div id="delete-modal" class="fixed inset-0 hidden items-center justify-center p-4 z-50" style="background: rgba(0,0,0,0.5);">
+    <div class="rounded-xl p-6 w-full max-w-md shadow-lg" style="background: var(--tile-bg);">
+      <h3 class="text-xl font-bold mb-3" style="color: var(--accent);">Confirm Delete</h3>
+      <p class="mb-5" style="color: var(--muted);">Are you sure you want to delete "<span id="ad-name"></span>"?</p>
       <div class="flex justify-end gap-4">
-        <button onclick="hideDeleteModal()" class="px-4 py-2 text-gray-600 hover:text-gray-900">Cancel</button>
+        <button onclick="hideDeleteModal()" class="px-4 py-2 rounded-md transition-colors" style="background: var(--chip); color: var(--muted);">Cancel</button>
         <form id="delete-form" method="POST">
           {% csrf_token %}
-          <button type="submit" class="px-4 py-2 bg-gradient-to-r from-pink-500 to-indigo-500 hover:from-indigo-500 hover:to-pink-500 rounded-lg font-medium text-white shadow">Delete</button>
+          <button type="submit" class="px-4 py-2 rounded-md font-medium text-white shadow transition-colors flex items-center gap-2" style="background: #ef4444; color: white;">
+            <i class="fas fa-trash"></i>
+            Delete Ad
+          </button>
         </form>
       </div>
     </div>

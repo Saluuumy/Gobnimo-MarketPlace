@@ -7,9 +7,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free Ads</title>
+    <title>Post Free Ad - Gobonimo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root{
+            --sidebar-bg:#0f1720;
+            --panel:#0b1220;
+            --muted:#9ca3af;
+            --chip:#1f2937;
+            --accent:#06b6d4;
+            --tile-bg:#2b3440;
+        }
+
         /* Font import */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -22,9 +31,9 @@
         }
 
         body {
-            background: linear-gradient(135deg, #f5f3ff 0%, #fdf2f8 100%);
+            background: var(--panel);
             min-height: 100vh;
-          
+            color: #e6eef8;
         }
 
         /* Container styles */
@@ -37,14 +46,14 @@
         .nav-link {
             display: inline-flex;
             align-items: center;
-            color: #7c3aed;
+            color: var(--accent);
             font-weight: 500;
             text-decoration: none;
             transition: color 0.3s ease;
         }
 
         .nav-link:hover {
-            color: #6d28d9;
+            color: #0891b2;
         }
 
         .nav-link i {
@@ -53,7 +62,7 @@
 
         /* Gradient background */
         .gradient-bg {
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            background: linear-gradient(135deg, var(--accent), #0d9488);
             padding: 32px;
             color: white;
         }
@@ -61,10 +70,11 @@
         /* Border gradient container */
         .border-gradient {
             position: relative;
-            background: white;
+            background: var(--tile-bg);
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
         .border-gradient::before {
@@ -74,7 +84,7 @@
             left: -1px;
             right: -1px;
             bottom: -1px;
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            background: linear-gradient(135deg, var(--accent), #0d9488);
             border-radius: 12px;
             z-index: -1;
         }
@@ -150,16 +160,17 @@
 
         /* Form section */
         .form-section {
-            background: white;
+            background: var(--tile-bg);
             padding: 24px;
             border-radius: 8px;
-            border: 1px solid #e5e7eb;
+            border: 1px solid rgba(255,255,255,0.05);
             transition: all 0.3s ease;
+            margin-bottom: 24px;
         }
 
         .form-section:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
         .form-section-header {
@@ -172,7 +183,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: #ede9fe;
+            background: rgba(6, 182, 212, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -180,28 +191,30 @@
         }
 
         .form-section-icon i {
-            color: #8b5cf6;
+            color: var(--accent);
         }
 
         .form-section h2 {
             font-size: 20px;
             font-weight: 600;
-            color: #1f2937;
+            color: #e6eef8;
         }
 
         /* Input fields */
         .input-field {
             width: 100%;
-            padding: 12px 31px;
-            border: 1px solid #d1d5db;
+            padding: 12px 16px;
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 8px;
             font-size: 14px;
             transition: all 0.3s ease;
+            background: var(--chip);
+            color: #e6eef8;
         }
 
         .input-field:focus {
-            border-color: #8b5cf6;
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
             outline: none;
         }
 
@@ -210,7 +223,7 @@
             display: block;
             font-size: 14px;
             font-weight: 500;
-            color: #374151;
+            color: var(--muted);
             margin-bottom: 8px;
         }
 
@@ -261,7 +274,7 @@
             left: 16px;
             top: 50%;
             transform: translateY(-50%);
-            color: #6b7280;
+            color: var(--muted);
         }
 
         .price-container input {
@@ -280,20 +293,26 @@
 
         .toggle-btn div {
             padding: 12px 24px;
-            border: 1px solid #d1d5db;
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 8px;
             transition: all 0.2s ease;
+            background: var(--chip);
+            color: var(--muted);
         }
 
         .toggle-btn input:checked + div {
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            background: linear-gradient(135deg, var(--accent), #0d9488);
             color: white;
             border-color: transparent;
         }
 
         /* File input */
+        .file-input {
+            color: var(--muted);
+        }
+
         .file-input::-webkit-file-upload-button {
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            background: linear-gradient(135deg, var(--accent), #0d9488);
             border: none;
             color: white;
             padding: 8px 16px;
@@ -308,7 +327,7 @@
 
         /* Gradient button */
         .gradient-btn {
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            background: linear-gradient(135deg, var(--accent), #0d9488);
             color: white;
             padding: 10px 20px;
             border-radius: 8px;
@@ -318,27 +337,40 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            border: none;
+            cursor: pointer;
         }
 
         .gradient-btn:hover {
             opacity: 0.9;
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 10px 20px rgba(6, 182, 212, 0.3);
+        }
+
+        .gradient-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .gradient-btn.red {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
         }
 
         /* Preview card */
         .preview-card {
             position: relative;
             transition: all 0.3s ease;
-            border: 2px dashed #d1d5db;
+            border: 2px dashed rgba(255,255,255,0.1);
             border-radius: 12px;
             height: 192px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: #f9fafb;
+            background: var(--chip);
             overflow: hidden;
         }
 
@@ -355,8 +387,8 @@
         /* Review process */
         .review-process {
             padding: 16px;
-            background: linear-gradient(to right, #f5f3ff, #fdf2f8);
-            border: 1px solid #ede9fe;
+            background: rgba(6, 182, 212, 0.05);
+            border: 1px solid rgba(6, 182, 212, 0.2);
             border-radius: 8px;
         }
 
@@ -375,17 +407,17 @@
         }
 
         .review-status.yellow span {
-            background: #fef3c7;
-            color: #d97706;
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
         }
 
         .review-status.green span {
-            background: #d1fae5;
-            color: #059669;
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
         }
 
         .review-status.red span {
-            background: #fee2e2;
+            background: rgba(220, 38, 38, 0.2);
             color: #dc2626;
         }
 
@@ -399,11 +431,11 @@
 
         .review-status h4 {
             font-weight: 500;
-            color: #1f2937;
+            color: #e6eef8;
         }
 
         .review-status p {
-            color: #6b7280;
+            color: var(--muted);
             font-size: 14px;
             margin-top: 4px;
         }
@@ -423,11 +455,11 @@
         }
 
         .feature-card {
-            background: white;
+            background: var(--tile-bg);
             padding: 20px;
             border-radius: 8px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
 
@@ -435,7 +467,7 @@
             width: 48px;
             height: 48px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            background: linear-gradient(135deg, var(--accent), #0d9488);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -445,12 +477,12 @@
         .feature-card h3 {
             font-size: 18px;
             font-weight: 600;
-            color: #1f2937;
+            color: #e6eef8;
             margin-bottom: 8px;
         }
 
         .feature-card p {
-            color: #6b7280;
+            color: var(--muted);
             font-size: 14px;
         }
 
@@ -471,7 +503,7 @@
         }
 
         .success-modal-content {
-            background: white;
+            background: var(--tile-bg);
             border-radius: 12px;
             padding: 32px;
             max-width: 448px;
@@ -479,6 +511,7 @@
             margin: auto;
             position: relative;
             animation: fadeIn 0.5s ease forwards;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
         @keyframes fadeIn {
@@ -494,7 +527,7 @@
             animation: confetti-fall 5s ease-in-out infinite;
         }
 
-        .confetti.primary-500 { background: #8b5cf6; }
+        .confetti.primary-500 { background: var(--accent); }
         .confetti.amber-400 { background: #f59e0b; }
         .confetti.green-400 { background: #10b981; }
         .confetti.pink-400 { background: #ec4899; }
@@ -509,31 +542,31 @@
             width: 96px;
             height: 96px;
             border-radius: 50%;
-            background: linear-gradient(to right, #8b5cf6, #ec4899);
+            background: linear-gradient(to right, var(--accent), #0d9488);
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 24px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .success-modal-content h3 {
             font-size: 24px;
             font-weight: 700;
-            color: #1f2937;
+            color: #e6eef8;
             margin-bottom: 16px;
             text-align: center;
         }
 
         .success-modal-content p {
-            color: #6b7280;
+            color: var(--muted);
             margin-bottom: 24px;
             text-align: center;
         }
 
         .success-modal-content a {
             display: inline-block;
-            background: linear-gradient(to right, #8b5cf6, #ec4899);
+            background: linear-gradient(to right, var(--accent), #0d9488);
             color: white;
             padding: 12px 24px;
             border-radius: 8px;
@@ -549,12 +582,12 @@
         /* Submit button */
         .submit-section {
             padding-top: 24px;
-            border-top: 1px solid #f3f4f6;
+            border-top: 1px solid rgba(255,255,255,0.05);
             text-align: center;
         }
 
         .submit-section p {
-            color: #6b7280;
+            color: var(--muted);
             font-size: 14px;
             margin-top: 16px;
         }
@@ -563,58 +596,68 @@
             margin-right: 4px;
         }
 
+        /* Error message styles */
+        .error-message {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .error-container {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        /* Checkbox styles */
+        .checkbox-input {
+            height: 20px;
+            width: 20px;
+            color: var(--accent);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+
+        /* Select dropdown styles */
+        select.input-field {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+
+        /* Responsive adjustments */
         @media (max-width: 768px) {
-            .from-violet-50 {
-                --tw-gradient-from: #fff var(--tw-gradient-from-position);
-                --tw-gradient-to: rgb(245 243 255 / 0) var(--tw-gradient-to-position);
-                --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-                width: 298px;
-                margin-left: -17px;
-                font-size: 11px !important;
+            .gradient-bg {
+                padding: 24px;
             }
-            #addImageBtn {
-               width: 127px;
-               font-size: 11px;
+            
+            .form-section {
+                padding: 16px;
             }
+            
+            .grid-2, .grid-3, .grid-4 {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
             .gradient-btn {
-                background: linear-gradient(135deg, #8b5cf6, #ec4899);
-                transition: all 0.3s ease;
-                width: 211px;
-                font-size: 12px !important;
+                width: 100%;
+                font-size: 14px;
             }
-            .image-input-group {
-                width: 140px;
-                font-size: 12px !important;
+            
+            .preview-card {
+                height: 150px;
             }
-            .form-section h3.font-medium {
-                font-size: 12px;
-            }
-            .form-section p.text-sm {
-                font-size: 11px;
-            }
-            .review-step h3 {
-                font-size: 11px !important;
-                line-height: 1.3;
-            }
-            .review-step p {
-                font-size: 10px !important;
-                line-height: 1.3;
-            }
-            .status-badge {
-                padding: 0.25rem 0.5rem !important;
-                font-size: 12px !important;
-            }
-            .step-content {
-                margin-left: 0.75rem !important;
-            }
-            .info-container {
-                padding: 0.75rem !important;
-            }
-            .max-w-2xl {
-           width: 325px;
-    position: relative;
-    right: 0px;
-            }
+        }
+
+        /* Category section styles */
+        .category-section {
+            display: none;
         }
     </style>
 </head>
@@ -639,7 +682,7 @@
                 </div>
                 <div class="form-header-text">
                     <h1>Post Free Ad</h1>
-                    <p>Showcase your product</p>
+                    <p>Showcase your product to thousands of buyers</p>
                 </div>
                 <div class="form-header-badge">
                     <i class="fas fa-bolt"></i>
@@ -649,15 +692,41 @@
         </div>
 
         <!-- Form Content -->
-        <form id="productForm" method="post" enctype="multipart/form-data" style="padding: 24px; background: white;">
+        <form id="productForm" method="post" enctype="multipart/form-data" style="padding: 24px; background: var(--panel);">
             {% csrf_token %}
             
-            <!-- Hidden Fields for Database -->
+            <!-- Hidden fields -->
             <input type="hidden" name="advertiser" value="{{ request.user.id }}">
-            <input type="hidden" name="category" value="{{ category.id }}">
             <input type="hidden" name="status" value="pending">
             <input type="hidden" name="is_featured" value="true">
-            
+
+            <!-- Messages and Errors -->
+            {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                    <div class="rounded-md p-3 mb-2 {% if message.tags == 'error' %}bg-red-600{% else %}bg-emerald-600{% endif %}">
+                        <p class="text-sm">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if form.errors %}
+            <div class="error-container">
+                <h3 class="font-bold mb-2">Please fix the following errors:</h3>
+                <ul class="list-disc list-inside text-sm">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
             <!-- Product Details -->
             <div class="form-section">
                 <div class="form-section-header">
@@ -666,519 +735,255 @@
                     </div>
                     <h2>Product Details</h2>
                 </div>
-                
+
                 <div style="margin-bottom: 24px;">
+                    <!-- Category Selection -->
+                    <div style="margin-bottom: 24px;">
+                        <label class="form-label">Select Category *</label>
+                        <select id="categorySelect" name="category" required class="input-field">
+                            <option value="">Select a Category</option>
+                            {% for c in categories %}
+                                <option value="{{ c.id }}" {% if form.category.value == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
+                            {% endfor %}
+                        </select>
+                        {% if form.category.errors %}
+                            <div class="error-message">{{ form.category.errors }}</div>
+                        {% endif %}
+                    </div>
+
                     <!-- Ad Type -->
                     <div style="margin-bottom: 24px;">
-                        <label class="form-label">Ad Type</label>
-                        <select name="ad_type" class="input-field">
+                        <label class="form-label">Ad Type *</label>
+                        <select name="ad_type" required class="input-field">
+                            <option value="">Select Ad Type</option>
                             <option value="sell" {% if form.ad_type.value == "sell" %}selected{% endif %}>For Sale</option>
                             <option value="rent" {% if form.ad_type.value == "rent" %}selected{% endif %}>For Rent</option>
                             <option value="exchange" {% if form.ad_type.value == "exchange" %}selected{% endif %}>For Exchange</option>
-                            <option value="service" {% if form.service_type.value == "service" %}selected{% endif %}>Service</option>
-                            <option value="job" {% if form.job_type.value == "job" %}selected{% endif %}>Job</option>
+                            <option value="service" {% if form.ad_type.value == "service" %}selected{% endif %}>Service</option>
+                            <option value="job" {% if form.ad_type.value == "job" %}selected{% endif %}>Job</option>
                             <option value="other" {% if form.ad_type.value == "other" %}selected{% endif %}>Other</option>
                         </select>
+                        {% if form.ad_type.errors %}
+                            <div class="error-message">{{ form.ad_type.errors }}</div>
+                        {% endif %}
                     </div>
 
-                    <div style="margin-bottom: 24px;">
-                        <label class="form-label">Product Name</label>
-                        <input type="text" name="name" value="{{ form.name.value|default_if_none:'' }}" 
-                               class="input-field" required>
-                    </div>
                     <div class="grid-2">
                         <div>
-                            <label class="form-label">Price</label>
+                            <label class="form-label">Product Name *</label>
+                            <input type="text" name="name" value="{{ form.name.value|default:'' }}" 
+                                   class="input-field" required placeholder="What are you selling?">
+                            {% if form.name.errors %}
+                                <div class="error-message">{{ form.name.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <label class="form-label">Price ($) *</label>
                             <div class="price-container">
                                 <span>$</span>
                                 <input type="number" name="price" step="0.01" min="0"
-                                       value="{{ form.price.value|default_if_none:'' }}"
-                                       class="input-field" required
-                                       pattern="^\d+(\.\d{1,2})?$"
-                                       title="Enter a valid price (e.g., 99.99) without slashes">
-                                <span class="error-message" style="color: red; display: none; font-size: 12px;">Invalid price format. Use numbers only (e.g., 99.99).</span>
+                                       value="{{ form.price.value|default:'' }}"
+                                       class="input-field" required placeholder="0.00">
                             </div>
+                            {% if form.price.errors %}
+                                <div class="error-message">{{ form.price.errors }}</div>
+                            {% endif %}
                         </div>
-                        <div>
-                            <label class="form-label">Location</label>
-                            <input type="text" name="location" 
-                                   value="{{ form.location.value|default_if_none:'' }}"
-                                   class="input-field" required
-                                   pattern="^[A-Za-z\s,.-]+$"
-                                   title="Enter a valid location (e.g., New York, Los Angeles) without numbers or slashes">
-                            <span class="error-message" style="color: red; display: none; font-size: 12px;">Invalid location. Use letters, spaces, commas, periods, or hyphens only.</span>
-                        </div>
+                    </div>
+
+                    <div style="margin-top: 24px;">
+                        <label class="form-label">Description *</label>
+                        <textarea name="description" rows="4" required class="input-field" 
+                                  placeholder="Describe your item in detail...">{{ form.description.value|default:'' }}</textarea>
+                        {% if form.description.errors %}
+                            <div class="error-message">{{ form.description.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div style="margin-top: 24px;">
+                        <label class="form-label">Location *</label>
+                        <input type="text" name="location" value="{{ form.location.value|default:'' }}" 
+                               class="input-field" required placeholder="City, State">
+                        {% if form.location.errors %}
+                            <div class="error-message">{{ form.location.errors }}</div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
 
-            <!-- Category Specific Sections -->
-            {% if category.name == 'Vehicles' %}
-            <div class="form-section">
+            <!-- DYNAMIC CATEGORY-SPECIFIC SECTIONS -->
+            <!-- Vehicles Section -->
+            <div class="category-section form-section" data-category-name="Vehicles">
                 <div class="form-section-header">
                     <div class="form-section-icon">
                         <i class="fas fa-car"></i>
                     </div>
-                    <h2>Car Details</h2>
+                    <h2>Vehicle Details</h2>
                 </div>
-                
-                <div style="margin-bottom: 24px;">
-                    <div class="grid-3">
-                        <div>
-                            <label class="form-label"><i class="fas fa-cog" style="margin-right: 8px; color: #8b5cf6;"></i>Motor Type</label>
-                            <input type="text" name="motortype" 
-                                   value="{{ form.motortype.value|default_if_none:'' }}"
-                                   class="input-field"
-                                   pattern="^[A-Za-z\s,.-]+$"
-                                   title="Enter a valid motor type (e.g., Petrol, Diesel, Electric) without numbers or slashes">
-                            <span class="error-message" style="color: red; display: none; font-size: 12px;">Invalid motor type. Use letters, spaces, commas, periods, or hyphens only.</span>
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-calendar-alt" style="margin-right: 8px; color: #8b5cf6;"></i>Year</label>
-                            <input type="number" name="year" 
-                                   value="{{ form.year.value|default_if_none:'' }}"
-                                   class="input-field" min="1900" max="2025"
-                                   title="Enter a valid year (1900-2025)">
-                            <span class="error-message" style="color: red; display: none; font-size: 12px;">Invalid year. Use a number between 1900 and 2025.</span>
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-cogs" style="margin-right: 8px; color: #8b5cf6;"></i>Transmission</label>
-                            <select name="geartype" class="input-field">
-                                <option value="">Select Transmission</option>
-                                <option value="Automatic" {% if form.geartype.value == "Automatic" %}selected{% endif %}>Automatic</option>
-                                <option value="Manual" {% if form.geartype.value == "Manual" %}selected{% endif %}>Manual</option>
-                                <option value="Semi-Automatic" {% if form.geartype.value == "Semi-Automatic" %}selected{% endif %}>Semi-Automatic</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-palette" style="margin-right: 8px; color: #8b5cf6;"></i>Color</label>
-                            <input type="text" name="color" 
-                                   value="{{ form.color.value|default_if_none:'' }}"
-                                   class="input-field"
-                                   pattern="^[A-Za-z\s,.-]+$"
-                                   title="Enter a valid color (e.g., Red, Blue) without numbers or slashes">
-                            <span class="error-message" style="color: red; display: none; font-size: 12px;">Invalid color. Use letters, spaces, commas, periods, or hyphens only.</span>
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-car" style="margin-right: 8px; color: #8b5cf6;"></i>Vehicle Type</label>
-                            <select name="vehicle_type" class="input-field">
-                                <option value="">Select Type</option>
-                                <option value="car" {% if form.vehicle_type.value == "car" %}selected{% endif %}>Car</option>
-                                <option value="motorcycle" {% if form.vehicle_type.value == "motorcycle" %}selected{% endif %}>Motorcycle</option>
-                                <option value="bus" {% if form.vehicle_type.value == "bus" %}selected{% endif %}>Bus</option>
-                                <option value="truck" {% if form.vehicle_type.value == "truck" %}selected{% endif %}>Truck</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-exchange-alt" style="margin-right: 8px; color: #8b5cf6;"></i>Automatic?</label>
-                            <div style="display: flex; align-items: center;">
-                                <input type="checkbox" name="is_automatic" id="is_automatic"
-                                       style="height: 20px; width: 20px; color: #8b5cf6; border: 1px solid #d1d5db; border-radius: 4px;"
-                                       {% if form.is_automatic.value %}checked{% endif %}>
-                                <label for="is_automatic" style="margin-left: 8px; color: #374151;">Yes</label>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="form-label">Condition</label>
-                            <div style="display: flex; flex-wrap: wrap; gap: 12px;">
-                                <label class="toggle-btn">
-                                    <input type="radio" name="condition" value="Used" 
-                                           {% if form.condition.value == "Used" %}checked{% endif %} required>
-                                    <div>Used</div>
-                                </label>
-                                <label class="toggle-btn">
-                                    <input type="radio" name="condition" value="New" 
-                                           {% if form.condition.value == "New" %}checked{% endif %} required>
-                                    <div>New</div>
-                                </label>
-                            </div>
+                <div class="grid-3">
+                    <div>
+                        <label class="form-label">Vehicle Type</label>
+                        <select name="vehicle_type" class="input-field">
+                            <option value="">Select Type</option>
+                            <option value="car" {% if form.vehicle_type.value == "car" %}selected{% endif %}>Car</option>
+                            <option value="motorcycle" {% if form.vehicle_type.value == "motorcycle" %}selected{% endif %}>Motorcycle</option>
+                            <option value="bus" {% if form.vehicle_type.value == "bus" %}selected{% endif %}>Bus</option>
+                            <option value="truck" {% if form.vehicle_type.value == "truck" %}selected{% endif %}>Truck</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Motor Type</label>
+                        <input type="text" name="motortype" value="{{ form.motortype.value|default:'' }}"
+                               class="input-field" placeholder="e.g., Diesel, Petrol, Electric">
+                    </div>
+                    <div>
+                        <label class="form-label">Year</label>
+                        <input type="number" name="year" value="{{ form.year.value|default:'' }}" min="1900" max="{% now 'Y' %}"
+                               class="input-field" placeholder="Manufacturing year">
+                    </div>
+                    <div>
+                        <label class="form-label">Color</label>
+                        <input type="text" name="color" value="{{ form.color.value|default:'' }}"
+                               class="input-field" placeholder="Vehicle color">
+                    </div>
+                    <div>
+                        <label class="form-label">Transmission</label>
+                        <select name="geartype" class="input-field">
+                            <option value="">Select Transmission</option>
+                            <option value="Automatic" {% if form.geartype.value == "Automatic" %}selected{% endif %}>Automatic</option>
+                            <option value="Manual" {% if form.geartype.value == "Manual" %}selected{% endif %}>Manual</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Automatic Transmission</label>
+                        <div style="display: flex; align-items: center;">
+                            <input type="checkbox" name="is_automatic" id="is_automatic" value="true" 
+                                   {% if form.is_automatic.value %}checked{% endif %} class="checkbox-input">
+                            <label for="is_automatic" style="margin-left: 8px; color: var(--muted);">Yes</label>
                         </div>
                     </div>
                 </div>
             </div>
-            {% elif category.name == 'Property' %}
-            <div class="form-section">
+
+            <!-- Property Section -->
+            <div class="category-section form-section" data-category-name="Property">
                 <div class="form-section-header">
                     <div class="form-section-icon">
                         <i class="fas fa-home"></i>
                     </div>
                     <h2>Property Details</h2>
                 </div>
-                
-                <div style="margin-bottom: 24px;">
-                    <div class="grid-3">
-                        <div>
-                            <label class="form-label"><i class="fas fa-bed" style="margin-right: 8px; color: #8b5cf6;"></i>Number of Rooms</label>
-                            <input type="number" name="num_rooms" 
-                                   value="{{ form.num_rooms.value|default_if_none:'' }}"
-                                   class="input-field" min="0">
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-bath" style="margin-right: 8px; color: #8b5cf6;"></i>Number of Bathrooms</label>
-                            <input type="number" name="num_baths" 
-                                   value="{{ form.num_baths.value|default_if_none:'' }}"
-                                   class="input-field" min="0">
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-ruler-combined" style="margin-right: 8px; color: #8b5cf6;"></i>Area Size (sq ft/m)</label>
-                            <input type="text" name="area_size" 
-                                   value="{{ form.area_size.value|default_if_none:'' }}"
-                                   class="input-field"
-                                   pattern="^\d+(\.\d{1,2})?\s*(sq\s*ft|m)?$"
-                                   title="Enter a valid area size (e.g., 100 or 100 sq ft or 100 m)">
-                            <span class="error-message" style="color: red; display: none; font-size: 12px;">Invalid area size. Use numbers optionally followed by 'sq ft' or 'm' (e.g., 100 sq ft).</span>
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-couch" style="margin-right: 8px; color: #8b5cf6;"></i>Furnishing Type</label>
-                            <select name="furnishing_type" class="input-field">
-                                <option value="">Select Type</option>
-                                <option value="fully_furnished" {% if form.furnishing_type.value == "fully_furnished" %}selected{% endif %}>Fully Furnished</option>
-                                <option value="semi_furnished" {% if form.furnishing_type.value == "semi_furnished" %}selected{% endif %}>Semi Furnished</option>
-                                <option value="unfurnished" {% if form.furnishing_type.value == "unfurnished" %}selected{% endif %}>Unfurnished</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-building" style="margin-right: 8px; color: #8b5cf6;"></i>Property Type</label>
-                            <select name="property_type" class="input-field">
-                                <option value="">Select Type</option>
-                                <option value="apartment" {% if form.property_type.value == "apartment" %}selected{% endif %}>Apartment</option>
-                                <option value="house" {% if form.property_type.value == "house" %}selected{% endif %}>House</option>
-                                <option value="villa" {% if form.property_type.value == "villa" %}selected{% endif %}>Villa</option>
-                                <option value="condo" {% if form.property_type.value == "condo" %}selected{% endif %}>Condo</option>
-                                <option value="commercial" {% if form.property_type.value == "commercial" %}selected{% endif %}>Commercial</option>
-                                <option value="office" {% if form.property_type.value == "office" %}selected{% endif %}>Office Space</option>
-                                <option value="warehouse" {% if form.property_type.value == "warehouse" %}selected{% endif %}>Warehouse</option>
-                                <option value="farmhouse" {% if form.property_type.value == "farmhouse" %}selected{% endif %}>Farm House</option>
-                            </select>
-                        </div>
+                <div class="grid-3">
+                    <div>
+                        <label class="form-label">Number of Rooms</label>
+                        <input type="number" name="num_rooms" value="{{ form.num_rooms.value|default:'' }}" min="0"
+                               class="input-field">
                     </div>
-                    <div class="grid-4" style="margin-top: 16px;">
-                        <div>
-                            <label class="form-label"><i class="fas fa-parking" style="margin-right: 8px; color: #8b5cf6;"></i>Has Parking?</label>
-                            <div style="display: flex; align-items: center;">
-                                <input type="checkbox" name="has_parking" id="has_parking"
-                                       style="height: 20px; width: 20px; color: #8b5cf6; border: 1px solid #d1d5db; border-radius: 4px;"
-                                       {% if form.has_parking.value %}checked{% endif %}>
-                                <label for="has_parking" style="margin-left: 8px; color: #374151;">Yes</label>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-swimming-pool" style="margin-right: 8px; color: #8b5cf6;"></i>Has Pool?</label>
-                            <div style="display: flex; align-items: center;">
-                                <input type="checkbox" name="has_pool" id="has_pool"
-                                       style="height: 20px; width: 20px; color: #8b5cf6; border: 1px solid #d1d5db; border-radius: 4px;"
-                                       {% if form.has_pool.value %}checked{% endif %}>
-                                <label for="has_pool" style="margin-left: 8px; color: #374151;">Yes</label>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-tint" style="margin-right: 8px; color: #8b5cf6;"></i>Has Water?</label>
-                            <div style="display: flex; align-items: center;">
-                                <input type="checkbox" name="has_water" id="has_water"
-                                       style="height: 20px; width: 20px; color: #8b5cf6; border: 1px solid #d1d5db; border-radius: 4px;"
-                                       {% if form.has_water.value %}checked{% endif %}>
-                                <label for="has_water" style="margin-left: 8px; color: #374151;">Yes</label>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-bolt" style="margin-right: 8px; color: #8b5cf6;"></i>Has Electricity?</label>
-                            <div style="display: flex; align-items: center;">
-                                <input type="checkbox" name="has_electricity" id="has_electricity"
-                                       style="height: 20px; width: 20px; color: #8b5cf6; border: 1px solid #d1d5db; border-radius: 4px;"
-                                       {% if form.has_electricity.value %}checked{% endif %}>
-                                <label for="has_electricity" style="margin-left: 8px; color: #374151;">Yes</label>
-                            </div>
-                        </div>
+                    <div>
+                        <label class="form-label">Number of Bathrooms</label>
+                        <input type="number" name="num_baths" value="{{ form.num_baths.value|default:'' }}" min="0"
+                               class="input-field">
                     </div>
-                </div>
-            </div>
-            {% elif category.name == 'Lands' %}
-            <div class="form-section">
-                <div class="form-section-header">
-                    <div class="form-section-icon">
-                        <i class="fas fa-map-marked-alt"></i>
+                    <div>
+                        <label class="form-label">Area Size (sq ft/m)</label>
+                        <input type="number" name="area_size" value="{{ form.area_size.value|default:'' }}" min="0"
+                               class="input-field">
                     </div>
-                    <h2>Land Details</h2>
-                </div>
-                
-                <div style="margin-bottom: 24px;">
+                    <div>
+                        <label class="form-label">Furnishing Type</label>
+                        <select name="furnishing_type" class="input-field">
+                            <option value="">Select Type</option>
+                            <option value="fully_furnished" {% if form.furnishing_type.value == "fully_furnished" %}selected{% endif %}>Fully Furnished</option>
+                            <option value="semi_furnished" {% if form.furnishing_type.value == "semi_furnished" %}selected{% endif %}>Semi Furnished</option>
+                            <option value="unfurnished" {% if form.furnishing_type.value == "unfurnished" %}selected{% endif %}>Unfurnished</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Property Type</label>
+                        <select name="property_type" class="input-field">
+                            <option value="">Select Type</option>
+                            <option value="apartment" {% if form.property_type.value == "apartment" %}selected{% endif %}>Apartment</option>
+                            <option value="house" {% if form.property_type.value == "house" %}selected{% endif %}>House</option>
+                            <option value="villa" {% if form.property_type.value == "villa" %}selected{% endif %}>Villa</option>
+                            <option value="commercial" {% if form.property_type.value == "commercial" %}selected{% endif %}>Commercial</option>
+                        </select>
+                    </div>
                     <div class="grid-2">
                         <div>
-                            <label class="form-label"><i class="fas fa-map" style="margin-right: 8px; color: #8b5cf6;"></i>Land Type</label>
-                            <select name="land_type" class="input-field">
-                                <option value="">Select Type</option>
-                                <option value="residential" {% if form.land_type.value == "residential" %}selected{% endif %}>Residential</option>
-                                <option value="agricultural" {% if form.land_type.value == "agricultural" %}selected{% endif %}>Agricultural</option>
-                                <option value="commercial" {% if form.land_type.value == "commercial" %}selected{% endif %}>Commercial</option>
-                                <option value="industrial" {% if form.land_type.value == "industrial" %}selected{% endif %}>Industrial</option>
-                            </select>
+                            <label class="form-label">Has Parking</label>
+                            <div style="display: flex; align-items: center;">
+                                <input type="checkbox" name="has_parking" id="has_parking"
+                                       {% if form.has_parking.value %}checked{% endif %} class="checkbox-input">
+                                <label for="has_parking" style="margin-left: 8px; color: var(--muted);">Yes</label>
+                            </div>
                         </div>
                         <div>
-                            <label class="form-label"><i class="fas fa-ruler-combined" style="margin-right: 8px; color: #8b5cf6;"></i>Land Area (acres/hectares)</label>
-                            <input type="text" name="land_area" 
-                                   value="{{ form.land_area.value|default_if_none:'' }}"
-                                   class="input-field"
-                                   pattern="^\d+(\.\d{1,2})?\s*(acres|hectares)?$"
-                                   title="Enter a valid land area (e.g., 5 or 5 acres or 5 hectares)">
-                            <span class="error-message" style="color: red; display: none; font-size: 12px;">Invalid land area. Use numbers optionally followed by 'acres' or 'hectares' (e.g., 5 acres).</span>
+                            <label class="form-label">Has Pool</label>
+                            <div style="display: flex; align-items: center;">
+                                <input type="checkbox" name="has_pool" id="has_pool"
+                                       {% if form.has_pool.value %}checked{% endif %} class="checkbox-input">
+                                <label for="has_pool" style="margin-left: 8px; color: var(--muted);">Yes</label>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            {% elif category.name == 'Electronics' %}
-            <div class="form-section">
+
+            <!-- Electronics Section -->
+            <div class="category-section form-section" data-category-name="Electronics">
                 <div class="form-section-header">
                     <div class="form-section-icon">
                         <i class="fas fa-laptop"></i>
                     </div>
                     <h2>Electronics Details</h2>
                 </div>
-                
-                <div style="margin-bottom: 24px;">
-                    <div class="grid-3">
-                        <div>
-                            <label class="form-label"><i class="fas fa-mobile-alt" style="margin-right: 8px; color: #8b5cf6;"></i>Electronics Type</label>
-                            <select name="electronics_type" class="input-field">
-                                <option value="">Select Type</option>
-                                <option value="phone" {% if form.electronics_type.value == "phone" %}selected{% endif %}>Mobile Phone</option>
-                                <option value="laptop" {% if form.electronics_type.value == "laptop" %}selected{% endif %}>Laptop</option>
-                                <option value="tablet" {% if form.electronics_type.value == "tablet" %}selected{% endif %}>Tablet</option>
-                                <option value="camera" {% if form.electronics_type.value == "camera" %}selected{% endif %}>Camera</option>
-                                <option value="tv" {% if form.electronics_type.value == "tv" %}selected{% endif %}>TV</option>
-                                <option value="audio" {% if form.electronics_type.value == "audio" %}selected{% endif %}>Audio Equipment</option>
-                                <option value="gaming" {% if form.electronics_type.value == "gaming" %}selected{% endif %}>Gaming Console</option>
-                                <option value="smart_home" {% if form.electronics_type.value == "smart_home" %}selected{% endif %}>Smart Home Devices</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-code" style="margin-right: 8px; color: #8b5cf6;"></i>Operating System</label>
-                            <select name="operating_system" class="input-field">
-                                <option value="">Select OS</option>
-                                <option value="android" {% if form.operating_system.value == "android" %}selected{% endif %}>Android</option>
-                                <option value="ios" {% if form.operating_system.value == "ios" %}selected{% endif %}>iOS</option>
-                                <option value="windows" {% if form.operating_system.value == "windows" %}selected{% endif %}>Windows</option>
-                                <option value="other" {% if form.operating_system.value == "other" %}selected{% endif %}>Other</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-hdd" style="margin-right: 8px; color: #8b5cf6;"></i>Storage Capacity</label>
-                            <input type="text" name="storage_capacity" 
-                                   value="{{ form.storage_capacity.value|default_if_none:'' }}"
-                                   class="input-field"
-                                   pattern="^\d+(\.\d{1,2})?\s*(GB|TB|MB)?$"
-                                   title="Enter a valid storage capacity (e.g., 128 GB or 1 TB)">
-                            <span class="error-message" style="color: red; display: none; font-size: 12px;">Invalid storage capacity. Use numbers optionally followed by 'GB', 'TB', or 'MB' (e.g., 128 GB).</span>
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-tablet-alt" style="margin-right: 8px; color: #8b5cf6;"></i>Screen Size (inches)</label>
-                            <input type="number" name="screen_size" step="0.1"
-                                   value="{{ form.screen_size.value|default_if_none:'' }}"
-                                   class="input-field" min="0">
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-memory" style="margin-right: 8px; color: #8b5cf6;"></i>RAM</label>
-                            <input type="text" name="ram" 
-                                   value="{{ form.ram.value|default_if_none:'' }}"
-                                   class="input-field"
-                                   pattern="^\d+(\.\d{1,2})?\s*(GB|MB)?$"
-                                   title="Enter a valid RAM size (e.g., 8 GB or 512 MB)">
-                            <span class="error-message" style="color: red; display: none; font-size: 12px;">Invalid RAM size. Use numbers optionally followed by 'GB' or 'MB' (e.g., 8 GB).</span>
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-microchip" style="margin-right: 8px; color: #8b5cf6;"></i>Processor</label>
-                            <input type="text" name="processor" 
-                                   value="{{ form.processor.value|default_if_none:'' }}"
-                                   class="input-field">
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-camera" style="margin-right: 8px; color: #8b5cf6;"></i>Camera Resolution</label>
-                            <input type="text" name="camera_resolution" 
-                                   value="{{ form.camera_resolution.value|default_if_none:'' }}"
-                                   class="input-field"
-                                   pattern="^\d+(\.\d{1,2})?\s*(MP)?$"
-                                   title="Enter a valid camera resolution (e.g., 12 MP)">
-                            <span class="error-message" style="color: red; display: none; font-size: 12px;">Invalid camera resolution. Use numbers optionally followed by 'MP' (e.g., 12 MP).</span>
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-clipboard-check" style="margin-right: 8px; color: #8b5cf6;"></i>Condition</label>
-                            <select name="electronics_condition" class="input-field">
-                                <option value="">Select Condition</option>
-                                <option value="new" {% if form.electronics_condition.value == "new" %}selected{% endif %}>New</option>
-                                <option value="second_hand" {% if form.electronics_condition.value == "second_hand" %}selected{% endif %}>Second Hand</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-file-contract" style="margin-right: 8px; color: #8b5cf6;"></i>Warranty</label>
-                            <div style="display: flex; align-items: center;">
-                                <input type="checkbox" name="has_warranty" id="has_warranty"
-                                       style="height: 20px; width: 20px; color: #8b5cf6; border: 1px solid #d1d5db; border-radius: 4px;"
-                                       {% if form.has_warranty.value %}checked{% endif %}>
-                                <label for="has_warranty" style="margin-left: 8px; color: #374151;">Has Warranty</label>
-                            </div>
-                            <input type="text" name="warranty_period" 
-                                   value="{{ form.warranty_period.value|default_if_none:'' }}"
-                                   placeholder="Warranty period"
-                                   class="input-field" style="margin-top: 8px;"
-                                   pattern="^\d+\s*(year(s)?|month(s)?)?$"
-                                   title="Enter a valid warranty period (e.g., 1 year or 6 months)">
-                            <span class="error-message" style="color: red; display: none; font-size: 12px;">Invalid warranty period. Use numbers optionally followed by 'year(s)' or 'month(s)' (e.g., 1 year).</span>
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-sim-card" style="margin-right: 8px; color: #8b5cf6;"></i>SIM Type</label>
-                            <select name="sim_type" class="input-field">
-                                <option value="">Select Type</option>
-                                <option value="single" {% if form.sim_type.value == "single" %}selected{% endif %}>Single SIM</option>
-                                <option value="dual" {% if form.sim_type.value == "dual" %}selected{% endif %}>Dual SIM</option>
-                                <option value="e_sim" {% if form.sim_type.value == "e_sim" %}selected{% endif %}>eSIM</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% elif category.name == 'Jobs' %}
-            <div class="form-section">
-                <div class="form-section-header">
-                    <div class="form-section-icon">
-                        <i class="fas fa-briefcase"></i>
-                    </div>
-                    <h2>Job Details</h2>
-                </div>
-                
-                <div style="margin-bottom: 24px;">
-                    <div class="grid-2">
-                        <div>
-                            <label class="form-label"><i class="fas fa-calendar-alt" style="margin-right: 8px; color: #8b5cf6;"></i>Job Type</label>
-                            <select name="job_type" class="input-field">
-                                <option value="">Select Type</option>
-                                <option value="full_time" {% if form.job_type.value == "full_time" %}selected{% endif %}>Full Time</option>
-                                <option value="part_time" {% if form.job_type.value == "part_time" %}selected{% endif %}>Part Time</option>
-                                <option value="contract" {% if form.job_type.value == "contract" %}selected{% endif %}>Contract</option>
-                                <option value="internship" {% if form.job_type.value == "internship" %}selected{% endif %}>Internship</option>
-                                <option value="remote" {% if form.job_type.value == "remote" %}selected{% endif %}>Remote</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-dollar-sign" style="margin-right: 8px; color: #8b5cf6;"></i>Salary</label>
-                            <input type="text" name="salary" 
-                                   value="{{ form.salary.value|default_if_none:'' }}"
-                                   placeholder="e.g. $50,000 or Negotiable"
-                                   class="input-field">
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-user-tie" style="margin-right: 8px; color: #8b5cf6;"></i>Experience Required</label>
-                            <input type="text" name="experience_required" 
-                                   value="{{ form.experience_required.value|default_if_none:'' }}"
-                                   placeholder="e.g. 3+ years"
-                                   class="input-field">
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-graduation-cap" style="margin-right: 8px; color: #8b5cf6;"></i>Education Required</label>
-                            <input type="text" name="education_required" 
-                                   value="{{ form.education_required.value|default_if_none:'' }}"
-                                   placeholder="e.g. Bachelor's Degree"
-                                   class="input-field">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% elif category.name == 'Services' %}
-            <div class="form-section">
-                <div class="form-section-header">
-                    <div class="form-section-icon">
-                        <i class="fas fa-concierge-bell"></i>
-                    </div>
-                    <h2>Service Details</h2>
-                </div>
-                
-                <div style="margin-bottom: 24px;">
-                    <div class="grid-2">
-                        <div>
-                            <label class="form-label"><i class="fas fa-tools" style="margin-right: 8px; color: #8b5cf6;"></i>Service Type</label>
-                            <select name="service_type" class="input-field">
-                                <option value="">Select Type</option>
-                                <option value="cleaning" {% if form.service_type.value == "cleaning" %}selected{% endif %}>Cleaning</option>
-                                <option value="moving" {% if form.service_type.value == "moving" %}selected{% endif %}>Moving & Storage</option>
-                                <option value="repair" {% if form.service_type.value == "repair" %}selected{% endif %}>Repair & Maintenance</option>
-                                <option value="it" {% if form.service_type.value == "it" %}selected{% endif %}>IT Services</option>
-                                <option value="beauty" {% if form.service_type.value == "beauty" %}selected{% endif %}>Beauty & Wellness</option>
-                                <option value="tutoring" {% if form.service_type.value == "tutoring" %}selected{% endif %}>Tutoring & Lessons</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-map-marker-alt" style="margin-right: 8px; color: #8b5cf6;"></i>Service Area</label>
-                            <input type="text" name="service_area" 
-                                   value="{{ form.service_area.value|default_if_none:'' }}"
-                                   placeholder="e.g. City-wide or specific areas"
-                                   class="input-field">
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-clock" style="margin-right: 8px; color: #8b5cf6;"></i>Availability</label>
-                            <input type="text" name="availability" 
-                                   value="{{ form.availability.value|default_if_none:'' }}"
-                                   placeholder="e.g. Mon-Fri 9am-5pm"
-                                   class="input-field">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% elif category.name == 'Fashion' %}
-            <div class="form-section">
-                <div class="form-section-header">
-                    <div class="form-section-icon">
-                        <i class="fas fa-tshirt"></i>
-                    </div>
-                    <h2>Fashion Details</h2>
-                </div>
-                
-                <div style="margin-bottom: 24px;">
-                    <div class="grid-3">
-                        <div>
-                            <label class="form-label"><i class="fas fa-vest" style="margin-right: 8px; color: #8b5cf6;"></i>Fashion Type</label>
-                            <select name="fashion_type" class="input-field">
-                                <option value="">Select Type</option>
-                                <option value="men" {% if form.fashion_type.value == "men" %}selected{% endif %}>Men's Fashion</option>
-                                <option value="women" {% if form.fashion_type.value == "women" %}selected{% endif %}>Women's Fashion</option>
-                                <option value="kids" {% if form.fashion_type.value == "kids" %}selected{% endif %}>Kids' Fashion</option>
-                                <option value="watches" {% if form.fashion_type.value == "watches" %}selected{% endif %}>Watches</option>
-                                <option value="jewelry" {% if form.fashion_type.value == "jewelry" %}selected{% endif %}>Jewelry</option>
-                                <option value="bags" {% if form.fashion_type.value == "bags" %}selected{% endif %}>Bags & Accessories</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-ruler" style="margin-right: 8px; color: #8b5cf6;"></i>Size</label>
-                            <input type="text" name="size" 
-                                   value="{{ form.size.value|default_if_none:'' }}"
-                                   placeholder="e.g. S, M, L or specific measurements"
-                                   class="input-field">
-                        </div>
-                        <div>
-                            <label class="form-label"><i class="fas fa-cut" style="margin-right: 8px; color: #8b5cf6;"></i>Material</label>
-                            <input type="text" name="material" 
-                                   value="{{ form.material.value|default_if_none:'' }}"
-                                   placeholder="e.g. Cotton, Leather, Silk"
-                                   class="input-field"
-                                   pattern="^[A-Za-z\s,.-]+$"
-                                   title="Enter a valid material (e.g., Cotton, Leather) without numbers or slashes">
-                            <span class="error-message" style="color: red; display: none; font-size: 12px;">Invalid material. Use letters, spaces, commas, periods, or hyphens only.</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- Description -->
-            <div class="form-section">
-                <div class="form-section-header">
-                    <div class="form-section-icon">
-                        <i class="fas fa-align-left"></i>
-                    </div>
-                    <h2>Description</h2>
-                </div>
-                
-                <div style="margin-bottom: 24px;">
+                <div class="grid-3">
                     <div>
-                        <label class="form-label">Detailed Description</label>
-                        <textarea name="description" class="input-field" style="min-height: 150px;">{{ form.description.value|default_if_none:'' }}</textarea>
+                        <label class="form-label">Electronics Type</label>
+                        <select name="electronics_type" class="input-field">
+                            <option value="">Select Type</option>
+                            <option value="phone" {% if form.electronics_type.value == "phone" %}selected{% endif %}>Mobile Phone</option>
+                            <option value="laptop" {% if form.electronics_type.value == "laptop" %}selected{% endif %}>Laptop</option>
+                            <option value="tablet" {% if form.electronics_type.value == "tablet" %}selected{% endif %}>Tablet</option>
+                            <option value="camera" {% if form.electronics_type.value == "camera" %}selected{% endif %}>Camera</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Operating System</label>
+                        <select name="operating_system" class="input-field">
+                            <option value="">Select OS</option>
+                            <option value="android" {% if form.operating_system.value == "android" %}selected{% endif %}>Android</option>
+                            <option value="ios" {% if form.operating_system.value == "ios" %}selected{% endif %}>iOS</option>
+                            <option value="windows" {% if form.operating_system.value == "windows" %}selected{% endif %}>Windows</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Storage Capacity</label>
+                        <input type="text" name="storage_capacity" value="{{ form.storage_capacity.value|default:'' }}"
+                               class="input-field" placeholder="e.g., 128GB, 1TB">
+                    </div>
+                    <div>
+                        <label class="form-label">Screen Size (inches)</label>
+                        <input type="number" step="0.1" name="screen_size" value="{{ form.screen_size.value|default:'' }}"
+                               class="input-field" placeholder="e.g., 6.1, 15.6">
+                    </div>
+                    <div>
+                        <label class="form-label">RAM</label>
+                        <input type="text" name="ram" value="{{ form.ram.value|default:'' }}"
+                               class="input-field" placeholder="e.g., 8GB, 16GB">
+                    </div>
+                    <div>
+                        <label class="form-label">Processor</label>
+                        <input type="text" name="processor" value="{{ form.processor.value|default:'' }}"
+                               class="input-field" placeholder="e.g., Intel i7, Snapdragon 888">
+                    </div>
+                    <div>
+                        <label class="form-label">Condition</label>
+                        <select name="electronics_condition" class="input-field">
+                            <option value="">Select Condition</option>
+                            <option value="new" {% if form.electronics_condition.value == "new" %}selected{% endif %}>New</option>
+                            <option value="second_hand" {% if form.electronics_condition.value == "second_hand" %}selected{% endif %}>Second Hand</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -1193,102 +998,75 @@
                 </div>
                 
                 <div style="margin-bottom: 24px;">
-                    <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px;">
-                        <div>
-                            <h3 style="font-size: 16px; font-weight: 500; color: #374151;">Upload Your Images</h3>
-                            <p style="color: #6b7280; font-size: 14px; margin-top: 4px;">First image will be featured as cover</p>
+                    <p style="color: var(--muted); margin-bottom: 16px;">Upload up to 10 images. First image will be the cover.</p>
+
+                    <div style="margin-bottom: 16px;">
+                        <input type="file" id="imagesInput" name="images" accept="image/*" multiple 
+                               class="file-input input-field">
+                    </div>
+                    {% if form.images.errors %}
+                        <div class="error-message">{{ form.images.errors }}</div>
+                    {% endif %}
+
+                    <div id="previewContainer" class="grid-3">
+                        <div class="preview-card">
+                            <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--muted); margin-bottom: 12px;"></i>
+                            <p style="color: var(--muted); font-size: 14px;">Images will appear here</p>
                         </div>
-                        <button type="button" id="addImageBtn" class="gradient-btn" disabled>
-                            <i class="fas fa-plus" style="margin-right: 8px;"></i>
-                            Add Images
+                    </div>
+
+                    <div style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center;">
+                        <span class="text-slate-400 text-sm" id="imageCount">0 images selected</span>
+                        <button type="button" id="clearImages" class="gradient-btn red" style="display: none;">
+                            <i class="fas fa-trash"></i> Clear All
                         </button>
-                    </div>
-                    
-                    <div id="imageInputContainer" class="grid-3">
-                        <div class="image-input-group">
-                            <input type="file" name="images" accept="image/*" class="file-input input-field">
-                        </div>
-                    </div>
-                    
-                    <div style="margin-top: 24px;">
-                        <h3 style="font-size: 16px; font-weight: 500; color: #374151; margin-bottom: 16px;">Image Previews</h3>
-                        <div id="previewContainer" class="grid-3">
-                            <div class="preview-card">
-                                <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #9ca3af; margin-bottom: 12px;"></i>
-                                <p style="color: #6b7280; font-size: 14px;">Upload Preview</p>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Review Process Information -->
-            <div class="max-w-2xl w-full">
-                <div class="form-section bg-white p-6 rounded-lg shadow-md">
-                    <div class="flex items-center mb-6">
-                        <div class="w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center mr-3">
-                            <i class="fas fa-info-circle text-violet-600"></i>
-                        </div>
-                        <h2 class="text-xl font-semibold text-gray-800">Review Process</h2>
+            <div class="form-section">
+                <div class="form-section-header">
+                    <div class="form-section-icon">
+                        <i class="fas fa-info-circle"></i>
                     </div>
-                    
-                    <div class="space-y-6">
-                        <div class="info-container p-4 bg-gradient-to-r from-violet-50 to-pink-50 rounded-lg border border-violet-200">
-                            <h3 class="font-semibold text-violet-800 mb-3">What happens after submission?</h3>
-                            <div class="space-y-4">
-                                <!-- Pending Step -->
-                                <div class="flex items-start review-step">
-                                    <div class="flex-shrink-0 mt-1">
-                                        <span class="status-badge px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
-                                            <i class="fas fa-clock mr-2"></i> Pending
-                                        </span>
-                                    </div>
-                                    <div class="step-content ml-4">
-                                        <h3 class="font-medium text-gray-800">Ad is awaiting review</h3>
-                                        <p class="text-gray-600 text-sm mt-1">Our team will review your ad within 24 hours</p>
-                                    </div>
-                                </div>
-                                
-                                <!-- Approved Step -->
-                                <div class="flex items-start review-step">
-                                    <div class="flex-shrink-0 mt-1">
-                                        <span class="status-badge px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-                                            <i class="fas fa-check-circle mr-2"></i> Approved
-                                        </span>
-                                    </div>
-                                    <div class="step-content ml-4">
-                                        <h3 class="font-medium text-gray-800">Ad is live and visible</h3>
-                                        <p class="text-gray-600 text-sm mt-1">Your ad will be published and visible to users</p>
-                                    </div>
-                                </div>
-                                
-                                <!-- Rejected Step -->
-                                <div class="flex items-start review-step">
-                                    <div class="flex-shrink-0 mt-1">
-                                        <span class="status-badge px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
-                                            <i class="fas fa-exclamation-circle mr-2"></i> Rejected
-                                        </span>
-                                    </div>
-                                    <div class="step-content ml-4">
-                                        <h3 class="font-medium text-gray-800">Ad didn't meet guidelines</h3>
-                                        <p class="text-gray-600 text-sm mt-1">We'll notify you with reasons and suggestions</p>
-                                    </div>
-                                </div>
-                            </div>
+                    <h2>Review Process</h2>
+                </div>
+                
+                <div class="review-process">
+                    <div class="review-status yellow">
+                        <span><i class="fas fa-clock"></i> Pending</span>
+                        <div>
+                            <h4>Ad is awaiting review</h4>
+                            <p>Our team will review your ad within 24 hours</p>
+                        </div>
+                    </div>
+                    <div class="review-status green">
+                        <span><i class="fas fa-check-circle"></i> Approved</span>
+                        <div>
+                            <h4>Ad is live and visible</h4>
+                            <p>Your ad will be published and visible to users</p>
+                        </div>
+                    </div>
+                    <div class="review-status red">
+                        <span><i class="fas fa-exclamation-circle"></i> Rejected</span>
+                        <div>
+                            <h4>Ad didn't meet guidelines</h4>
+                            <p>We'll notify you with reasons and suggestions</p>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Submit -->
-                <div class="submit-section">
-                    <button type="submit" class="gradient-btn" style="padding: 16px 40px; font-size: 18px; font-weight: 700;">
-                        <i class="fas fa-paper-plane" style="margin-right: 12px;"></i>
-                        Submit for Review
-                    </button>
-                    <p>
-                        <i class="fas fa-lock"></i> Secure submission · 24/7 support · 30-day visibility
-                    </p>
-                </div>
+            <!-- Submit Button -->
+            <div class="submit-section">
+                <button type="submit" class="gradient-btn" style="padding: 16px 40px; font-size: 18px; font-weight: 700;">
+                    <i class="fas fa-paper-plane" style="margin-right: 12px;"></i>
+                    Submit for Review
+                </button>
+                <p>
+                    <i class="fas fa-lock"></i> Secure submission · 24/7 support · 30-day visibility
+                </p>
             </div>
         </form>
         
@@ -1309,7 +1087,7 @@
                 <p>Get your ad approved and live in under 24 hours with priority processing.</p>
             </div>
             <div class="feature-card">
-                <div class="form-section-icon">
+                <div class="feature-card-icon">
                     <i class="fas fa-headset" style="font-size: 20px; color: white;"></i>
                 </div>
                 <h3>Premium Support</h3>
@@ -1319,7 +1097,9 @@
     </div>
 
     <!-- Success Modal -->
-    <div id="successModal" class="success-modal">
+    <div id="successModal" class="success-modal" 
+         {% if show_success %}data-show-success="true"{% endif %}
+         style="display: none;">
         <div class="success-modal-content">
             <!-- Confetti -->
             <div class="confetti primary-500" style="top: 10%; left: 10%; animation-delay: 0s;"></div>
@@ -1334,454 +1114,223 @@
                 </div>
                 <h3>Ad Submitted Successfully!</h3>
                 <p>Your ad is now in review. We'll notify you once it's approved.</p>
-                <a href="{% url 'index' %}">Return to Dashboard</a>
+                <a href="{% url 'index' %}" class="gradient-btn">Return to Dashboard</a>
             </div>
         </div>
     </div>
+</div>
 
-    <style>
-        .error-message {
-            color: red;
-            font-size: 12px;
-            margin-top: 4px;
-            display: none;
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Category selection logic
+    const categorySelect = document.getElementById('categorySelect');
+    const categorySections = document.querySelectorAll('.category-section');
+
+    console.log('Category select element:', categorySelect);
+    console.log('Category sections found:', categorySections.length);
+
+    function hideAllCategorySections() {
+        categorySections.forEach(section => {
+            section.style.display = 'none';
+        });
+    }
+
+    function showCategorySection(categoryName) {
+        hideAllCategorySections();
+        const section = document.querySelector(`.category-section[data-category-name="${categoryName}"]`);
+        if (section) {
+            section.style.display = 'block';
+            console.log('Showing category section for:', categoryName);
+        } else {
+            console.log('No category section found for:', categoryName);
         }
-    </style>
+    }
 
-    <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Function to validate input and prevent invalid characters
-    function restrictInput(inputElement, regex, errorElement, errorMessage) {
-        inputElement.addEventListener('input', function () {
-            // Prevent slashes
-            if (inputElement.value.includes('/')) {
-                inputElement.value = inputElement.value.replace('/', '');
-                errorElement.style.display = 'block';
-                errorElement.textContent = 'Slashes (/) are not allowed.';
-            } else if (inputElement.value && !regex.test(inputElement.value)) {
-                errorElement.style.display = 'block';
-                errorElement.textContent = errorMessage;
-            } else {
-                errorElement.style.display = 'none';
-            }
+    // Event listener for select change
+    if (categorySelect) {
+        categorySelect.addEventListener('change', function() {
+            const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+            const categoryName = selectedOption.text;
+            showCategorySection(categoryName);
         });
     }
 
-    // Function to validate year specifically
-    function restrictYearInput(inputElement, errorElement) {
-        inputElement.addEventListener('input', function () {
-            const year = parseInt(inputElement.value);
-            if (inputElement.value && (isNaN(year) || year < 1900 || year > 2025)) {
-                errorElement.style.display = 'block';
-                errorElement.textContent = 'Invalid year. Use a number between 1900 and 2025.';
-            } else {
-                errorElement.style.display = 'none';
-            }
-        });
+    // Initialize category if pre-selected
+    const initialCategoryId = categorySelect ? categorySelect.value : null;
+    console.log('Initial category ID:', initialCategoryId);
+
+    if (initialCategoryId && initialCategoryId !== '') {
+        const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+        const categoryName = selectedOption.text;
+        showCategorySection(categoryName);
+    } else {
+        hideAllCategorySections();
     }
 
-    // Validation for price
-    const priceInput = document.querySelector('input[name="price"]');
-    const priceError = priceInput.parentElement.nextElementSibling;
-    restrictInput(
-        priceInput,
-        /^\d+(\.\d{1,2})?$/,
-        priceError,
-        'Invalid price format. Use numbers only (e.g., 99.99).'
-    );
-
-    // Validation for location
-    const locationInput = document.querySelector('input[name="location"]');
-    const locationError = locationInput.nextElementSibling;
-    restrictInput(
-        locationInput,
-        /^[A-Za-z\s,.-]+$/,
-        locationError,
-        'Invalid location. Use letters, spaces, commas, periods, or hyphens only.'
-    );
-
-    // Validation for area_size
-    const areaSizeInput = document.querySelector('input[name="area_size"]');
-    if (areaSizeInput) {
-        const areaSizeError = areaSizeInput.nextElementSibling;
-        restrictInput(
-            areaSizeInput,
-            /^\d+(\.\d{1,2})?\s*(sq\s*ft|m)?$/,
-            areaSizeError,
-            "Invalid area size. Use numbers optionally followed by 'sq ft' or 'm' (e.g., 100 sq ft)."
-        );
-    }
-
-    // Validation for land_area
-    const landAreaInput = document.querySelector('input[name="land_area"]');
-    if (landAreaInput) {
-        const landAreaError = landAreaInput.nextElementSibling;
-        restrictInput(
-            landAreaInput,
-            /^\d+(\.\d{1,2})?\s*(acres|hectares)?$/,
-            landAreaError,
-            "Invalid land area. Use numbers optionally followed by 'acres' or 'hectares' (e.g., 5 acres)."
-        );
-    }
-
-    // Validation for storage_capacity
-    const storageCapacityInput = document.querySelector('input[name="storage_capacity"]');
-    if (storageCapacityInput) {
-        const storageCapacityError = storageCapacityInput.nextElementSibling;
-        restrictInput(
-            storageCapacityInput,
-            /^\d+(\.\d{1,2})?\s*(GB|TB|MB)?$/,
-            storageCapacityError,
-            "Invalid storage capacity. Use numbers optionally followed by 'GB', 'TB', or 'MB' (e.g., 128 GB)."
-        );
-    }
-
-    // Validation for ram
-    const ramInput = document.querySelector('input[name="ram"]');
-    if (ramInput) {
-        const ramError = ramInput.nextElementSibling;
-        restrictInput(
-            ramInput,
-            /^\d+(\.\d{1,2})?\s*(GB|MB)?$/,
-            ramError,
-            "Invalid RAM size. Use numbers optionally followed by 'GB' or 'MB' (e.g., 8 GB)."
-        );
-    }
-
-    // Validation for camera_resolution
-    const cameraResolutionInput = document.querySelector('input[name="camera_resolution"]');
-    if (cameraResolutionInput) {
-        const cameraResolutionError = cameraResolutionInput.nextElementSibling;
-        restrictInput(
-            cameraResolutionInput,
-            /^\d+(\.\d{1,2})?\s*(MP)?$/,
-            cameraResolutionError,
-            "Invalid camera resolution. Use numbers optionally followed by 'MP' (e.g., 12 MP)."
-        );
-    }
-
-    // Validation for warranty_period
-    const warrantyPeriodInput = document.querySelector('input[name="warranty_period"]');
-    if (warrantyPeriodInput) {
-        const warrantyPeriodError = warrantyPeriodInput.nextElementSibling;
-        restrictInput(
-            warrantyPeriodInput,
-            /^\d+\s*(year(s)?|month(s)?)?$/,
-            warrantyPeriodError,
-            "Invalid warranty period. Use numbers optionally followed by 'year(s)' or 'month(s)' (e.g., 1 year)."
-        );
-    }
-
-    // Validation for motortype
-    const motorTypeInput = document.querySelector('input[name="motortype"]');
-    if (motorTypeInput) {
-        const motorTypeError = motorTypeInput.nextElementSibling;
-        restrictInput(
-            motorTypeInput,
-            /^[A-Za-z\s,.-]+$/,
-            motorTypeError,
-            "Invalid motor type. Use letters, spaces, commas, periods, or hyphens only."
-        );
-    }
-
-    // Validation for material
-    const materialInput = document.querySelector('input[name="material"]');
-    if (materialInput) {
-        const materialError = materialInput.nextElementSibling;
-        restrictInput(
-            materialInput,
-            /^[A-Za-z\s,.-]+$/,
-            materialError,
-            "Invalid material. Use letters, spaces, commas, periods, or hyphens only."
-        );
-    }
-
-    // Validation for color
-    const colorInput = document.querySelector('input[name="color"]');
-    if (colorInput) {
-        const colorError = colorInput.nextElementSibling;
-        restrictInput(
-            colorInput,
-            /^[A-Za-z\s,.-]+$/,
-            colorError,
-            "Invalid color. Use letters, spaces, commas, periods, or hyphens only."
-        );
-    }
-
-    // Validation for year
-    const yearInput = document.querySelector('input[name="year"]');
-    if (yearInput) {
-        const yearError = yearInput.nextElementSibling;
-        restrictYearInput(yearInput, yearError);
-    }
-
-    // Form submission validation
+    // Form validation (optional, since 'required' attribute is on select)
     const form = document.getElementById('productForm');
-    form.addEventListener('submit', function (event) {
-        let isValid = true;
-
-        // Validate price
-        if (priceInput.value && !/^\d+(\.\d{1,2})?$/.test(priceInput.value)) {
-            priceError.style.display = 'block';
-            priceError.textContent = 'Invalid price format. Use numbers only (e.g., 99.99).';
-            isValid = false;
-        }
-
-        // Validate location
-        if (locationInput.value && !/^[A-Za-z\s,.-]+$/.test(locationInput.value)) {
-            locationError.style.display = 'block';
-            locationError.textContent = 'Invalid location. Use letters, spaces, commas, periods, or hyphens only.';
-            isValid = false;
-        }
-
-        // Validate area_size
-        if (areaSizeInput && areaSizeInput.value && !/^\d+(\.\d{1,2})?\s*(sq\s*ft|m)?$/.test(areaSizeInput.value)) {
-            areaSizeError.style.display = 'block';
-            areaSizeError.textContent = "Invalid area size. Use numbers optionally followed by 'sq ft' or 'm' (e.g., 100 sq ft).";
-            isValid = false;
-        }
-
-        // Validate land_area
-        if (landAreaInput && landAreaInput.value && !/^\d+(\.\d{1,2})?\s*(acres|hectares)?$/.test(landAreaInput.value)) {
-            landAreaError.style.display = 'block';
-            landAreaError.textContent = "Invalid land area. Use numbers optionally followed by 'acres' or 'hectares' (e.g., 5 acres).";
-            isValid = false;
-        }
-
-        // Validate storage_capacity
-        if (storageCapacityInput && storageCapacityInput.value && !/^\d+(\.\d{1,2})?\s*(GB|TB|MB)?$/.test(storageCapacityInput.value)) {
-            storageCapacityError.style.display = 'block';
-            storageCapacityError.textContent = "Invalid storage capacity. Use numbers optionally followed by 'GB', 'TB', or 'MB' (e.g., 128 GB).";
-            isValid = false;
-        }
-
-        // Validate ram
-        if (ramInput && ramInput.value && !/^\d+(\.\d{1,2})?\s*(GB|MB)?$/.test(ramInput.value)) {
-            ramError.style.display = 'block';
-            ramError.textContent = "Invalid RAM size. Use numbers optionally followed by 'GB' or 'MB' (e.g., 8 GB).";
-            isValid = false;
-        }
-
-        // Validate camera_resolution
-        if (cameraResolutionInput && cameraResolutionInput.value && !/^\d+(\.\d{1,2})?\s*(MP)?$/.test(cameraResolutionInput.value)) {
-            cameraResolutionError.style.display = 'block';
-            cameraResolutionError.textContent = "Invalid camera resolution. Use numbers optionally followed by 'MP' (e.g., 12 MP).";
-            isValid = false;
-        }
-
-        // Validate warranty_period
-        if (warrantyPeriodInput && warrantyPeriodInput.value && !/^\d+\s*(year(s)?|month(s)?)?$/.test(warrantyPeriodInput.value)) {
-            warrantyPeriodError.style.display = 'block';
-            warrantyPeriodError.textContent = "Invalid warranty period. Use numbers optionally followed by 'year(s)' or 'month(s)' (e.g., 1 year).";
-            isValid = false;
-        }
-
-        // Validate motortype
-        if (motorTypeInput && motorTypeInput.value && !/^[A-Za-z\s,.-]+$/.test(motorTypeInput.value)) {
-            motorTypeError.style.display = 'block';
-            motorTypeError.textContent = "Invalid motor type. Use letters, spaces, commas, periods, or hyphens only.";
-            isValid = false;
-        }
-
-        // Validate material
-        if (materialInput && materialInput.value && !/^[A-Za-z\s,.-]+$/.test(materialInput.value)) {
-            materialError.style.display = 'block';
-            materialError.textContent = "Invalid material. Use letters, spaces, commas, periods, or hyphens only.";
-            isValid = false;
-        }
-
-        // Validate color
-        if (colorInput && colorInput.value && !/^[A-Za-z\s,.-]+$/.test(colorInput.value)) {
-            colorError.style.display = 'block';
-            colorError.textContent = "Invalid color. Use letters, spaces, commas, periods, or hyphens only.";
-            isValid = false;
-        }
-
-        // Validate year
-        if (yearInput && yearInput.value) {
-            const year = parseInt(yearInput.value);
-            if (isNaN(year) || year < 1900 || year > 2025) {
-                yearError.style.display = 'block';
-                yearError.textContent = "Invalid year. Use a number between 1900 and 2025.";
-                isValid = false;
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const categoryValue = categorySelect ? categorySelect.value : null;
+            console.log('Form submit - checking category value:', categoryValue);
+            
+            if (!categoryValue || categoryValue === '') {
+                e.preventDefault();
+                alert('Please select a category for your ad.');
+                return false;
             }
-        }
+            
+            console.log('Category validation passed, value is:', categoryValue);
+            return true;
+        });
+    }
 
-        if (!isValid) {
-            event.preventDefault(); // Prevent form submission if invalid
-        }
-    });
+    // Image Upload Functionality
+    const imagesInput = document.getElementById('imagesInput');
+    const previewContainer = document.getElementById('previewContainer');
+    const imageCount = document.getElementById('imageCount');
+    const clearImagesBtn = document.getElementById('clearImages');
 
-    // Image upload functionality
-    const addImageBtn = document.getElementById('addImageBtn');
-    const handleImageUpload = (input) => {
-        const file = input.files[0]; // Only take the first file
-        const previewContainer = document.getElementById('previewContainer');
+    function handleImageSelection(event) {
+        const files = event.target.files;
         
-        if (file) {
+        if (files.length === 0) return;
+
+        // Clear existing previews
+        const existingPreviews = previewContainer.querySelectorAll('.image-preview');
+        existingPreviews.forEach(preview => preview.remove());
+        
+        // Remove placeholder
+        const placeholder = previewContainer.querySelector('.preview-card');
+        if (placeholder && !placeholder.classList.contains('image-preview')) {
+            placeholder.remove();
+        }
+
+        // Create preview for each file
+        Array.from(files).forEach((file, index) => {
+            if (!file.type.startsWith('image/')) return;
+
             const reader = new FileReader();
             
-            reader.onload = (e) => {
-                const preview = document.createElement('div');
-                preview.className = 'preview-card';
-                preview.style.border = '1px solid #e5e7eb';
-                preview.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.05)';
-                preview.innerHTML = `
+            reader.onload = function(e) {
+                const previewDiv = document.createElement('div');
+                previewDiv.className = 'preview-card image-preview';
+                previewDiv.style.position = 'relative';
+                previewDiv.style.overflow = 'hidden';
+                previewDiv.innerHTML = `
                     <img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">
-                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent); padding: 12px;">
-                        <span style="color: white; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${file.name}</span>
-                    </div>
-                    <div style="position: absolute; top: 8px; right: 8px; display: flex;">
-                        <button type="button" class="feature-btn" style="background: rgba(31, 41, 55, 0.8); padding: 6px; border-radius: 50%; transition: background 0.3s ease;">
-                            <i class="fas fa-star" style="font-size: 12px; color: white;"></i>
-                        </button>
-                        <button type="button" class="remove-btn" style="background: rgba(31, 41, 55, 0.8); padding: 6px; border-radius: 50%; transition: background 0.3s ease; margin-left: 8px;">
-                            <i class="fas fa-times" style="font-size: 12px; color: white;"></i>
+                    <div style="position: absolute; top: 8px; right: 8px;">
+                        <button type="button" class="remove-image-btn gradient-btn red" style="padding: 4px 8px; font-size: 12px;">
+                            <i class="fas fa-times"></i>
                         </button>
                     </div>
+                    ${index === 0 ? `
+                        <div style="position: absolute; top: 8px; left: 8px; background: #f59e0b; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+                            <i class="fas fa-star mr-1"></i>Cover
+                        </div>
+                    ` : ''}
                 `;
                 
-                // Remove button functionality
-                preview.querySelector('.remove-btn').addEventListener('click', () => {
-                    preview.remove();
-                    input.value = ''; // Clear the file input
-                    addImageBtn.disabled = true; // Disable Add Images button
+                // Add remove functionality
+                const removeBtn = previewDiv.querySelector('.remove-image-btn');
+                removeBtn.addEventListener('click', function() {
+                    previewDiv.remove();
+                    updateImageCount();
+                    
+                    // If no images left, show placeholder
                     if (previewContainer.children.length === 0) {
                         previewContainer.innerHTML = `
                             <div class="preview-card">
-                                <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #9ca3af; margin-bottom: 12px;"></i>
-                                <p style="color: #6b7280; font-size: 14px;">Upload Preview</p>
+                                <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--muted); margin-bottom: 12px;"></i>
+                                <p style="color: var(--muted); font-size: 14px;">Images will appear here</p>
                             </div>
                         `;
+                        clearImagesBtn.style.display = 'none';
                     }
                 });
                 
-                // Feature button functionality
-                const featureBtn = preview.querySelector('.feature-btn');
-                featureBtn.addEventListener('click', () => {
-                    const allFeatureButtons = previewContainer.querySelectorAll('.feature-btn i');
-                    allFeatureButtons.forEach(btn => {
-                        btn.style.color = 'white';
-                        btn.classList.remove('fas');
-                        btn.classList.add('far');
-                    });
-                    const starIcon = featureBtn.querySelector('i');
-                    starIcon.style.color = '#f59e0b';
-                    starIcon.classList.remove('far');
-                    starIcon.classList.add('fas');
-                });
-                
-                if (previewContainer.querySelector('[style*="border: 2px dashed"]')) {
-                    previewContainer.innerHTML = '';
-                }
-                
-                previewContainer.appendChild(preview);
-                addImageBtn.disabled = false; // Enable Add Images button after successful upload
+                previewContainer.appendChild(previewDiv);
             };
+            
             reader.readAsDataURL(file);
-        }
-    };
-
-    const addNewImageInput = () => {
-        const imageInputContainer = document.getElementById('imageInputContainer');
-        const inputGroup = document.createElement('div');
-        inputGroup.className = 'image-input-group';
-        inputGroup.style.marginBottom = '12px';
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.name = 'images';
-        input.classList.add('file-input', 'input-field');
-        input.addEventListener('change', (e) => handleImageUpload(e.target));
-        inputGroup.appendChild(input);
-        imageInputContainer.appendChild(inputGroup);
-        addImageBtn.disabled = true; // Disable Add Images button until new input has an image
-    };
-
-    // Add event listeners to existing file inputs
-    document.querySelectorAll('input[type="file"]').forEach(input => {
-        input.addEventListener('change', (e) => handleImageUpload(e.target));
-    });
-
-    // Add Images button click handler
-    addImageBtn.addEventListener('click', () => {
-        addNewImageInput();
-    });
-
-    // Existing JavaScript for other functionality
-    const successModal = document.getElementById('successModal');
-    successModal.style.display = 'none';
-
-    const inputs = document.querySelectorAll('input, select, textarea');
-    inputs.forEach(input => {
-        input.classList.add('input-field');
-    });
-    
-    const conditionRadios = document.querySelectorAll('input[name="condition"]');
-    conditionRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            conditionRadios.forEach(r => {
-                r.nextElementSibling.style.background = '';
-                r.nextElementSibling.style.color = '';
-                r.nextElementSibling.style.borderColor = '';
-            });
-            this.nextElementSibling.style.background = 'linear-gradient(135deg, #8b5cf6, #ec4899)';
-            this.nextElementSibling.style.color = 'white';
-            this.nextElementSibling.style.borderColor = 'transparent';
         });
+
+        updateImageCount();
+        clearImagesBtn.style.display = 'block';
+    }
+
+    function updateImageCount() {
+        const previewCount = previewContainer.querySelectorAll('.image-preview').length;
+        imageCount.textContent = `${previewCount} image${previewCount !== 1 ? 's' : ''} selected`;
+    }
+
+    function clearAllImages() {
+        previewContainer.innerHTML = `
+            <div class="preview-card">
+                <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--muted); margin-bottom: 12px;"></i>
+                <p style="color: var(--muted); font-size: 14px;">Images will appear here</p>
+            </div>
+        `;
+        imagesInput.value = '';
+        clearImagesBtn.style.display = 'none';
+        updateImageCount();
+    }
+
+    // Event listeners for images
+    if (imagesInput) {
+        imagesInput.addEventListener('change', handleImageSelection);
+    }
+    
+    if (clearImagesBtn) {
+        clearImagesBtn.addEventListener('click', clearAllImages);
+    }
+
+    // Success Modal Functionality
+    const successModal = document.getElementById('successModal');
+
+    // Check if we should show success modal based on Django context
+    if (successModal && successModal.dataset.showSuccess === 'true') {
+        successModal.style.display = 'flex';
+        createConfetti();
+    }
+
+    function createConfetti() {
+        const container = document.querySelector('.success-modal-content');
+        if (!container) return;
         
-        if (radio.checked) {
-            radio.nextElementSibling.style.background = 'linear-gradient(135deg, #8b5cf6, #ec4899)';
-            radio.nextElementSibling.style.color = 'white';
-            radio.nextElementSibling.style.borderColor = 'transparent';
-        }
-    });
-
-    async function handleFormSubmit(event) {
-        event.preventDefault();
-        const form = event.target;
-        const formData = new FormData(form);
-        const successModal = document.getElementById('successModal');
-
-        try {
-            const response = await fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value
-                }
-            });
-
-            if (response.ok) {
-                successModal.style.display = 'flex';
-            } else {
-                console.error('Form submission failed:', response.statusText);
-                alert('Error submitting form. Please try again.');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again.');
+        const colors = ['primary-500', 'amber-400', 'green-400', 'pink-400', 'purple-400'];
+        
+        // Clear existing confetti
+        const existingConfetti = container.querySelectorAll('.confetti');
+        existingConfetti.forEach(confetti => confetti.remove());
+        
+        // Create new confetti
+        for (let i = 0; i < 20; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = `confetti ${colors[Math.floor(Math.random() * colors.length)]}`;
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.top = Math.random() * -50 + 'px';
+            confetti.style.animationDelay = Math.random() * 5 + 's';
+            container.appendChild(confetti);
         }
     }
 
     function closeSuccessModal() {
-        const successModal = document.getElementById('successModal');
         if (successModal) {
             successModal.style.display = 'none';
         }
     }
 
-    const productForm = document.getElementById('productForm');
-    if (productForm) {
-        productForm.addEventListener('submit', handleFormSubmit);
-    }
-
-    const dashboardLink = document.querySelector('#successModal a');
-    if (dashboardLink) {
-        dashboardLink.addEventListener('click', closeSuccessModal);
+    // Close modal when clicking outside content
+    if (successModal) {
+        successModal.addEventListener('click', function(e) {
+            if (e.target === successModal) {
+                closeSuccessModal();
+            }
+        });
     }
 });
-    </script>
+</script>
 </body>
 </html>
 {% endblock %}
