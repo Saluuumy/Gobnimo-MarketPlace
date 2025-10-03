@@ -169,7 +169,33 @@ def index(request):
         'categories': categories,
         'featured_products': featured_ads,
     })
+def category_detail(request, category_id):
+    """
+    View to display all ads for a specific category
+    """
+    # Get the category or return 404 if not found
+    category = get_object_or_404(Category, id=category_id)
+    categories = Category.objects.all()
+
+    # Get approved ads for this specific category, ordered by newest first
+    ads = Ad.objects.filter(
+        category=category, 
+        status='approved'  # Make sure this matches your Ad model status field
+    ).select_related('category').prefetch_related('images').order_by('-created_at')
     
+    context = {
+        'category': category,
+        'ads': ads,
+         'categories': categories,
+    }
+    return render(request, 'base/category_detail.html', context)  
+
+def handle_redirect(request, category_id):
+    """
+    Redirect to the category detail page
+    This is the function your sidebar is currently using
+    """
+    return category_detail(request, category_id)
 def menu(request):
     # Get approved ads that are currently featured
     featured_ads = Ad.objects.filter(

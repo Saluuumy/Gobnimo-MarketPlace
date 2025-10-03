@@ -2,14 +2,53 @@
 
 <!-- Fixed skinny left sidebar (visible on all sizes) -->
 <aside class="sidebar-narrow bg-[color:var(--sidebar-bg)] scrollbar-thin" aria-label="Main sidebar">
-  <!-- Home -->
-<a class="flex flex-col items-center focus:outline-none icon-btn" aria-label="Post Ad" tabindex="0">
-  <svg class="side-icon" viewBox="0 0 24 24" fill="none">
-    <rect x="3" y="3" width="18" height="18" rx="2" stroke="#3b82f6" stroke-width="1.2" fill="none"/>
-    <path d="M12 7v10M7 12h10" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round"/>
-  </svg>
-  <div class="label text-white/90 font-semibold">Post Free Ad</div>
-</a>
+  <!-- Post Ad Dropdown in Sidebar -->
+    <!-- Home -->
+    <button class="flex flex-col items-center focus:outline-none icon-btn" aria-label="Home" tabindex="0">
+      <svg class="side-icon" viewBox="0 0 24 24" fill="none"><path d="M3 10.5L12 4l9 6.5V20a1 1 0 0 1-1 1h-5V13H9v8H4a1 1 0 0 1-1-1V10.5z" fill="#3b82f6"/></svg>
+      <div class="label text-white/90 font-semibold">Home</div>
+    </button>
+
+    <!-- Dropdown Menu -->
+    <div id="sidebar-post-ad-menu" class="hidden absolute left-full top-0 ml-2 w-56 bg-slate-800 border border-slate-700 rounded-md shadow-lg py-2 z-50">
+      <!-- Promoted Ad Option -->
+      <a href="{% url 'create_ad_form' %}" class="flex items-center px-4 py-3 hover:bg-slate-700 transition-colors group">
+        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center mr-3">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+        <div class="flex-1">
+          <div class="flex items-center gap-2">
+            <span class="text-white font-medium text-sm">Promoted Ad</span>
+            <span class="bg-amber-500 text-amber-900 text-xs px-2 py-0.5 rounded-full font-bold">FEATURED</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">Appear on main page • More visibility</p>
+          <p class="text-amber-400 text-xs font-semibold mt-1">Starting at $5</p>
+        </div>
+      </a>
+
+      <div class="border-t border-slate-700 my-2"></div>
+
+      <!-- Free Ad Option -->
+      <a href="{% url 'ad_form' %}" class="flex items-center px-4 py-3 hover:bg-slate-700 transition-colors group">
+        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-r from-emerald-500 to-green-500 flex items-center justify-center mr-3">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+        </div>
+        <div class="flex-1">
+          <div class="flex items-center gap-2">
+            <span class="text-white font-medium text-sm">Free Standard Ad</span>
+            <span class="bg-emerald-500 text-emerald-900 text-xs px-2 py-0.5 rounded-full font-bold">FREE</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">Basic listing in category</p>
+          <p class="text-emerald-400 text-xs font-semibold mt-1">No cost • Quick post</p>
+        </div>
+      </a>
+    </div>
+  </div>
+
   <!-- Categories -->
   <div class="tile flex flex-col items-center" style="width:56px;">
     <a href="#" class="flex flex-col items-center focus:outline-none" aria-current="true" aria-label="Categories" tabindex="0">
@@ -27,8 +66,8 @@
   <!-- Categories List with Correct Icons -->
   <div class="flex-1 flex flex-col items-center justify-start mt-2 space-y-3 overflow-auto w-full pt-2">
     {% for category in categories|slice:":8" %}
-    <a href="{% url 'handle_ad_redirect' category.id %}" class="flex flex-col items-center focus:outline-none icon-btn" aria-label="{{ category.name }}" tabindex="0">
       <!-- Icon based on category icon field - matching your model's values -->
+      <a href="{% url 'category_detail' category.id %}" class="flex flex-col items-center focus:outline-none icon-btn" aria-label="{{ category.name }}" tabindex="0">
       {% if category.icon == 'building' %}
         <!-- Property - Blue -->
         <svg class="side-icon" viewBox="0 0 24 24" fill="none">
@@ -135,7 +174,7 @@
       <button id="mobileToggle" class="p-2 rounded-md bg-slate-800/30 md:hidden" title="Menu">
         <svg class="w-5 h-5 text-[color:var(--muted)]" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round"/></svg>
       </button>
-      <div class="text-lg md:text-xl font-semibold">Gobonimo Marketplace</div>
+      <div class="text-lg md:text-xl font-semibold"> <a href="{% url 'index' %}">Gobonimo Marketplace </a></div>
     </div>
 
     <!-- DESKTOP: inline 3-field search (visible md+) -->
@@ -156,79 +195,183 @@
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><circle cx="11" cy="11" r="5" stroke="#fff" stroke-width="1.6"/></svg>
         </button>
 
-        <a href="{% url 'ad_form' %}" class="ml-2 px-3 md:px-4 py-1 md:py-2 bg-slate-800 text-white rounded-md text-sm whitespace-nowrap">Post Free Ad</a>
+        <!-- Desktop Header Post Ad Dropdown -->
+        <div class="relative ml-2" id="desktop-post-ad-dropdown">
+          <button class="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 shadow-lg hover:shadow-xl">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Post Ad
+            <svg class="w-4 h-4 transition-transform" id="dropdown-arrow-desktop" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+
+          <div id="desktop-post-ad-menu" class="hidden absolute right-0 mt-2 w-80 bg-slate-800 border border-slate-700 rounded-md shadow-lg py-2 z-50">
+            <!-- Promoted Ad Option -->
+            <a href="{% url 'create_ad_form' %}" class="flex items-center px-4 py-3 hover:bg-slate-700 transition-colors group">
+              <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center mr-3">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="text-white font-semibold">Promoted Ad</span>
+                  <span class="bg-amber-500 text-amber-900 text-xs px-2 py-1 rounded-full font-bold">FEATURED</span>
+                </div>
+                <p class="text-sm text-slate-300 mb-1">Get featured on the main page for maximum visibility</p>
+                <div class="flex items-center justify-between">
+                  <span class="text-amber-400 text-sm font-semibold">Starting at $5</span>
+                  <span class="text-xs text-slate-400">✓ Priority placement</span>
+                </div>
+              </div>
+            </a>
+
+            <div class="border-t border-slate-700 my-2"></div>
+
+            <!-- Free Ad Option -->
+            <a href="{% url 'ad_form' %}" class="flex items-center px-4 py-3 hover:bg-slate-700 transition-colors group">
+              <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-r from-emerald-500 to-green-500 flex items-center justify-center mr-3">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="text-white font-semibold">Free Standard Ad</span>
+                  <span class="bg-emerald-500 text-emerald-900 text-xs px-2 py-1 rounded-full font-bold">FREE</span>
+                </div>
+                <p class="text-sm text-slate-300 mb-1">Basic listing in your chosen category</p>
+                <div class="flex items-center justify-between">
+                  <span class="text-emerald-400 text-sm font-semibold">No cost</span>
+                  <span class="text-xs text-slate-400">✓ Quick posting</span>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
       </form>
     </div>
 
-    <!-- MOBILE: icon + panel -->
-    <div class="md:hidden flex items-center gap-3">
-      <!-- Notification bell for mobile (only show if authenticated) -->
-      {% if user.is_authenticated %}
-      <a href="{% url 'notification_center' %}" class="p-2 rounded-md bg-slate-800/40 relative" aria-label="Notifications" tabindex="0">
-        <svg class="w-5 h-5 text-[color:var(--muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-        </svg>
-        {% if unread_count > 0 %}
-          <span class="absolute -top-1 -right-1 inline-flex items-center justify-center h-4 w-4 rounded-full bg-red-500 text-[9px] text-white font-medium">
-            {{ unread_count }}
-          </span>
-        {% endif %}
-      </a>
-
-      <!-- Favorites for mobile (only show if authenticated) -->
-      <a href="{% url 'my_favorites' %}" class="p-2 rounded-md bg-slate-800/40 relative" aria-label="Favorites" tabindex="0">
-        <svg class="w-5 h-5 text-[color:var(--muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-        </svg>
-        {% if favorites_count > 0 %}
-          <span class="absolute -top-1 -right-1 inline-flex items-center justify-center h-4 w-4 rounded-full bg-red-500 text-[9px] text-white font-medium">
-            {{ favorites_count }}
-          </span>
-        {% endif %}
-      </a>
-      {% endif %}
-
-      <div id="mobileSearchWrap" class="mobile-search-wrap" aria-haspopup="true">
-        <button id="mobileSearchBtn" class="p-2 rounded-md bg-slate-800/40" title="Search">
-          <svg class="w-5 h-5 text-[color:var(--muted)]" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="#cbd5e1" stroke-width="1.6" stroke-linecap="round"/><circle cx="11" cy="11" r="5" stroke="#cbd5e1" stroke-width="1.6"/></svg>
+    <!-- MOBILE: Only Search and Post Ad -->
+    <div class="md:hidden flex items-center gap-2">
+      <!-- Search Button - BEAUTIFUL CENTERED VERSION -->
+      <div class="relative" id="mobile-search-dropdown">
+        <button id="mobileSearchBtn" class="p-2 rounded-md bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 transition-all duration-200 shadow-lg" title="Search">
+          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="11" cy="11" r="5" stroke="currentColor" stroke-width="1.6"/></svg>
         </button>
 
-        <!-- Panel: removed 'hidden' so CSS/JS control its visibility -->
-        <div id="mobileSearchPanel" class="mobile-search-panel">
-          <form id="mobileSearchForm" method="GET" action="{% url 'search_ads' %}" class="space-y-3" autocomplete="off">
-            <div>
-              <label class="block text-xs text-[color:var(--muted)] mb-1">Category</label>
-              <select id="mobileCategory" name="category" class="w-full rounded-md bg-slate-800 px-3 py-2 text-sm" required>
-                <option value="" disabled selected>Select category</option>
-                {% for category in categories %}
-                  <option value="{{ category.id }}"{% if request.GET.category|stringformat:"s" == category.id|stringformat:"s" %} selected{% endif %}>{{ category.name }}</option>
-                {% endfor %}
-              </select>
+        <!-- Search Panel - Centered and Beautiful -->
+        <div id="mobileSearchPanel" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-md mx-4 transform transition-all duration-300 scale-95">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-6 border-b border-slate-700">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none">
+                    <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                    <circle cx="11" cy="11" r="5" stroke="currentColor" stroke-width="1.6"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-white font-bold text-lg">Search Marketplace</h3>
+                  <p class="text-slate-400 text-sm">Find exactly what you're looking for</p>
+                </div>
+              </div>
+              <button id="mobileSearchClose" class="p-2 rounded-lg hover:bg-slate-700 transition-colors">
+                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
             </div>
 
-            <div>
-              <label class="block text-xs text-[color:var(--muted)] mb-1">Keyword</label>
-              <input id="mobileKeyword" name="q" type="search" placeholder="Search keywords" class="w-full rounded-md bg-slate-800 px-3 py-2 text-sm" value="{{ request.GET.q|default:'' }}" required />
-            </div>
+            <!-- Search Form -->
+            <form id="mobileSearchForm" method="GET" action="{% url 'search_ads' %}" class="p-6 space-y-5" autocomplete="off">
+         
 
-            <div>
-              <label class="block text-xs text-[color:var(--muted)] mb-1">Location</label>
-              <input id="mobileLocation" name="location" type="text" placeholder="e.g. New York" class="w-full rounded-md bg-slate-800 px-3 py-2 text-sm" value="{{ request.GET.location|default:'' }}" required />
-            </div>
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-white">Keyword</label>
+                <input id="mobileKeyword" name="q" type="search" placeholder="What are you looking for?" class="w-full rounded-xl bg-slate-800/60 border border-slate-600 px-4 py-3.5 text-white placeholder-slate-400 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200" value="{{ request.GET.q|default:'' }}" required />
+              </div>
 
-            <div class="flex items-center gap-2">
-              <button type="submit" class="flex-1 px-3 py-2 rounded-md bg-sky-500 text-white text-sm">Search</button>
-              <button id="mobileClearBtn" type="button" class="px-3 py-2 rounded-md bg-slate-800 text-[color:var(--muted)] text-sm">Clear</button>
-            </div>
-          </form>
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-white">Location</label>
+                <input id="mobileLocation" name="location" type="text" placeholder="Enter city or area" class="w-full rounded-xl bg-slate-800/60 border border-slate-600 px-4 py-3.5 text-white placeholder-slate-400 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200" value="{{ request.GET.location|default:'' }}" required />
+              </div>
+
+              <div class="flex items-center gap-3 pt-4">
+                <button type="submit" class="flex-1 px-6 py-3.5 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]">
+                  <div class="flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                      <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      <circle cx="11" cy="11" r="5" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    Search Now
+                  </div>
+                </button>
+                <button id="mobileClearBtn" type="button" class="px-6 py-3.5 bg-slate-700/60 hover:bg-slate-700 border border-slate-600 text-slate-300 font-medium rounded-xl transition-all duration-200">
+                  Clear
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
 
-      <!-- keep Post Ad on mobile right side -->
-      <a href="{% url 'ad_form' %}" class="px-3 py-1 bg-sky-500 rounded-md text-white text-sm whitespace-nowrap">Post Ad</a>
+      <!-- Mobile Header Post Ad Dropdown - FULL DESKTOP STYLE FOR MOBILE -->
+      <div class="relative" id="mobile-post-ad-dropdown">
+        <button class="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-lg text-sm font-medium whitespace-nowrap shadow-lg">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          Post
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+
+        <div id="mobile-post-ad-menu" class="hidden absolute right-0 mt-2 w-72 bg-slate-800 border border-slate-700 rounded-md shadow-lg py-2 z-50">
+          <!-- Promoted Ad Option -->
+          <a href="{% url 'create_ad_form' %}" class="flex items-center px-3 py-3 hover:bg-slate-700 transition-colors group">
+            <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center mr-3">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-white font-medium text-sm">Promoted Ad</span>
+                <span class="bg-amber-500 text-amber-900 text-xs px-2 py-0.5 rounded-full font-bold">FEATURED</span>
+              </div>
+              <p class="text-xs text-slate-400 mb-1">Appear on main page • More visibility</p>
+              <p class="text-amber-400 text-xs font-semibold">Starting at $5</p>
+            </div>
+          </a>
+
+          <div class="border-t border-slate-700 my-2 mx-3"></div>
+
+          <!-- Free Ad Option -->
+          <a href="{% url 'ad_form' %}" class="flex items-center px-3 py-3 hover:bg-slate-700 transition-colors group">
+            <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-r from-emerald-500 to-green-500 flex items-center justify-center mr-3">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-white font-medium text-sm">Free Standard Ad</span>
+                <span class="bg-emerald-500 text-emerald-900 text-xs px-2 py-0.5 rounded-full font-bold">FREE</span>
+              </div>
+              <p class="text-xs text-slate-400 mb-1">Basic listing in category</p>
+              <p class="text-emerald-400 text-xs font-semibold">No cost • Quick post</p>
+            </div>
+          </a>
+        </div>
+      </div>
     </div>
 
-    <!-- Right side (user menu) -->
+    <!-- Right side (user menu) - DESKTOP ONLY -->
     <div class="hidden md:flex items-center gap-3">
       <!-- Notification bell for desktop (only show if authenticated) -->
       {% if user.is_authenticated %}
@@ -310,20 +453,43 @@
   </header>
 
   <style>
-    /* Dropdown animation */
-    #account-menu {
+    /* Dropdown animations */
+    #account-menu,
+    #sidebar-post-ad-menu,
+    #desktop-post-ad-menu,
+    #mobile-post-ad-menu {
       opacity: 0;
       transform: translateY(-10px);
       transition: opacity 0.2s ease, transform 0.2s ease;
     }
 
-    #account-menu:not(.hidden) {
+    #account-menu:not(.hidden),
+    #sidebar-post-ad-menu:not(.hidden),
+    #desktop-post-ad-menu:not(.hidden),
+    #mobile-post-ad-menu:not(.hidden) {
       opacity: 1;
       transform: translateY(0);
     }
 
+    /* Mobile Search Panel Animation */
+    #mobileSearchPanel:not(.hidden) > div {
+      animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
     /* Rotate dropdown arrow when menu is open */
-    #account-toggle[aria-expanded="true"] #dropdown-arrow {
+    #account-toggle[aria-expanded="true"] #dropdown-arrow,
+    .rotate-180 {
       transform: rotate(180deg);
     }
   </style>
@@ -371,5 +537,124 @@
           console.log('Mobile menu toggle clicked');
         });
       }
+
+      // Post Ad Dropdown functionality
+      function setupDropdown(buttonId, menuId, arrowId = null) {
+        const button = document.getElementById(buttonId);
+        const menu = document.getElementById(menuId);
+        const arrow = arrowId ? document.getElementById(arrowId) : null;
+
+        if (button && menu) {
+          button.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isExpanded = button.getAttribute('aria-expanded') === 'true';
+            button.setAttribute('aria-expanded', !isExpanded);
+            menu.classList.toggle('hidden');
+            
+            if (arrow) {
+              arrow.classList.toggle('rotate-180');
+            }
+          });
+
+          // Close when clicking outside
+          document.addEventListener('click', function() {
+            button.setAttribute('aria-expanded', 'false');
+            menu.classList.add('hidden');
+            if (arrow) {
+              arrow.classList.remove('rotate-180');
+            }
+          });
+
+          // Prevent dropdown from closing when clicking inside
+          menu.addEventListener('click', function(e) {
+            e.stopPropagation();
+          });
+        }
+      }
+
+      // Setup all post ad dropdowns
+      setupDropdown('sidebar-post-ad-dropdown', 'sidebar-post-ad-menu');
+      setupDropdown('desktop-post-ad-dropdown', 'desktop-post-ad-menu', 'dropdown-arrow-desktop');
+      setupDropdown('mobile-post-ad-dropdown', 'mobile-post-ad-menu');
+
+      // BEAUTIFUL MOBILE SEARCH PANEL FUNCTIONALITY
+      const mobileSearchBtn = document.getElementById('mobileSearchBtn');
+      const mobileSearchPanel = document.getElementById('mobileSearchPanel');
+      const mobileSearchClose = document.getElementById('mobileSearchClose');
+      const mobileClearBtn = document.getElementById('mobileClearBtn');
+
+      if (mobileSearchBtn && mobileSearchPanel) {
+        // Toggle search panel
+        mobileSearchBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          mobileSearchPanel.classList.remove('hidden');
+          document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        });
+
+        // Close search panel with close button
+        mobileSearchClose.addEventListener('click', function() {
+          mobileSearchPanel.classList.add('hidden');
+          document.body.style.overflow = ''; // Restore scrolling
+        });
+
+        // Close search panel when clicking on backdrop
+        mobileSearchPanel.addEventListener('click', function(e) {
+          if (e.target === mobileSearchPanel) {
+            mobileSearchPanel.classList.add('hidden');
+            document.body.style.overflow = ''; // Restore scrolling
+          }
+        });
+
+        // Clear button functionality
+        if (mobileClearBtn) {
+          mobileClearBtn.addEventListener('click', function() {
+            document.getElementById('mobileKeyword').value = '';
+            document.getElementById('mobileLocation').value = '';
+            document.getElementById('mobileCategory').selectedIndex = 0;
+          });
+        }
+
+        // Close with Escape key
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && !mobileSearchPanel.classList.contains('hidden')) {
+            mobileSearchPanel.classList.add('hidden');
+            document.body.style.overflow = ''; // Restore scrolling
+          }
+        });
+      }
+
+      // Close other dropdowns when pressing Escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          const dropdowns = [
+            'sidebar-post-ad-menu', 
+            'desktop-post-ad-menu', 
+            'mobile-post-ad-menu', 
+            'account-menu'
+          ];
+          const buttons = [
+            'sidebar-post-ad-dropdown', 
+            'desktop-post-ad-dropdown', 
+            'mobile-post-ad-dropdown', 
+            'account-toggle'
+          ];
+          const arrows = ['dropdown-arrow-desktop', 'dropdown-arrow'];
+          
+          dropdowns.forEach(menuId => {
+            const menu = document.getElementById(menuId);
+            if (menu) menu.classList.add('hidden');
+          });
+          
+          buttons.forEach(buttonId => {
+            const button = document.getElementById(buttonId);
+            if (button) button.setAttribute('aria-expanded', 'false');
+          });
+          
+          arrows.forEach(arrowId => {
+            const arrow = document.getElementById(arrowId);
+            if (arrow) arrow.classList.remove('rotate-180');
+          });
+        }
+      });
     });
   </script>

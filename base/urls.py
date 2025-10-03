@@ -10,7 +10,9 @@ path('ad/create/<int:category_id>/', views.create_ad_form, name='create_ad_form'
 
 path('ad/free/<int:category_id>/', views.ad_form, name='ad_form'),
 path('ad/free/', views.ad_form, name='ad_form'),
-
+path('category/<int:category_id>/', views.category_detail, name='category_detail'),
+    # Make sure you have this for the redirect too
+    #  path('ad/redirect/<int:category_id>/', views.handle_ad_redirect, name='handle_ad_redirect'),
 path('delete-ad/<int:ad_id>/', views.delete_ad, name='delete_ad'),
 
 # Product

@@ -1,0 +1,153 @@
+<!-- templates/category_detail.html -->
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<body class="antialiased">
+    <main class="flex-1 overflow-auto p-3 md:p-6 scrollbar-thin">
+      <section class="mb-4 md:mb-6">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg md:text-2xl font-semibold">{{ category.name }} - All Listings</h2>
+        </div>
+
+        <div class="mt-3 md:mt-4 flex flex-wrap gap-2 items-center">
+          <input id="filterInput" class="rounded-md bg-slate-800 px-2 py-2 w-48 md:w-64 placeholder:text-[color:var(--muted)] text-sm" placeholder="Type to filter {{ category.name }} listings" />
+          <div class="flex gap-2 flex-wrap">
+            <button id="sortButton" class="px-2 py-1 rounded-full bg-[color:var(--chip)] text-[color:var(--muted)] text-xs md:text-sm">Display name ▾</button>
+          </div>
+          <div class="ml-auto text-xs md:text-sm text-[color:var(--muted)] flex items-center gap-3">
+            <span>Showing <strong id="assetCount">{{ ads|length }}</strong> listings in {{ category.name }}</span>   
+            <a href="{% url 'create_ad_form' %}">
+              <button class="px-2 py-1 rounded-md text-xs" style="background-color: rgb(14 165 233); color: #fff; width: 112px; height: 35px; font-family: arial; font-size: 13px;">Post Here</button>
+            </a>     
+          </div>
+        </div>
+      </section>
+
+      <!-- Breadcrumb -->
+      <div class="mb-4 text-sm text-[color:var(--muted)]">
+        <a href="{% url 'index' %}" class="hover:text-white transition">Home</a>
+        <span class="mx-2">/</span>
+        <span class="text-white">{{ category.name }}</span>
+      </div>
+
+      <!-- Category Products Grid -->
+      <section class="categories-section py-6 px-4 relative z-0">
+        <div class="container mx-auto max-w-6xl">
+          {% if ads %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {% for product in ads %}
+              <article class="asset-card bg-slate-800 rounded-lg shadow-md overflow-hidden border border-slate-700" data-name="{{ product.name|lower }}" data-location="{{ product.location|default:''|lower }}">
+                <a href="{% url 'product_detail' product.id %}">
+                  <div class="product-image-container relative h-40">
+                    {% if product.images.first %}
+                    <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="product-image w-full h-full object-cover" loading="lazy" draggable="false">
+                    {% else %}
+                    <div class="product-placeholder w-full h-full bg-slate-700 flex items-center justify-center">
+                      <i class="fas fa-image text-4xl text-slate-500"></i>
+                    </div>
+                    {% endif %}
+
+                    {% if product.is_featured %}
+                    <span class="absolute top-2 left-2 bg-pink-500 text-white text-xs font-bold px-2 py-1 rounded">Featured</span>
+                    {% endif %}
+
+                    <span class="absolute top-2 right-2 bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded">${{ product.price }}</span>
+                  </div>
+                </a>
+                
+                <div class="p-4">
+                  <div class="flex items-start justify-between gap-3">
+                    <div class="w-full">
+                      <h3 class="font-semibold text-white mb-1 product-name">{{ product.name }}</h3>
+                      <div class="text-xs text-slate-400 mb-2">
+                        <i class="fas fa-map-marker-alt mr-1"></i>{{ product.location|default:"No location" }}
+                      </div>
+                      <div class="text-xs text-slate-400 mb-3">
+                        <i class="far fa-clock mr-1"></i>{{ product.created_at|timesince }} ago
+                      </div>
+                      <div class="mt-2 flex items-center justify-between">
+                        <span class="text-xs bg-slate-700 px-2 py-1 rounded text-slate-300">{{ product.category.name }}</span>
+                        <a href="{% url 'product_detail' product.id %}" class="px-3 py-2 rounded-md bg-sky-500 text-white text-xs font-medium hover:bg-sky-600 transition">View Details</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </article>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="text-center py-12">
+              <div class="text-6xl text-slate-600 mb-4">
+                <i class="fas fa-folder-open"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-white mb-2">No listings in {{ category.name }}</h3>
+              <p class="text-slate-400 mb-6">Be the first to post in this category!</p>
+              <a href="{% url 'create_ad_form' %}" class="px-6 py-3 rounded-md bg-sky-500 text-white font-medium hover:bg-sky-600 transition">
+                Post Your First Ad
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      </section>
+    </main>
+
+    <script>
+      // Filter and sort functionality (same as before)
+      document.addEventListener('DOMContentLoaded', function() {
+        const filterInput = document.getElementById('filterInput');
+        const sortButton = document.getElementById('sortButton');
+        
+        let sortAscending = false;
+        
+        // Filter function
+        function filterProducts(keyword) {
+          const searchTerm = keyword.toLowerCase().trim();
+          let visibleCount = 0;
+          
+          document.querySelectorAll('.asset-card').forEach(card => {
+            const productName = card.querySelector('.product-name').textContent.toLowerCase();
+            const productLocation = card.getAttribute('data-location');
+            
+            const matches = productName.includes(searchTerm) || 
+                           productLocation.includes(searchTerm);
+            
+            if (searchTerm === '' || matches) {
+              card.style.display = 'block';
+              visibleCount++;
+            } else {
+              card.style.display = 'none';
+            }
+          });
+          
+          document.getElementById('assetCount').textContent = visibleCount;
+        }
+        
+        if (filterInput) {
+          filterInput.addEventListener('input', function(e) {
+            filterProducts(e.target.value);
+          });
+        }
+        
+        if (sortButton) {
+          sortButton.addEventListener('click', function() {
+            sortAscending = !sortAscending;
+            sortButton.textContent = `Display name ${sortAscending ? '▴' : '▾'}`;
+            
+            const container = document.querySelector('.grid');
+            const cards = Array.from(container.querySelectorAll('.asset-card'));
+            
+            cards.sort((a, b) => {
+              const nameA = a.querySelector('.product-name').textContent.toLowerCase();
+              const nameB = b.querySelector('.product-name').textContent.toLowerCase();
+              
+              return sortAscending ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+            });
+            
+            cards.forEach(card => container.appendChild(card));
+          });
+        }
+      });
+    </script>
+</body>
+{% endblock %}

@@ -18,8 +18,7 @@
        </div>
     <div class="ml-auto text-xs md:text-sm text-[color:var(--muted)] flex items-center gap-3">
     <span>Showing <strong id="assetCount">{{ featured_products|length }}</strong> assets</span>   
-                 <a href="{% url 'create_ad_form' %}">
-  <button id="ad" class="px-2 py-1 rounded-md bg-slate-800 text-xs" style="background-color: rgb(14 165 233 / var(--tw-bg-opacity, 1));color: #fff;width: 112px;height: 35px;font-family: ariel;font-size: 13px;">Post Here</button></a>     
+
         </div>
         </div>
       </section>
@@ -122,22 +121,8 @@
         {% endif %}
       </div>
       
-      <!-- Mobile category menu -->
-      <div class="mb-6">
-        <ul class="space-y-2">
-          <!-- All Categories Link -->
-          <li>
-            <a href="{% url 'index' %}" class="block px-3 py-2 rounded bg-slate-800 text-sky-300">All Categories</a>
-          </li>
-          
-          <!-- Categories List (limited to 5 for mobile) -->
-          {% for category in categories|slice:":5" %}
-          <li>
-            <a href="{% url 'handle_ad_redirect' category.id %}" class="block px-3 py-2 rounded text-[color:var(--muted)] hover:bg-white/3">{{ category.name }}</a>
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
+    
+    
       
       <nav class="space-y-2">
         <a href="{% url 'about_us' %}" class="block px-3 py-2 rounded text-[color:var(--muted)] hover:bg-white/3">About Us</a>

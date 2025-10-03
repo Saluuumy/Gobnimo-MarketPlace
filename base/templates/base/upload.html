@@ -664,13 +664,7 @@
 <body>
 
 <div class="container">
-    <!-- Navigation -->
-    <div style="margin-bottom: 32px;">
-        <a href="{% url 'index' %}" class="nav-link">
-            <i class="fas fa-arrow-left"></i>
-            Back to Categories
-        </a>
-    </div>
+
 
     <!-- Form Container -->
     <div class="border-gradient">
@@ -929,6 +923,44 @@
                 </div>
             </div>
 
+            <!-- Lands Section -->
+            <div class="category-section form-section" data-category-name="Lands">
+                <div class="form-section-header">
+                    <div class="form-section-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <h2>Land Details</h2>
+                </div>
+                <div class="grid-2">
+                    <div>
+                        <label class="form-label">Land Type</label>
+                        <select name="land_type" class="input-field">
+                            <option value="">Select Type</option>
+                            <option value="residential" {% if form.land_type.value == "residential" %}selected{% endif %}>Residential</option>
+                            <option value="agricultural" {% if form.land_type.value == "agricultural" %}selected{% endif %}>Agricultural</option>
+                            <option value="commercial" {% if form.land_type.value == "commercial" %}selected{% endif %}>Commercial</option>
+                            <option value="industrial" {% if form.land_type.value == "industrial" %}selected{% endif %}>Industrial</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Land Area (acres/hectares)</label>
+                        <input type="text" name="land_area" value="{{ form.land_area.value|default:'' }}"
+                               class="input-field" placeholder="e.g., 5 acres, 2 hectares">
+                    </div>
+                    <div>
+                        <label class="form-label">Zoning Type</label>
+                        <select name="zoning_type" class="input-field">
+                            <option value="">Select Zoning</option>
+                            <option value="residential" {% if form.zoning_type.value == "residential" %}selected{% endif %}>Residential</option>
+                            <option value="commercial" {% if form.zoning_type.value == "commercial" %}selected{% endif %}>Commercial</option>
+                            <option value="agricultural" {% if form.zoning_type.value == "agricultural" %}selected{% endif %}>Agricultural</option>
+                            <option value="mixed" {% if form.zoning_type.value == "mixed" %}selected{% endif %}>Mixed Use</option>
+                        </select>
+                    </div>
+                   
+                </div>
+            </div>
+
             <!-- Electronics Section -->
             <div class="category-section form-section" data-category-name="Electronics">
                 <div class="form-section-header">
@@ -946,6 +978,8 @@
                             <option value="laptop" {% if form.electronics_type.value == "laptop" %}selected{% endif %}>Laptop</option>
                             <option value="tablet" {% if form.electronics_type.value == "tablet" %}selected{% endif %}>Tablet</option>
                             <option value="camera" {% if form.electronics_type.value == "camera" %}selected{% endif %}>Camera</option>
+                            <option value="tv" {% if form.electronics_type.value == "tv" %}selected{% endif %}>TV</option>
+                            <option value="audio" {% if form.electronics_type.value == "audio" %}selected{% endif %}>Audio Equipment</option>
                         </select>
                     </div>
                     <div>
@@ -955,6 +989,7 @@
                             <option value="android" {% if form.operating_system.value == "android" %}selected{% endif %}>Android</option>
                             <option value="ios" {% if form.operating_system.value == "ios" %}selected{% endif %}>iOS</option>
                             <option value="windows" {% if form.operating_system.value == "windows" %}selected{% endif %}>Windows</option>
+                            <option value="other" {% if form.operating_system.value == "other" %}selected{% endif %}>Other</option>
                         </select>
                     </div>
                     <div>
@@ -983,6 +1018,163 @@
                             <option value="">Select Condition</option>
                             <option value="new" {% if form.electronics_condition.value == "new" %}selected{% endif %}>New</option>
                             <option value="second_hand" {% if form.electronics_condition.value == "second_hand" %}selected{% endif %}>Second Hand</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Warranty</label>
+                        <div style="display: flex; align-items: center;">
+                            <input type="checkbox" name="has_warranty" id="has_warranty"
+                                   {% if form.has_warranty.value %}checked{% endif %} class="checkbox-input">
+                            <label for="has_warranty" style="margin-left: 8px; color: var(--muted);">Has Warranty</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jobs Section -->
+            <div class="category-section form-section" data-category-name="Jobs">
+                <div class="form-section-header">
+                    <div class="form-section-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h2>Job Details</h2>
+                </div>
+                <div class="grid-2">
+                    <div>
+                        <label class="form-label">Job Type</label>
+                        <select name="job_type" class="input-field">
+                            <option value="">Select Type</option>
+                            <option value="full_time" {% if form.job_type.value == "full_time" %}selected{% endif %}>Full Time</option>
+                            <option value="part_time" {% if form.job_type.value == "part_time" %}selected{% endif %}>Part Time</option>
+                            <option value="contract" {% if form.job_type.value == "contract" %}selected{% endif %}>Contract</option>
+                            <option value="internship" {% if form.job_type.value == "internship" %}selected{% endif %}>Internship</option>
+                            <option value="remote" {% if form.job_type.value == "remote" %}selected{% endif %}>Remote</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Salary</label>
+                        <input type="text" name="salary" value="{{ form.salary.value|default:'' }}"
+                               class="input-field" placeholder="e.g., $50,000 or Negotiable">
+                    </div>
+                    <div>
+                        <label class="form-label">Experience Required</label>
+                        <input type="text" name="experience_required" value="{{ form.experience_required.value|default:'' }}"
+                               class="input-field" placeholder="e.g., 3+ years">
+                    </div>
+                    <div>
+                        <label class="form-label">Education Required</label>
+                        <input type="text" name="education_required" value="{{ form.education_required.value|default:'' }}"
+                               class="input-field" placeholder="e.g., Bachelor's Degree">
+                    </div>
+                    <div>
+                        <label class="form-label">Company Name</label>
+                        <input type="text" name="company_name" value="{{ form.company_name.value|default:'' }}"
+                               class="input-field" placeholder="Employer company name">
+                    </div>
+                    <div>
+                        <label class="form-label">Work Location</label>
+                        <input type="text" name="work_location" value="{{ form.work_location.value|default:'' }}"
+                               class="input-field" placeholder="Office location">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services Section -->
+            <div class="category-section form-section" data-category-name="Services">
+                <div class="form-section-header">
+                    <div class="form-section-icon">
+                        <i class="fas fa-concierge-bell"></i>
+                    </div>
+                    <h2>Service Details</h2>
+                </div>
+                <div class="grid-2">
+                    <div>
+                        <label class="form-label">Service Type</label>
+                        <select name="service_type" class="input-field">
+                            <option value="">Select Type</option>
+                            <option value="cleaning" {% if form.service_type.value == "cleaning" %}selected{% endif %}>Cleaning</option>
+                            <option value="moving" {% if form.service_type.value == "moving" %}selected{% endif %}>Moving & Storage</option>
+                            <option value="repair" {% if form.service_type.value == "repair" %}selected{% endif %}>Repair & Maintenance</option>
+                            <option value="it" {% if form.service_type.value == "it" %}selected{% endif %}>IT Services</option>
+                            <option value="beauty" {% if form.service_type.value == "beauty" %}selected{% endif %}>Beauty & Wellness</option>
+                            <option value="tutoring" {% if form.service_type.value == "tutoring" %}selected{% endif %}>Tutoring & Lessons</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Service Area</label>
+                        <input type="text" name="service_area" value="{{ form.service_area.value|default:'' }}"
+                               class="input-field" placeholder="e.g., City-wide or specific areas">
+                    </div>
+                    <div>
+                        <label class="form-label">Availability</label>
+                        <input type="text" name="availability" value="{{ form.availability.value|default:'' }}"
+                               class="input-field" placeholder="e.g., Mon-Fri 9am-5pm">
+                    </div>
+                    <div>
+                        <label class="form-label">Service Duration</label>
+                        <input type="text" name="service_duration" value="{{ form.service_duration.value|default:'' }}"
+                               class="input-field" placeholder="e.g., 2 hours, 1 day">
+                    </div>
+                    <div>
+                        <label class="form-label">Certification</label>
+                        <input type="text" name="certification" value="{{ form.certification.value|default:'' }}"
+                               class="input-field" placeholder="Professional certifications">
+                    </div>
+                    <div>
+                        <label class="form-label">Years of Experience</label>
+                        <input type="number" name="years_experience" value="{{ form.years_experience.value|default:'' }}"
+                               class="input-field" placeholder="Years in business">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fashion Section -->
+            <div class="category-section form-section" data-category-name="Fashion">
+                <div class="form-section-header">
+                    <div class="form-section-icon">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <h2>Fashion Details</h2>
+                </div>
+                <div class="grid-3">
+                    <div>
+                        <label class="form-label">Fashion Type</label>
+                        <select name="fashion_type" class="input-field">
+                            <option value="">Select Type</option>
+                            <option value="men" {% if form.fashion_type.value == "men" %}selected{% endif %}>Men's Fashion</option>
+                            <option value="women" {% if form.fashion_type.value == "women" %}selected{% endif %}>Women's Fashion</option>
+                            <option value="kids" {% if form.fashion_type.value == "kids" %}selected{% endif %}>Kids' Fashion</option>
+                            <option value="watches" {% if form.fashion_type.value == "watches" %}selected{% endif %}>Watches</option>
+                            <option value="jewelry" {% if form.fashion_type.value == "jewelry" %}selected{% endif %}>Jewelry</option>
+                            <option value="bags" {% if form.fashion_type.value == "bags" %}selected{% endif %}>Bags & Accessories</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Size</label>
+                        <input type="text" name="size" value="{{ form.size.value|default:'' }}"
+                               class="input-field" placeholder="e.g., S, M, L or specific measurements">
+                    </div>
+                    <div>
+                        <label class="form-label">Material</label>
+                        <input type="text" name="material" value="{{ form.material.value|default:'' }}"
+                               class="input-field" placeholder="e.g., Cotton, Leather, Silk">
+                    </div>
+                    <div>
+                        <label class="form-label">Color</label>
+                        <input type="text" name="fashion_color" value="{{ form.fashion_color.value|default:'' }}"
+                               class="input-field" placeholder="Item color">
+                    </div>
+                    <div>
+                        <label class="form-label">Brand</label>
+                        <input type="text" name="brand" value="{{ form.brand.value|default:'' }}"
+                               class="input-field" placeholder="Brand name">
+                    </div>
+                    <div>
+                        <label class="form-label">Condition</label>
+                        <select name="fashion_condition" class="input-field">
+                            <option value="">Select Condition</option>
+                            <option value="new" {% if form.fashion_condition.value == "new" %}selected{% endif %}>New</option>
+                            <option value="used" {% if form.fashion_condition.value == "used" %}selected{% endif %}>Used</option>
                         </select>
                     </div>
                 </div>
