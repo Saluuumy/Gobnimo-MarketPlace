@@ -397,7 +397,7 @@ class PendingFeaturedAd(models.Model):
 
 class AdImage(models.Model):
     ad = models.ForeignKey(Ad, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='ad_images/')
+    image = models.ImageField()  # ← No upload_to, Cloudinary will handle it
 
     def __str__(self):
         return f"Image for {self.ad.name}"
