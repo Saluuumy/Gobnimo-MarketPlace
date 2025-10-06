@@ -221,7 +221,7 @@
    
   </style>
 
-  <script>
+<script>
     // Simple and effective filter function
     function filterProducts(keyword) {
       const searchTerm = keyword.toLowerCase().trim();
@@ -332,58 +332,126 @@
         }
       }
       
-      // Horizontal scroll with drag functionality
+      // Improved Horizontal scroll with drag functionality
       function initializeHorizontalScroll() {
         const containers = document.querySelectorAll('.category-scroll-container');
         
         containers.forEach(container => {
           let isDown = false;
+          let isDragging = false;
           let startX;
           let scrollLeft;
+          let clickStartX;
+          let clickStartY;
+          let clickStartTime;
           
           container.addEventListener('mousedown', (e) => {
+            // Store initial click position and time
+            clickStartX = e.pageX;
+            clickStartY = e.pageY;
+            clickStartTime = Date.now();
+            
             isDown = true;
-            container.classList.add('dragging');
             startX = e.pageX - container.offsetLeft;
             scrollLeft = container.scrollLeft;
           });
           
-          container.addEventListener('mouseleave', () => {
-            isDown = false;
-            container.classList.remove('dragging');
-          });
-          
-          container.addEventListener('mouseup', () => {
-            isDown = false;
-            container.classList.remove('dragging');
-          });
-          
           container.addEventListener('mousemove', (e) => {
             if (!isDown) return;
-            e.preventDefault();
+            
             const x = e.pageX - container.offsetLeft;
             const walk = (x - startX) * 2;
-            container.scrollLeft = scrollLeft - walk;
+            
+            // Check if this is actually a drag (movement threshold)
+            const moveX = Math.abs(e.pageX - clickStartX);
+            const moveY = Math.abs(e.pageY - clickStartY);
+            
+            if (moveX > 5 || moveY > 5) {
+              isDragging = true;
+              container.classList.add('dragging');
+              e.preventDefault();
+              container.scrollLeft = scrollLeft - walk;
+            }
+          });
+          
+          container.addEventListener('mouseup', (e) => {
+            if (!isDown) return;
+            
+            const clickDuration = Date.now() - clickStartTime;
+            const moveX = Math.abs(e.pageX - clickStartX);
+            const moveY = Math.abs(e.pageY - clickStartY);
+            
+            // If it was a quick click with minimal movement, treat as click
+            if (clickDuration < 300 && moveX < 5 && moveY < 5 && !isDragging) {
+              // Find if we clicked on a link
+              const element = document.elementFromPoint(e.clientX, e.clientY);
+              const link = element.closest('a');
+              
+              if (link) {
+                e.preventDefault();
+                window.location.href = link.href;
+              }
+            }
+            
+            isDown = false;
+            isDragging = false;
+            container.classList.remove('dragging');
+          });
+          
+          container.addEventListener('mouseleave', () => {
+            isDown = false;
+            isDragging = false;
+            container.classList.remove('dragging');
           });
           
           // Touch events for mobile
           container.addEventListener('touchstart', (e) => {
             isDown = true;
-            container.classList.add('dragging');
             startX = e.touches[0].pageX - container.offsetLeft;
             scrollLeft = container.scrollLeft;
-          });
-          
-          container.addEventListener('touchend', () => {
-            isDown = false;
-            container.classList.remove('dragging');
+            clickStartTime = Date.now();
+            clickStartX = e.touches[0].pageX;
+            clickStartY = e.touches[0].pageY;
           });
           
           container.addEventListener('touchmove', (e) => {
             if (!isDown) return;
+            
             const x = e.touches[0].pageX - container.offsetLeft;
             const walk = (x - startX) * 2;
-            container.scrollLeft = scrollLeft - walk;
+            
+            const moveX = Math.abs(e.touches[0].pageX - clickStartX);
+            const moveY = Math.abs(e.touches[0].pageY - clickStartY);
+            
+            if (moveX > 5 || moveY > 5) {
+              isDragging = true;
+              container.classList.add('dragging');
+              e.preventDefault();
+              container.scrollLeft = scrollLeft - walk;
+            }
+          });
+          
+          container.addEventListener('touchend', (e) => {
+            if (!isDown) return;
+            
+            const clickDuration = Date.now() - clickStartTime;
+            const moveX = Math.abs(e.changedTouches[0].pageX - clickStartX);
+            const moveY = Math.abs(e.changedTouches[0].pageY - clickStartY);
+            
+            // If it was a quick tap with minimal movement, treat as click
+            if (clickDuration < 300 && moveX < 10 && moveY < 10 && !isDragging) {
+              const element = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+              const link = element ? element.closest('a') : null;
+              
+              if (link) {
+                e.preventDefault();
+                window.location.href = link.href;
+              }
+            }
+            
+            isDown = false;
+            isDragging = false;
+            container.classList.remove('dragging');
           });
         });
       }
@@ -401,6 +469,19 @@
           e.target !== mobileToggle && 
           !mobileToggle.contains(e.target)) {
         mobileSidebar.classList.add('hidden');
+      }
+    });
+
+    // Add direct click handlers for product images as backup
+    document.addEventListener('click', function(e) {
+      // If clicking on a product image that's inside a scroll container
+      const productImage = e.target.closest('.product-image');
+      if (productImage) {
+        const link = productImage.closest('a');
+        if (link && link.href) {
+          e.preventDefault();
+          window.location.href = link.href;
+        }
       }
     });
   </script>

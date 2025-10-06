@@ -39,7 +39,7 @@
         /* Container styles */
         .container {
             max-width: 896px;
-            margin: 0 auto;
+            margin: 64px auto;
         }
 
         /* Navigation styles */
@@ -920,6 +920,22 @@
                                 <label for="has_pool" style="margin-left: 8px; color: var(--muted);">Yes</label>
                             </div>
                         </div>
+                           <div>
+                            <label class="form-label">Has Water</label>
+                            <div style="display: flex; align-items: center;">
+                                <input type="checkbox" name="has_water" id="has_pool"
+                                       {% if form.has_pool.value %}checked{% endif %} class="checkbox-input">
+                                <label for="has_pool" style="margin-left: 8px; color: var(--muted);">Yes</label>
+                            </div>
+                        </div>
+                           <div>
+                            <label class="form-label">Has Electricity</label>
+                            <div style="display: flex; align-items: center;">
+                                <input type="checkbox" name="has_electricity" id="has_pool"
+                                       {% if form.has_pool.value %}checked{% endif %} class="checkbox-input">
+                                <label for="has_pool" style="margin-left: 8px; color: var(--muted);">Yes</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1165,11 +1181,7 @@
                         <input type="text" name="fashion_color" value="{{ form.fashion_color.value|default:'' }}"
                                class="input-field" placeholder="Item color">
                     </div>
-                    <div>
-                        <label class="form-label">Brand</label>
-                        <input type="text" name="brand" value="{{ form.brand.value|default:'' }}"
-                               class="input-field" placeholder="Brand name">
-                    </div>
+                
                     <div>
                         <label class="form-label">Condition</label>
                         <select name="fashion_condition" class="input-field">

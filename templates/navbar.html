@@ -194,7 +194,7 @@
         <button id="desktopSearchBtn" type="submit" class="search-btn bg-sky-500 text-white rounded-md" title="Search" aria-label="Search">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><circle cx="11" cy="11" r="5" stroke="#fff" stroke-width="1.6"/></svg>
         </button>
-
+      </form>
         <!-- Desktop Header Post Ad Dropdown -->
         <div class="relative ml-2" id="desktop-post-ad-dropdown">
           <button class="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 shadow-lg hover:shadow-xl">
@@ -207,7 +207,8 @@
             </svg>
           </button>
 
-          <div id="desktop-post-ad-menu" class="hidden absolute right-0 mt-2 w-80 bg-slate-800 border border-slate-700 rounded-md shadow-lg py-2 z-50">
+          <div id="desktop-post-ad-menu" class="hidden absolute right-0 mt-2 w-80 bg-slate-800 border border-slate-700 rounded-md shadow-lg py-2 z-50" style="osition: absolute;
+  left: -10px;">
             <!-- Promoted Ad Option -->
             <a href="{% url 'create_ad_form' %}" class="flex items-center px-4 py-3 hover:bg-slate-700 transition-colors group">
               <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center mr-3">

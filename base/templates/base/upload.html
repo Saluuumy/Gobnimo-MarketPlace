@@ -39,7 +39,7 @@
         /* Container styles */
         .container {
             max-width: 896px;
-            margin: 0 auto;
+            margin: 65px auto !important;
         }
 
         /* Navigation styles */
@@ -1164,11 +1164,7 @@
                         <input type="text" name="fashion_color" value="{{ form.fashion_color.value|default:'' }}"
                                class="input-field" placeholder="Item color">
                     </div>
-                    <div>
-                        <label class="form-label">Brand</label>
-                        <input type="text" name="brand" value="{{ form.brand.value|default:'' }}"
-                               class="input-field" placeholder="Brand name">
-                    </div>
+                  
                     <div>
                         <label class="form-label">Condition</label>
                         <select name="fashion_condition" class="input-field">
