@@ -9,6 +9,8 @@
     body { background: var(--panel); color: #e6eef8; -webkit-font-smoothing:antialiased; }
     .sidebar-narrow { width:72px;height:1000px;min-width:72px; position:fixed; left:0; top:0; bottom:0; z-index:40; display:flex; flex-direction:column; align-items:center; padding-top:24px; gap:12px; background:var(--sidebar-bg); border-right:1px solid rgba(255,255,255,0.03); }
     .main-with-offset { margin-left:72px; min-height:100vh; }
+
+    
     .side-icon {
   width: 36px;
   height: 36px;
@@ -88,6 +90,45 @@
       background: #0b1220;
       border-left: 1px solid rgba(255,255,255,0.04);
       border-top: 1px solid rgba(255,255,255,0.04);
+    }
+        /* Dropdown animations */
+    #account-menu,
+    #sidebar-post-ad-menu,
+    #desktop-post-ad-menu,
+    #mobile-post-ad-menu {
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    #account-menu:not(.hidden),
+    #sidebar-post-ad-menu:not(.hidden),
+    #desktop-post-ad-menu:not(.hidden),
+    #mobile-post-ad-menu:not(.hidden) {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Mobile Search Panel Animation */
+    #mobileSearchPanel:not(.hidden) > div {
+      animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Rotate dropdown arrow when menu is open */
+    #account-toggle[aria-expanded="true"] #dropdown-arrow,
+    .rotate-180 {
+      transform: rotate(180deg);
     }
 
     /* responsive tweaks */
@@ -504,6 +545,16 @@
             .mobile-logo {
                 font-size: 1.25rem;
             }
+            .font-semibold {
+  font-weight: 600;
+font-size: 14px !important;
+line-height: 1.2 !important;
+}
+.sidebar-narrow {
+  width: 40px !important;
+  height: 1000px;
+  min-width: 65px;
+}
             
             .categories-section {
                 display: block !important;
