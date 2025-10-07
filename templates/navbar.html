@@ -453,47 +453,6 @@
     </div>
   </header>
 
-  <style>
-    /* Dropdown animations */
-    #account-menu,
-    #sidebar-post-ad-menu,
-    #desktop-post-ad-menu,
-    #mobile-post-ad-menu {
-      opacity: 0;
-      transform: translateY(-10px);
-      transition: opacity 0.2s ease, transform 0.2s ease;
-    }
-
-    #account-menu:not(.hidden),
-    #sidebar-post-ad-menu:not(.hidden),
-    #desktop-post-ad-menu:not(.hidden),
-    #mobile-post-ad-menu:not(.hidden) {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Mobile Search Panel Animation */
-    #mobileSearchPanel:not(.hidden) > div {
-      animation: slideUp 0.3s ease-out;
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px) scale(0.95);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-
-    /* Rotate dropdown arrow when menu is open */
-    #account-toggle[aria-expanded="true"] #dropdown-arrow,
-    .rotate-180 {
-      transform: rotate(180deg);
-    }
-  </style>
 
   <script>
     // User dropdown functionality
