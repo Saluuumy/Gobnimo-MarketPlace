@@ -1260,41 +1260,44 @@
               <p class="text-slate-400 text-xs mt-2">Accepted formats: JPG, PNG, PDF (Max 5MB)</p>
             </div>
 
-            <!-- Image Upload -->
-            <div class="form-section">
-                <div class="form-section-header">
-                    <div class="form-section-icon">
-                        <i class="fas fa-images"></i>
-                    </div>
-                    <h2>Product Gallery</h2>
-                </div>
-                
-                <div style="margin-bottom: 24px;">
-                    <p style="color: var(--muted); margin-bottom: 16px;">Upload up to 10 images. First image will be the cover.</p>
-
-                    <div style="margin-bottom: 16px;">
-                        <input type="file" id="imagesInput" name="images" accept="image/*" multiple 
-                               class="file-input input-field">
-                    </div>
-                    {% if form.images.errors %}
-                        <div class="error-message">{{ form.images.errors }}</div>
-                    {% endif %}
-
-                    <div id="previewContainer" class="grid-3">
-                        <div class="preview-card">
-                            <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--muted); margin-bottom: 12px;"></i>
-                            <p style="color: var(--muted); font-size: 14px;">Images will appear here</p>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center;">
-                        <span class="text-slate-400 text-sm" id="imageCount">0 images selected</span>
-                        <button type="button" id="clearImages" class="gradient-btn red" style="display: none;">
-                            <i class="fas fa-trash"></i> Clear All
-                        </button>
-                    </div>
+              <!-- Image Upload Section -->
+<div class="form-section">
+    <div class="form-section-header">
+        <div class="form-section-icon">
+            <i class="fas fa-images"></i>
+        </div>
+        <h2>Product Gallery</h2>
+    </div>
+    
+    <div style="margin-bottom: 24px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px;">
+            <div>
+                <h3 style="font-size: 16px; font-weight: 500; color: #e6eef8;">Upload Your Images</h3>
+                <p style="color: var(--muted); font-size: 14px; margin-top: 4px;">First image will be featured as cover</p>
+            </div>
+            <button type="button" id="addImageBtn" class="gradient-btn" disabled>
+                <i class="fas fa-plus" style="margin-right: 8px;"></i>
+                Add Images
+            </button>
+        </div>
+        
+        <div id="imageInputContainer" class="grid-3">
+            <div class="image-input-group">
+                <input type="file" name="images" accept="image/*" class="file-input input-field">
+            </div>
+        </div>
+        
+        <div style="margin-top: 24px;">
+            <h3 style="font-size: 16px; font-weight: 500; color: #e6eef8; margin-bottom: 16px;">Image Previews</h3>
+            <div id="previewContainer" class="grid-3">
+                <div class="preview-card">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--muted); margin-bottom: 12px;"></i>
+                    <p style="color: var(--muted); font-size: 14px;">Upload Preview</p>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
 
             <!-- Review Process Information -->
             <div class="form-section">
@@ -1457,107 +1460,173 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Image Upload Functionality
-    const imagesInput = document.getElementById('imagesInput');
+    // =============================================
+    // IMAGE UPLOAD FUNCTIONALITY
+    // =============================================
+    const addImageBtn = document.getElementById('addImageBtn');
+    const imageInputContainer = document.getElementById('imageInputContainer');
     const previewContainer = document.getElementById('previewContainer');
-    const imageCount = document.getElementById('imageCount');
-    const clearImagesBtn = document.getElementById('clearImages');
 
-    function handleImageSelection(event) {
-        const files = event.target.files;
+    function handleImageUpload(input) {
+        const file = input.files[0]; // Only take the first file
         
-        if (files.length === 0) return;
-
-        // Clear existing previews
-        const existingPreviews = previewContainer.querySelectorAll('.image-preview');
-        existingPreviews.forEach(preview => preview.remove());
-        
-        // Remove placeholder
-        const placeholder = previewContainer.querySelector('.preview-card');
-        if (placeholder && !placeholder.classList.contains('image-preview')) {
-            placeholder.remove();
-        }
-
-        // Create preview for each file
-        Array.from(files).forEach((file, index) => {
-            if (!file.type.startsWith('image/')) return;
-
+        if (file) {
             const reader = new FileReader();
             
-            reader.onload = function(e) {
-                const previewDiv = document.createElement('div');
-                previewDiv.className = 'preview-card image-preview';
-                previewDiv.style.position = 'relative';
-                previewDiv.style.overflow = 'hidden';
-                previewDiv.innerHTML = `
+            reader.onload = (e) => {
+                const preview = document.createElement('div');
+                preview.className = 'preview-card';
+                preview.style.border = '1px solid rgba(255,255,255,0.1)';
+                preview.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+                preview.innerHTML = `
                     <img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">
-                    <div style="position: absolute; top: 8px; right: 8px;">
-                        <button type="button" class="remove-image-btn gradient-btn red" style="padding: 4px 8px; font-size: 12px;">
-                            <i class="fas fa-times"></i>
+                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent); padding: 12px;">
+                        <span style="color: white; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${file.name}</span>
+                    </div>
+                    <div style="position: absolute; top: 8px; right: 8px; display: flex;">
+                        <button type="button" class="feature-btn" style="background: rgba(31, 41, 55, 0.8); padding: 6px; border-radius: 50%; transition: background 0.3s ease; border: none; cursor: pointer;">
+                            <i class="far fa-star" style="font-size: 12px; color: white;"></i>
+                        </button>
+                        <button type="button" class="remove-btn" style="background: rgba(31, 41, 55, 0.8); padding: 6px; border-radius: 50%; transition: background 0.3s ease; margin-left: 8px; border: none; cursor: pointer;">
+                            <i class="fas fa-times" style="font-size: 12px; color: white;"></i>
                         </button>
                     </div>
-                    ${index === 0 ? `
-                        <div style="position: absolute; top: 8px; left: 8px; background: #f59e0b; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
-                            <i class="fas fa-star mr-1"></i>Cover
-                        </div>
-                    ` : ''}
                 `;
                 
-                // Add remove functionality
-                const removeBtn = previewDiv.querySelector('.remove-image-btn');
-                removeBtn.addEventListener('click', function() {
-                    previewDiv.remove();
-                    updateImageCount();
-                    
-                    // If no images left, show placeholder
+                // Remove button functionality
+                preview.querySelector('.remove-btn').addEventListener('click', () => {
+                    preview.remove();
+                    input.value = ''; // Clear the file input
+                    addImageBtn.disabled = true; // Disable Add Images button
                     if (previewContainer.children.length === 0) {
                         previewContainer.innerHTML = `
                             <div class="preview-card">
                                 <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--muted); margin-bottom: 12px;"></i>
-                                <p style="color: var(--muted); font-size: 14px;">Images will appear here</p>
+                                <p style="color: var(--muted); font-size: 14px;">Upload Preview</p>
                             </div>
                         `;
-                        clearImagesBtn.style.display = 'none';
                     }
                 });
                 
-                previewContainer.appendChild(previewDiv);
+                // Feature button functionality
+                const featureBtn = preview.querySelector('.feature-btn');
+                featureBtn.addEventListener('click', () => {
+                    const allFeatureButtons = previewContainer.querySelectorAll('.feature-btn i');
+                    allFeatureButtons.forEach(btn => {
+                        btn.style.color = 'white';
+                        btn.classList.remove('fas');
+                        btn.classList.add('far');
+                    });
+                    const starIcon = featureBtn.querySelector('i');
+                    starIcon.style.color = '#f59e0b';
+                    starIcon.classList.remove('far');
+                    starIcon.classList.add('fas');
+                });
+                
+                // If this is the first image, set it as featured
+                if (previewContainer.querySelectorAll('.preview-card').length === 1) {
+                    const firstStar = previewContainer.querySelector('.feature-btn i');
+                    if (firstStar) {
+                        firstStar.style.color = '#f59e0b';
+                        firstStar.classList.remove('far');
+                        firstStar.classList.add('fas');
+                    }
+                }
+                
+                if (previewContainer.querySelector('[style*="border: 2px dashed"]')) {
+                    previewContainer.innerHTML = '';
+                }
+                
+                previewContainer.appendChild(preview);
+                addImageBtn.disabled = false; // Enable Add Images button after successful upload
             };
-            
             reader.readAsDataURL(file);
+        }
+    }
+
+    function addNewImageInput() {
+        const inputGroup = document.createElement('div');
+        inputGroup.className = 'image-input-group';
+        inputGroup.style.marginBottom = '12px';
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.name = 'images';
+        input.classList.add('file-input', 'input-field');
+        input.addEventListener('change', (e) => handleImageUpload(e.target));
+        inputGroup.appendChild(input);
+        imageInputContainer.appendChild(inputGroup);
+        addImageBtn.disabled = true; // Disable Add Images button until new input has an image
+    }
+
+    // Add event listeners to existing file inputs
+    document.querySelectorAll('#imageInputContainer input[type="file"]').forEach(input => {
+        input.addEventListener('change', (e) => handleImageUpload(e.target));
+    });
+
+    // Add Images button click handler
+    if (addImageBtn) {
+        addImageBtn.addEventListener('click', () => {
+            addNewImageInput();
         });
-
-        updateImageCount();
-        clearImagesBtn.style.display = 'block';
     }
 
-    function updateImageCount() {
-        const previewCount = previewContainer.querySelectorAll('.image-preview').length;
-        imageCount.textContent = `${previewCount} image${previewCount !== 1 ? 's' : ''} selected`;
+    // =============================================
+    // FORM VALIDATION FOR INPUT FIELDS
+    // =============================================
+    // Function to validate input and prevent invalid characters
+    function restrictInput(inputElement, regex, errorElement, errorMessage) {
+        if (!inputElement || !errorElement) return;
+        
+        inputElement.addEventListener('input', function () {
+            // Prevent slashes
+            if (inputElement.value.includes('/')) {
+                inputElement.value = inputElement.value.replace('/', '');
+                errorElement.style.display = 'block';
+                errorElement.textContent = 'Slashes (/) are not allowed.';
+            } else if (inputElement.value && !regex.test(inputElement.value)) {
+                errorElement.style.display = 'block';
+                errorElement.textContent = errorMessage;
+            } else {
+                errorElement.style.display = 'none';
+            }
+        });
     }
 
-    function clearAllImages() {
-        previewContainer.innerHTML = `
-            <div class="preview-card">
-                <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--muted); margin-bottom: 12px;"></i>
-                <p style="color: var(--muted); font-size: 14px;">Images will appear here</p>
-            </div>
-        `;
-        imagesInput.value = '';
-        clearImagesBtn.style.display = 'none';
-        updateImageCount();
+    // Function to validate year specifically
+    function restrictYearInput(inputElement, errorElement) {
+        if (!inputElement || !errorElement) return;
+        
+        inputElement.addEventListener('input', function () {
+            const year = parseInt(inputElement.value);
+            if (inputElement.value && (isNaN(year) || year < 1900 || year > new Date().getFullYear())) {
+                errorElement.style.display = 'block';
+                errorElement.textContent = `Invalid year. Use a number between 1900 and ${new Date().getFullYear()}.`;
+            } else {
+                errorElement.style.display = 'none';
+            }
+        });
     }
 
-    // Event listeners for images
-    if (imagesInput) {
-        imagesInput.addEventListener('change', handleImageSelection);
-    }
-    
-    if (clearImagesBtn) {
-        clearImagesBtn.addEventListener('click', clearAllImages);
+    // Apply validation to relevant fields
+    const priceInput = document.querySelector('input[name="price"]');
+    if (priceInput) {
+        const priceError = priceInput.parentElement ? priceInput.parentElement.nextElementSibling : null;
+        if (priceError && priceError.classList.contains('error-message')) {
+            restrictInput(
+                priceInput,
+                /^\d+(\.\d{1,2})?$/,
+                priceError,
+                'Invalid price format. Use numbers only (e.g., 99.99).'
+            );
+        }
     }
 
-    // Success Modal Functionality
+    // Add similar validation for other fields as needed...
+
+    // =============================================
+    // SUCCESS MODAL FUNCTIONALITY
+    // =============================================
     const successModal = document.getElementById('successModal');
 
     // Check if we should show success modal based on Django context
@@ -1601,6 +1670,47 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // =============================================
+    // ADDITIONAL FORM ENHANCEMENTS
+    // =============================================
+    
+    // Toggle button styling for condition radios
+    const conditionRadios = document.querySelectorAll('input[name="condition"]');
+    conditionRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            conditionRadios.forEach(r => {
+                if (r.nextElementSibling && r.nextElementSibling.tagName === 'DIV') {
+                    r.nextElementSibling.style.background = '';
+                    r.nextElementSibling.style.color = '';
+                    r.nextElementSibling.style.borderColor = '';
+                }
+            });
+            if (this.nextElementSibling && this.nextElementSibling.tagName === 'DIV') {
+                this.nextElementSibling.style.background = 'linear-gradient(135deg, var(--accent), #0d9488)';
+                this.nextElementSibling.style.color = 'white';
+                this.nextElementSibling.style.borderColor = 'transparent';
+            }
+        });
+        
+        if (radio.checked && radio.nextElementSibling && radio.nextElementSibling.tagName === 'DIV') {
+            radio.nextElementSibling.style.background = 'linear-gradient(135deg, var(--accent), #0d9488)';
+            radio.nextElementSibling.style.color = 'white';
+            radio.nextElementSibling.style.borderColor = 'transparent';
+        }
+    });
+
+    // Date input enhancements
+    const dateInputs = document.querySelectorAll('input[type="date"]');
+    dateInputs.forEach(input => {
+        // Set minimum date to today if not already set
+        if (!input.getAttribute('min')) {
+            const today = new Date().toISOString().split('T')[0];
+            input.setAttribute('min', today);
+        }
+    });
+
+    console.log('Image upload functionality initialized successfully');
 });
 </script>
 </body>
