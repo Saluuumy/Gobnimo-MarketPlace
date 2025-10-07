@@ -41,62 +41,92 @@ from django.core.paginator import Paginator
 import re
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST, request.FILES)
+        
         if form.is_valid():
-            user = form.save(commit=False)
-            user.username = form.cleaned_data['email']
-            user.is_active = False
-            user.email_verified = False
-            user.save()
-
-            # Send verification email
-            token = default_token_generator.make_token(user)
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            verification_url = request.build_absolute_uri(
-                reverse('verify_email', kwargs={'uidb64': uid, 'token': token})
-            )
-
-            # Render HTML email content
-            html_content = render_to_string('base/verification_email.html', {
-                'verification_url': verification_url,
-                'user': user,
-            })
-            text_content = strip_tags(html_content)
-
-            # Send email using Django's send_mail
             try:
-                send_mail(
-                    'Verify Your Email',
-                    text_content,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [user.email],
-                    html_message=html_content,
-                    fail_silently=False,
+                user = form.save(commit=False)
+                user.username = form.cleaned_data['email']
+                user.is_active = False
+                user.email_verified = False
+                user.save()
+
+                # Send verification email
+                token = default_token_generator.make_token(user)
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                verification_url = request.build_absolute_uri(
+                    reverse('verify_email', kwargs={'uidb64': uid, 'token': token})
                 )
-                return render(request, 'base/verification_sent.html')
-            except Exception as e:
-                logger.error(f"Failed to send verification email: {e}")
-                # Fallback to console email backend for debugging
-                if settings.DEBUG:
-                    from django.core.mail.backends.console import EmailBackend
-                    backend = EmailBackend()
-                    backend.send_messages([EmailMultiAlternatives(
-                        'Verify Your Email',
+
+                # Render HTML email content
+                html_content = render_to_string('base/verification_email.html', {
+                    'verification_url': verification_url,
+                    'user': user,
+                })
+                text_content = strip_tags(html_content)
+
+                # Send email using Django's send_mail
+                try:
+                    send_mail(
+                        'Verify Your Email - Gobonimo Marketplace',
                         text_content,
                         settings.DEFAULT_FROM_EMAIL,
                         [user.email],
-                        alternatives=[(html_content, 'text/html')]
-                    )])
+                        html_message=html_content,
+                        fail_silently=False,
+                    )
+                    
+                    # Log successful registration
+                    logger.info(f"New user registered: {user.email} (ID: {user.id})")
+                    
+                    # Add success message for the next page
+                    messages.success(request, f"Verification email sent to {user.email}. Please check your inbox.")
                     return render(request, 'base/verification_sent.html')
-                else:
-                    messages.error(request, "Failed to send verification email. Please try again later.")
-                    return render(request, 'base/signup.html', {'form': form})
+                    
+                except Exception as e:
+                    logger.error(f"Failed to send verification email to {user.email}: {e}")
+                    
+                    # Fallback to console email backend for debugging
+                    if settings.DEBUG:
+                        from django.core.mail.backends.console import EmailBackend
+                        backend = EmailBackend()
+                        backend.send_messages([EmailMultiAlternatives(
+                            'Verify Your Email - Gobonimo Marketplace',
+                            text_content,
+                            settings.DEFAULT_FROM_EMAIL,
+                            [user.email],
+                            alternatives=[(html_content, 'text/html')]
+                        )])
+                        messages.success(request, f"Verification email sent to {user.email}. Please check your inbox.")
+                        return render(request, 'base/verification_sent.html')
+                    else:
+                        # Delete the user if email sending fails in production
+                        user.delete()
+                        messages.error(request, 
+                            "We encountered an issue sending the verification email. "
+                            "Please try again later or contact support if the problem persists."
+                        )
+                        return render(request, 'base/signup.html', {'form': form})
+                        
+            except Exception as e:
+                logger.error(f"Error during user registration: {e}")
+                messages.error(request, 
+                    "An unexpected error occurred during registration. "
+                    "Please try again or contact support if the problem continues."
+                )
+                return render(request, 'base/signup.html', {'form': form})
+                
         else:
-            return render(request, 'base/signup.html', {'form': form})
+            # Let the form handle its own error messages
+            # The form errors will be displayed in the template automatically
+            logger.warning(f"Form validation failed: {form.errors}")
+            
     else:
         form = SignupForm()
+    
     return render(request, 'base/signup.html', {'form': form})
 
 def verify_email(request, uidb64, token):
@@ -171,24 +201,190 @@ def index(request):
     })
 def category_detail(request, category_id):
     """
-    View to display all ads for a specific category
+    View to display all ads for a specific category, grouped by their type fields
     """
-    # Get the category or return 404 if not found
     category = get_object_or_404(Category, id=category_id)
     categories = Category.objects.all()
 
-    # Get approved ads for this specific category, ordered by newest first
+    # Get approved ads for this specific category
     ads = Ad.objects.filter(
         category=category, 
-        status='approved'  # Make sure this matches your Ad model status field
+        status='approved'
     ).select_related('category').prefetch_related('images').order_by('-created_at')
+    
+    # Group ads by their type based on the category
+    subcategories = group_ads_by_type(category.name, ads)
     
     context = {
         'category': category,
         'ads': ads,
-         'categories': categories,
+        'subcategories': subcategories,
+        'categories': categories,
     }
-    return render(request, 'base/category_detail.html', context)  
+    return render(request, 'base/category_detail.html', context)
+
+def group_ads_by_type(category_name, ads):
+    """
+    Group ads by their specific type fields based on category
+    """
+    if not ads:
+        return {}
+    
+    subcategories = {}
+    
+    # Map category names to their respective type fields and choices
+    category_type_mapping = {
+        'Vehicles': {
+            'field': 'vehicle_type',
+            'choices': dict(Ad.VEHICLE_TYPE_CHOICES),
+            'default_name': 'Other Vehicles'
+        },
+        'Electronics': {
+            'field': 'electronics_type', 
+            'choices': dict(Ad.ELECTRONICS_TYPE_CHOICES),
+            'default_name': 'Other Electronics'
+        },
+        'Property': {
+            'field': 'property_type',
+            'choices': dict(Ad.PROPERTY_TYPE_CHOICES),
+            'default_name': 'Other Property'
+        },
+        'Lands': {
+            'field': 'land_type',
+            'choices': dict(Ad.LAND_TYPE_CHOICES),
+            'default_name': 'Other Land'
+        },
+        'Fashion': {
+            'field': 'fashion_type',
+            'choices': dict(Ad.FASHION_TYPE_CHOICES),
+            'default_name': 'Other Fashion'
+        },
+        'Services': {
+            'field': 'service_type',
+            'choices': dict(Ad.SERVICE_TYPE_CHOICES),
+            'default_name': 'Other Services'
+        },
+        'Jobs': {
+            'field': 'job_type',
+            'choices': dict(Ad.JOB_TYPE_CHOICES),
+            'default_name': 'Other Jobs'
+        },
+        'Beauty & Salons': {
+            'field': 'service_type',  # Beauty services use service_type
+            'choices': dict(Ad.SERVICE_TYPE_CHOICES),
+            'default_name': 'Other Beauty Services'
+        },
+        'Decoration': {
+            'field': 'service_type',  # Decoration might use service_type or other
+            'choices': dict(Ad.SERVICE_TYPE_CHOICES),
+            'default_name': 'Other Decoration'
+        }
+    }
+    
+    # Get the type configuration for this category
+    type_config = category_type_mapping.get(category_name)
+    
+    if not type_config:
+        return {}  # No type grouping for this category
+    
+    field_name = type_config['field']
+    choices = type_config['choices']
+    default_name = type_config['default_name']
+    
+    # Initialize subcategories with all possible choices
+    for choice_value, choice_name in choices.items():
+        subcategories[choice_name] = []
+    
+    # Add the default category for items without a type
+    subcategories[default_name] = []
+    
+    # Group ads by their type
+    for ad in ads:
+        type_value = getattr(ad, field_name)
+        
+        if type_value and type_value in choices:
+            type_name = choices[type_value]
+            subcategories[type_name].append(ad)
+        else:
+            # No type specified or invalid type
+            subcategories[default_name].append(ad)
+    
+    # Remove empty subcategories
+    subcategories = {k: v for k, v in subcategories.items() if v}
+    
+    return subcategories
+
+def get_subcategories_for_category(category_name, ads):
+    """
+    Dynamically determine subcategories based on the main category
+    """
+    subcategory_config = {
+        'Vehicles': {
+            'Cars': ['car', 'sedan', 'hatchback', 'suv', 'coupe', 'jeep', 'vehicle', 'auto', 'automobile'],
+            'Motorcycles': ['motorcycle', 'bike', 'scooter', 'motorbike', 'yamaha', 'honda', 'kawasaki'],
+            'Buses & Vans': ['bus', 'coaster', 'minibus', 'van', 'minivan', 'transport'],
+            'Trucks': ['truck', 'lorry', 'pickup', 'pick-up', 'isuzu', 'nissan'],
+            'Other Vehicles': []
+        },
+        'Electronics': {
+            'Phones': ['phone', 'smartphone', 'iphone', 'samsung', 'huawei', 'techno', 'infinix'],
+            'Laptops': ['laptop', 'notebook', 'macbook', 'dell', 'hp', 'lenovo'],
+            'TVs': ['tv', 'television', 'smart tv', 'led', 'oled'],
+            'Audio': ['headphone', 'earphone', 'speaker', 'sound', 'airpods'],
+            'Other Electronics': []
+        },
+        'Property': {
+            'Apartments': ['apartment', 'flat', 'studio'],
+            'Houses': ['house', 'bungalow', 'mansion', 'villa'],
+            'Commercial': ['office', 'shop', 'store', 'commercial'],
+            'Land': ['land', 'plot', 'acre'],
+            'Other Property': []
+        },
+    }
+    
+    # Get the subcategory mapping for this category, or return empty if no mapping
+    category_mapping = subcategory_config.get(category_name, {})
+    
+    # If no subcategories defined for this category, return empty dict
+    if not category_mapping:
+        return {}
+    
+    # Initialize subcategories
+    subcategories = {subcat_name: [] for subcat_name in category_mapping.keys()}
+    
+    # Group ads into subcategories
+    for ad in ads:
+        ad_name_lower = ad.name.lower()
+        ad_description_lower = getattr(ad, 'description', '').lower()
+        
+        # Combine name and description for better matching
+        search_text = ad_name_lower + " " + ad_description_lower
+        matched = False
+        
+        for subcat_name, keywords in category_mapping.items():
+            if subcat_name == 'Other Vehicles' or subcat_name.startswith('Other'):
+                continue  # Skip "Other" category during initial matching
+                
+            if any(keyword in search_text for keyword in keywords):
+                subcategories[subcat_name].append(ad)
+                matched = True
+                break
+        
+        # If no match found, put in "Other" category
+        if not matched:
+            # Find the "Other" category for this main category
+            other_key = next((key for key in category_mapping.keys() if 'Other' in key), None)
+            if other_key:
+                subcategories[other_key].append(ad)
+            else:
+                # If no "Other" category, put in the first available subcategory
+                first_key = next(iter(category_mapping.keys()))
+                subcategories[first_key].append(ad)
+    
+    # Remove empty subcategories
+    subcategories = {k: v for k, v in subcategories.items() if v}
+    
+    return subcategories
 
 def handle_redirect(request, category_id):
     """

@@ -80,6 +80,11 @@
             border-left: 3px solid #f43f5e;
         }
 
+        .success-message {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid #10b981;
+        }
+
         /* Dark theme adjustments */
         .bg-white {
             background: var(--tile-bg) !important;
@@ -130,6 +135,90 @@
         .shadow-lg {
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
         }
+        
+        .input-error {
+            border-color: #f43f5e !important;
+            box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.2) !important;
+        }
+        
+        .error-text {
+            color: #f43f5e;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+        
+        /* Avatar preview styles */
+        .avatar-preview-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .avatar-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--chip);
+        }
+        
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            font-size: 2rem;
+        }
+        
+        .avatar-upload-area {
+            flex: 1;
+        }
+        
+        .file-input-label {
+            display: block;
+            padding: 0.75rem 1rem;
+            background: var(--chip);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .file-input-label:hover {
+            border-color: var(--accent);
+            background: rgba(6, 182, 212, 0.05);
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .remove-avatar {
+            margin-top: 0.5rem;
+            color: #f43f5e;
+            cursor: pointer;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .remove-avatar:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen">
@@ -145,35 +234,111 @@
         <h2 class="text-2xl font-bold text-center mb-2">Create Your Account</h2>
         <p class="text-center mb-8">Join our community today</p>
         
-        <form method="post" enctype="multipart/form-data" class="signup-form space-y-5 p-6 rounded-xl border">
+        <form method="post" enctype="multipart/form-data" class="signup-form space-y-5 p-6 rounded-xl border" id="signupForm">
             {% csrf_token %}
-            <div class="error-message text-sm p-3 rounded-lg mb-4 flex items-start hidden">
-                <i class="fas fa-exclamation-circle mr-2 mt-0.5"></i>
-                <div>
-                    <p>Sample error message</p>
+            
+            <!-- Display Django messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %} text-sm p-3 rounded-lg mb-4 flex items-start">
+                        <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} mr-2 mt-0.5"></i>
+                        <div>
+                            <p>{{ message }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <!-- Display form non-field errors -->
+            {% if form.non_field_errors %}
+                <div class="error-message text-sm p-3 rounded-lg mb-4 flex items-start">
+                    <i class="fas fa-exclamation-circle mr-2 mt-0.5"></i>
+                    <div>
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
                 </div>
+            {% endif %}
+            
+            <!-- Avatar Upload with Preview -->
+            <div>
+                <label class="block text-sm font-medium mb-2">Profile Picture</label>
+                <div class="avatar-preview-container">
+                    <div class="avatar-preview" id="avatarPreview">
+                        <div class="avatar-placeholder">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="avatar-upload-area">
+                        <label for="id_avatar" class="file-input-label">
+                            <i class="fas fa-cloud-upload-alt mr-2"></i>
+                            <span>Choose an image</span>
+                        </label>
+                        <input type="file" name="avatar" id="id_avatar" 
+                               class="file-input {% if form.avatar.errors %}input-error{% endif %}" 
+                               accept="image/*">
+                        <div class="text-xs text-gray-400 mt-2">
+                            <p>JPG, PNG, or WebP. Max 5MB.</p>
+                        </div>
+                        <div class="remove-avatar hidden" id="removeAvatar">
+                            <i class="fas fa-times"></i>
+                            <span>Remove image</span>
+                        </div>
+                    </div>
+                </div>
+                {% if form.avatar.errors %}
+                    <div class="error-text">
+                        {% for error in form.avatar.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
             
+            <!-- Email Field -->
             <div>
                 <label for="id_email" class="block text-sm font-medium mb-2">Email Address</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <i class="fas fa-envelope" style="color: var(--accent);"></i>
                     </div>
-                    <input type="email" name="email" id="id_email" class="form-input w-full pl-10" required placeholder="your@email.com">
+                    <input type="email" name="email" id="id_email" 
+                           class="form-input w-full pl-10 {% if form.email.errors %}input-error{% endif %}" 
+                           required placeholder="your@email.com"
+                           value="{{ form.email.value|default:'' }}">
                 </div>
+                {% if form.email.errors %}
+                    <div class="error-text">
+                        {% for error in form.email.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
             
+            <!-- Full Name Field -->
             <div>
                 <label for="id_full_name" class="block text-sm font-medium mb-2">Full Name</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <i class="fas fa-user" style="color: var(--accent);"></i>
                     </div>
-                    <input type="text" name="full_name" id="id_full_name" class="form-input w-full pl-10" placeholder="John Doe">
+                    <input type="text" name="full_name" id="id_full_name" 
+                           class="form-input w-full pl-10 {% if form.full_name.errors %}input-error{% endif %}" 
+                           placeholder="John Doe"
+                           value="{{ form.full_name.value|default:'' }}">
                 </div>
+                {% if form.full_name.errors %}
+                    <div class="error-text">
+                        {% for error in form.full_name.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
             
+            <!-- Password Fields -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label for="id_password1" class="block text-sm font-medium mb-2">Password</label>
@@ -181,11 +346,20 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-lock" style="color: var(--accent);"></i>
                         </div>
-                        <input type="password" name="password1" id="id_password1" class="form-input w-full pl-10 pr-10" required>
+                        <input type="password" name="password1" id="id_password1" 
+                               class="form-input w-full pl-10 pr-10 {% if form.password1.errors %}input-error{% endif %}" 
+                               required>
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
                             <i class="fas fa-eye-slash text-gray-400 cursor-pointer toggle-password" data-target="id_password1"></i>
                         </div>
                     </div>
+                    {% if form.password1.errors %}
+                        <div class="error-text">
+                            {% for error in form.password1.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
                 
                 <div>
@@ -194,52 +368,105 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-lock" style="color: var(--accent);"></i>
                         </div>
-                        <input type="password" name="password2" id="id_password2" class="form-input w-full pl-10 pr-10" required>
+                        <input type="password" name="password2" id="id_password2" 
+                               class="form-input w-full pl-10 pr-10 {% if form.password2.errors %}input-error{% endif %}" 
+                               required>
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
                             <i class="fas fa-eye-slash text-gray-400 cursor-pointer toggle-password" data-target="id_password2"></i>
                         </div>
                     </div>
+                    {% if form.password2.errors %}
+                        <div class="error-text">
+                            {% for error in form.password2.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             
+            <!-- Phone Number Field -->
             <div>
                 <label for="id_phone_number" class="block text-sm font-medium mb-2">Phone Number</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <i class="fas fa-phone" style="color: var(--accent);"></i>
                     </div>
-                    <input type="text" name="phone_number" id="id_phone_number" class="form-input w-full pl-10" placeholder="+1 (555) 123-4567">
+                    <input type="text" name="phone_number" id="id_phone_number" 
+                           class="form-input w-full pl-10 {% if form.phone_number.errors %}input-error{% endif %}" 
+                           placeholder="+25212345678"
+                           value="{{ form.phone_number.value|default:'' }}">
                 </div>
+                {% if form.phone_number.errors %}
+                    <div class="error-text">
+                        {% for error in form.phone_number.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
             
+            <!-- Bio Field -->
             <div>
                 <label for="id_bio" class="block text-sm font-medium mb-2">Bio</label>
                 <div class="relative">
                     <div class="absolute top-3 left-3">
                         <i class="fas fa-pen" style="color: var(--accent);"></i>
                     </div>
-                    <textarea name="bio" id="id_bio" class="w-full py-3 pl-10 pr-3 border rounded-lg focus:border-cyan-400 h-24" placeholder="Tell us about yourself..." style="background: var(--chip); color: #e6eef8; border-color: rgba(255,255,255,0.1);"></textarea>
+                    <textarea name="bio" id="id_bio" 
+                              class="w-full py-3 pl-10 pr-3 border rounded-lg focus:border-cyan-400 h-24 {% if form.bio.errors %}input-error{% endif %}" 
+                              placeholder="Tell us about yourself..." 
+                              style="background: var(--chip); color: #e6eef8; border-color: rgba(255,255,255,0.1);">{{ form.bio.value|default:'' }}</textarea>
                 </div>
+                {% if form.bio.errors %}
+                    <div class="error-text">
+                        {% for error in form.bio.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
             
+            <!-- Location Field -->
             <div>
                 <label for="id_location" class="block text-sm font-medium mb-2">Location</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <i class="fas fa-map-marker-alt" style="color: var(--accent);"></i>
                     </div>
-                    <input type="text" name="location" id="id_location" class="form-input w-full pl-10" placeholder="City, Country">
+                    <input type="text" name="location" id="id_location" 
+                           class="form-input w-full pl-10 {% if form.location.errors %}input-error{% endif %}" 
+                           placeholder="City, Country"
+                           value="{{ form.location.value|default:'' }}">
                 </div>
+                {% if form.location.errors %}
+                    <div class="error-text">
+                        {% for error in form.location.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
             
+            <!-- Terms and Conditions -->
             <div class="flex items-start pt-2">
                 <div class="flex items-center h-5">
-                    <input id="terms" name="terms" type="checkbox" class="h-4 w-4 border-gray-300 rounded" required style="accent-color: var(--accent);">
+                    <input id="terms" name="terms" type="checkbox" 
+                           class="h-4 w-4 border-gray-300 rounded {% if form.terms.errors %}input-error{% endif %}" 
+                           required style="accent-color: var(--accent);"
+                           {% if form.terms.value %}checked{% endif %}>
                 </div>
                 <div class="ml-3 text-sm">
                     <label for="terms" class="text-gray-700">
                         I agree to the <a href="#" class="hover:underline" style="color: var(--accent);">Terms</a> and <a href="#" class="hover:underline" style="color: var(--accent);">Privacy Policy</a>
                     </label>
+                    {% if form.terms.errors %}
+                        <div class="error-text">
+                            {% for error in form.terms.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             
@@ -266,18 +493,138 @@
             });
         });
         
-        // Preview avatar image
+        // Avatar preview functionality
         const avatarInput = document.getElementById('id_avatar');
-        const avatarPreview = document.getElementById('avatar-preview');
+        const avatarPreview = document.getElementById('avatarPreview');
+        const removeAvatar = document.getElementById('removeAvatar');
         
         avatarInput.addEventListener('change', function() {
             const file = this.files[0];
             if (file) {
+                // Check file size (5MB limit)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size exceeds 5MB limit. Please choose a smaller image.');
+                    this.value = '';
+                    return;
+                }
+                
+                // Check file type
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Please select a valid image file (JPG, PNG, GIF, or WebP).');
+                    this.value = '';
+                    return;
+                }
+                
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    avatarPreview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                    avatarPreview.innerHTML = `<img src="${e.target.result}" alt="Avatar preview">`;
+                    removeAvatar.classList.remove('hidden');
                 }
                 reader.readAsDataURL(file);
+            }
+        });
+        
+        // Remove avatar functionality
+        removeAvatar.addEventListener('click', function() {
+            avatarInput.value = '';
+            avatarPreview.innerHTML = '<div class="avatar-placeholder"><i class="fas fa-user"></i></div>';
+            this.classList.add('hidden');
+        });
+        
+        // Real-time password strength indicator
+        const passwordInput = document.getElementById('id_password1');
+        if (passwordInput) {
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                const strengthIndicator = document.getElementById('password-strength');
+                
+                if (!strengthIndicator) {
+                    // Create strength indicator if it doesn't exist
+                    const indicator = document.createElement('div');
+                    indicator.id = 'password-strength';
+                    indicator.className = 'text-xs mt-1';
+                    this.parentNode.parentNode.appendChild(indicator);
+                }
+                
+                const strength = checkPasswordStrength(password);
+                updatePasswordStrengthIndicator(strength);
+            });
+        }
+        
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            return strength;
+        }
+        
+        function updatePasswordStrengthIndicator(strength) {
+            const indicator = document.getElementById('password-strength');
+            if (!indicator) return;
+            
+            const colors = {
+                0: 'text-red-500',
+                1: 'text-red-500',
+                2: 'text-orange-500',
+                3: 'text-yellow-500',
+                4: 'text-green-500',
+                5: 'text-green-500'
+            };
+            
+            const messages = {
+                0: 'Very weak',
+                1: 'Weak',
+                2: 'Fair',
+                3: 'Good',
+                4: 'Strong',
+                5: 'Very strong'
+            };
+            
+            indicator.className = `text-xs mt-1 ${colors[strength]}`;
+            indicator.textContent = `Password strength: ${messages[strength]}`;
+        }
+        
+        // Phone number formatting
+        const phoneInput = document.getElementById('id_phone_number');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                
+                // Format as international number if it starts with country code
+                if (value.startsWith('252')) {
+                    value = '+' + value;
+                } else if (value.length > 0 && !value.startsWith('+')) {
+                    value = '+252' + value;
+                }
+                
+                e.target.value = value;
+            });
+        }
+        
+        // Form validation
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            const password1 = document.getElementById('id_password1').value;
+            const password2 = document.getElementById('id_password2').value;
+            const terms = document.getElementById('terms').checked;
+            
+            // Check if passwords match
+            if (password1 !== password2) {
+                e.preventDefault();
+                alert('Passwords do not match. Please make sure both passwords are identical.');
+                return;
+            }
+            
+            // Check if terms are accepted
+            if (!terms) {
+                e.preventDefault();
+                alert('Please agree to the Terms and Privacy Policy.');
+                return;
             }
         });
     </script>
