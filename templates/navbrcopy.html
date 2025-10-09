@@ -1,151 +1,544 @@
 {% load static %}
-<header class="w-full bg-gray-900 bg-opacity-90 z-20">
-    <div class="max-w-7xl mx-auto px-4 py-4">
-        <!-- Navbar -->
-        <div class="flex justify-between items-center">
-            <!-- Text-Based Logo and Right Nav -->
-            <div class="flex items-center space-x-6">
-                <a href="/" class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-yellow-500 tracking-tight">
-                    Almis-MarketPlace
-                </a>
-                <nav class="hidden md:flex items-center space-x-6">
-                    <a href="{% url 'about_us' %}" class="text-white text-lg hover:text-red-500 transition-colors px-3 py-2 rounded">
-                        <i class="fas fa-address-card mr-1"></i> About Us
-                    </a>
-                </nav>
-            </div>
-            <!-- Desktop Left Nav -->
-            <nav class="hidden md:flex items-center space-x-6">
-                {% if user.is_authenticated %}
-                <div class="relative group">
-                    <button class="text-white text-lg hover:text-red-500 flex items-center transition-colors px-3 py-2 rounded">
-                        Settings
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
-                    <div class="absolute top-full right-0 w-40 bg-gray-800 rounded-md shadow-lg mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <a href="" class="block px-4 py-2 text-white hover:bg-red-500 text-sm">View Profile</a>
-                        <a href="{% url 'logout' %}" class="block px-4 py-2 text-white hover:bg-red-500 text-sm">Logout</a>
-                    </div>
-                </div>
-                {% else %}
-                <a href="{% url 'signup' %}" class="text-white text-lg hover:text-red-500 transition-colors px-3 py-2 rounded">
-                    <i class="far fa-user mr-1"></i> Signup
-                </a>
-                {% endif %}
-                <div class="relative group">
-                    <button class="text-white text-lg hover:text-red-500 flex items-center transition-colors px-3 py-2 rounded">
-                        Ads
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
-                    <div class="absolute top-full right-0 w-40 bg-gray-800 rounded-md shadow-lg mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <a href="{% url 'menu' %}?is_paid=false" class="block px-4 py-2 text-white hover:bg-red-500 text-sm">Free Ad</a>
-                        <a href="{% url 'menu' %}?is_paid=true" class="block px-4 py-2 text-white hover:bg-red-500 text-sm">Paid Ad</a>
-                    </div>
-                </div>
-            </nav>
-            <!-- Mobile Hamburger -->
-            <button id="hamburger" class="md:hidden text-white focus:outline-none p-2 rounded hover:bg-gray-800">
-                <i class="fas fa-bars text-xl"></i>
-            </button>
-        </div>
-        <!-- Mobile Dropdown Menu -->
-        <div id="mobile-menu" class="hidden md:hidden bg-gray-800 shadow-lg mt-2 rounded-md">
-            <a href="{% url 'about_us' %}" class="block px-4 py-2 text-white hover:bg-red-500 text-lg">
-                <i class="fas fa-address-card mr-1"></i> About Us
-            </a>
-            {% if user.is_authenticated %}
-            <div class="relative">
-                <button id="mobileDropdownLink" class="text-white hover:text-red-500 w-full text-left px-4 py-2 text-lg">
-                    Settings
-                </button>
-                <div id="mobileDropdownContent" class="hidden bg-gray-700 pl-4">
-                    <a href="" class="block px-4 py-2 text-white hover:bg-red-500 text-sm">View Profile</a>
-                    <a href="{% url 'logout' %}" class="block px-4 py-2 text-white hover:bg-red-500 text-sm">Logout</a>
-                </div>
-            </div>
-            {% else %}
-            <a href="{% url 'login' %}" class="block px-4 py-2 text-white hover:bg-red-500 text-lg">
-                <i class="far fa-user mr-1"></i> Login
-            </a>
-            {% endif %}
-            <div class="relative">
-                <button id="mobileAdsDropdown" class="text-white hover:text-red-500 w-full text-left px-4 py-2 text-lg">
-                    Ads
-                </button>
-                <div id="mobileAdsContent" class="hidden bg-gray-700 pl-4">
-                    <a href="{% url 'menu' %}?is_paid=false" class="block px-4 py-2 text-white hover:bg-red-500 text-sm">Free Ad</a>
-                    <a href="{% url 'menu' %}?is_paid=true" class="block px-4 py-2 text-white hover:bg-red-500 text-sm">Paid Ad</a>
-                </div>
-            </div>
-        </div>
-        <!-- Search Panel -->
-        <form method="GET" action="{% url 'search_ads' %}" class="flex flex-col sm:flex-row gap-4 justify-center items-center mt-4">
-            <select name="category" class="bg-gray-800 text-white px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 w-full sm:w-48">
-                <option value="">All Categories</option>
-                {% for category in categories %}
-                    {% for subcategory in category.subcategories.all %}
-                        <option value="{{ subcategory.id }}">{{ category.name }} - {{ subcategory.name }}</option>
-                    {% endfor %}
-                {% endfor %}
-            </select>
-            <input type="text" name="keyword" placeholder="Search" class="bg-gray-800 text-white px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 w-full sm:w-48">
-            <input type="text" name="location" placeholder="Location" class="bg-gray-800 text-white px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 w-full sm:w-48">
-            <button type="submit" class="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600 w-full sm:w-auto">Search</button>
-        </form>
-        <!-- Mobile Side Menu Toggler -->
-        <div class="md:hidden mt-4">
-            <div id="toggleButton" class="text-white cursor-pointer p-2 rounded hover:bg-gray-800">
-                <i class="fas fa-bars text-xl"></i>
-            </div>
-            <div id="togglerMenu" class="hidden bg-gray-800 rounded-md shadow-lg mt-2 p-4">
-                <ul>
-                    {% for category in categories %}
-                        {% if category.subcategories.all %}
-                            <li class="py-2">
-                                <span class="text-white font-semibold">{{ category.name }}</span>
-                                <ul class="ml-8">
-                                    {% for subcategory in category.subcategories.all %}
-                                        <li class="flex items-center space-x-2 py-1">
-                                            <img class="w-6 h-6 object-cover rounded-full" src="{{ subcategory.image.url }}" alt="{{ subcategory.name }}">
-                                            <a href="{% url 'product_list' subcategory.id %}" class="text-gray-300 hover:text-red-500">{{ subcategory.name }}</a>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
+
+<!-- Mobile Header - Only visible on mobile -->
+<header class="md:hidden sticky top-0 z-40 bg-slate-900 border-b border-slate-700">
+  <!-- Top Bar -->
+  <div class="flex items-center justify-between px-4 py-3">
+    <!-- Logo and Menu -->
+    <div class="flex items-center gap-3">
+      <button id="mobileMenuToggle" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors">
+        <svg class="w-6 h-6 text-slate-300" viewBox="0 0 24 24" fill="none">
+          <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <div class="text-lg font-bold text-white">
+        <a href="{% url 'index' %}">Gobonimo Marketplace</a>
+      </div>
     </div>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-2">
+      <!-- Search Button -->
+      <button id="mobileSearchBtn" class="p-2 rounded-lg bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 transition-all duration-200 shadow-lg">
+        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none">
+          <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="11" cy="11" r="5" stroke="currentColor" stroke-width="1.6"/>
+        </svg>
+      </button>
+
+      <!-- Mobile Post Ad Dropdown -->
+      <div class="relative" id="mobile-post-ad-dropdown">
+        <button class="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white rounded-lg text-sm font-medium whitespace-nowrap shadow-lg transition-all duration-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          Post
+          <svg class="w-3 h-3 transition-transform" id="dropdown-arrow-mobile" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+
+        <div id="mobile-post-ad-menu" class="hidden absolute right-0 mt-2 w-72 bg-slate-800 border border-slate-700 rounded-md shadow-lg py-2 z-50">
+          <!-- Promoted Ad Option -->
+          <a href="{% url 'create_ad_form' %}" class="flex items-center px-3 py-3 hover:bg-slate-700 transition-colors group">
+            <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center mr-3">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-white font-medium text-sm">Promoted Ad</span>
+                <span class="bg-amber-500 text-amber-900 text-xs px-2 py-0.5 rounded-full font-bold">FEATURED</span>
+              </div>
+              <p class="text-xs text-slate-400 mb-1">Appear on main page • More visibility</p>
+              <p class="text-amber-400 text-xs font-semibold">Starting at $5</p>
+            </div>
+          </a>
+
+          <div class="border-t border-slate-700 my-2 mx-3"></div>
+
+          <!-- Free Ad Option -->
+          <a href="{% url 'ad_form' %}" class="flex items-center px-3 py-3 hover:bg-slate-700 transition-colors group">
+            <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-r from-emerald-500 to-green-500 flex items-center justify-center mr-3">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-white font-medium text-sm">Free Standard Ad</span>
+                <span class="bg-emerald-500 text-emerald-900 text-xs px-2 py-0.5 rounded-full font-bold">FREE</span>
+              </div>
+              <p class="text-xs text-slate-400 mb-1">Basic listing in category</p>
+              <p class="text-emerald-400 text-xs font-semibold">No cost • Quick post</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 </header>
 
+<!-- MOBILE SEARCH PANEL - From your original template -->
+<div id="mobileSearchPanel" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-md mx-4 transform transition-all duration-300 scale-95">
+    <!-- Header -->
+    <div class="flex items-center justify-between p-6 border-b border-slate-700">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none">
+            <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <circle cx="11" cy="11" r="5" stroke="currentColor" stroke-width="1.6"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-white font-bold text-lg">Search Marketplace</h3>
+          <p class="text-slate-400 text-sm">Find exactly what you're looking for</p>
+        </div>
+      </div>
+      <button id="mobileSearchClose" class="p-2 rounded-lg hover:bg-slate-700 transition-colors">
+        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Search Form -->
+    <form id="mobileSearchForm" method="GET" action="{% url 'search_ads' %}" class="p-6 space-y-5" autocomplete="off">
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-white">Category</label>
+        <select id="mobileCategory" name="category" class="w-full rounded-xl bg-slate-800/60 border border-slate-600 px-4 py-3.5 text-white placeholder-slate-400 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200" required>
+          <option value="" disabled selected>Select category</option>
+          {% for category in categories %}
+            <option value="{{ category.id }}"{% if request.GET.category|stringformat:"s" == category.id|stringformat:"s" %} selected{% endif %}>{{ category.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-white">Keyword</label>
+        <input id="mobileKeyword" name="q" type="search" placeholder="What are you looking for?" class="w-full rounded-xl bg-slate-800/60 border border-slate-600 px-4 py-3.5 text-white placeholder-slate-400 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200" value="{{ request.GET.q|default:'' }}" required />
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-white">Location</label>
+        <input id="mobileLocation" name="location" type="text" placeholder="Enter city or area" class="w-full rounded-xl bg-slate-800/60 border border-slate-600 px-4 py-3.5 text-white placeholder-slate-400 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200" value="{{ request.GET.location|default:'' }}" required />
+      </div>
+
+      <div class="flex items-center gap-3 pt-4">
+        <button type="submit" class="flex-1 px-6 py-3.5 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]">
+          <div class="flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none">
+              <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="11" cy="11" r="5" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Search Now
+          </div>
+        </button>
+        <button id="mobileClearBtn" type="button" class="px-6 py-3.5 bg-slate-700/60 hover:bg-slate-700 border border-slate-600 text-slate-300 font-medium rounded-xl transition-all duration-200">
+          Clear
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MOBILE SIDEBAR DRAWER -->
+<div id="mobileSidebar" class="fixed inset-0 z-50 transform -translate-x-full transition-transform duration-300 md:hidden">
+  <!-- Backdrop -->
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="mobileSidebarBackdrop"></div>
+  
+  <!-- Sidebar Panel -->
+  <div class="relative w-80 h-full bg-slate-900 border-r border-slate-700 overflow-y-auto">
+    <!-- Header -->
+    <div class="flex items-center justify-between p-4 border-b border-slate-700">
+      <div class="text-lg font-bold text-white">Menu</div>
+      <button id="mobileSidebarClose" class="p-2 rounded-lg hover:bg-slate-800 transition-colors">
+        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Navigation -->
+    <div class="p-4 space-y-4">
+      <!-- Home -->
+      <a href="{% url 'index' %}" class="flex items-center gap-3 p-3 rounded-lg bg-slate-800 text-white font-medium">
+        <svg class="w-5 h-5 text-blue-400" viewBox="0 0 24 24" fill="none">
+          <path d="M3 10.5L12 4l9 6.5V20a1 1 0 0 1-1 1h-5V13H9v8H4a1 1 0 0 1-1-1V10.5z" fill="#3b82f6"/>
+        </svg>
+        Home
+      </a>
+
+      <!-- Categories Section -->
+      <div>
+        <div class="flex items-center gap-3 p-3 text-slate-400 font-medium mb-2">
+          <svg class="w-5 h-5 text-green-400" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <g fill="#aaf36b">
+              <circle cx="12" cy="6.5" r="1.6"/>
+              <circle cx="8" cy="11.5" r="1.6"/>
+              <circle cx="16" cy="11.5" r="1.6"/>
+            </g>
+          </svg>
+          Categories
+        </div>
+        
+        <div class="grid grid-cols-2 gap-2 pl-8">
+          {% for category in categories|slice:":8" %}
+          <a href="{% url 'category_detail' category.id %}" class="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-800 transition-colors text-slate-300 text-sm">
+            {% if category.icon == 'building' %}
+              <svg class="w-4 h-4 text-blue-400" viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="6.5" width="18" height="11" rx="1.2" stroke="#4ea2ff" stroke-width="1.1"/>
+                <path d="M9 10h1m-1 3h1m3-3h1m-1 3h1m3-3h1m-1 3h1" stroke="#4ea2ff" stroke-width="1.1" stroke-linecap="round"/>
+              </svg>
+            {% elif category.icon == 'land' %}
+              <svg class="w-4 h-4 text-green-400" viewBox="0 0 24 24" fill="none">
+                <path d="M3 10l9-9 9 9M6 10v9a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-9" stroke="#22c55e" stroke-width="1.1"/>
+                <rect x="8" y="12" width="2" height="2" rx="0.5" fill="#22c55e"/>
+                <rect x="12" y="12" width="2" height="2" rx="0.5" fill="#22c55e"/>
+                <rect x="16" y="12" width="2" height="2" rx="0.5" fill="#22c55e"/>
+                <rect x="8" y="16" width="2" height="2" rx="0.5" fill="#22c55e"/>
+                <rect x="12" y="16" width="2" height="2" rx="0.5" fill="#22c55e"/>
+                <rect x="16" y="16" width="2" height="2" rx="0.5" fill="#22c55e"/>
+              </svg>
+            {% elif category.icon == 'electronics' %}
+              <svg class="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="none">
+                <rect x="4" y="4" width="16" height="16" rx="2" stroke="#a855f7" stroke-width="1.1"/>
+                <circle cx="12" cy="10" r="1" fill="#a855f7"/>
+                <rect x="8" y="13" width="8" height="2" rx="1" fill="#a855f7"/>
+              </svg>
+            {% elif category.icon == 'fashion' %}
+              <svg class="w-4 h-4 text-pink-400" viewBox="0 0 24 24" fill="none">
+                <path d="M12 12h4.5a3.5 3.5 0 1 1 0 7H12V12z" stroke="#ec4899" stroke-width="1.1"/>
+                <path d="M12 12H7.5a3.5 3.5 0 1 0 0 7H12V12z" stroke="#ec4899" stroke-width="1.1"/>
+                <circle cx="12" cy="9" r="1.5" fill="#ec4899"/>
+              </svg>
+            {% elif category.icon == 'car' %}
+              <svg class="w-4 h-4 text-orange-400" viewBox="0 0 24 24" fill="none">
+                <path d="M5 13l1.5-4.5A2 2 0 0 1 8.5 7h7a2 2 0 0 1 2 1.5L19 13M5 13h14M5 13v5a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-1m8 1v1a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-1m0 0H9" stroke="#f97316" stroke-width="1.1"/>
+                <circle cx="8" cy="17" r="1" fill="#f97316"/>
+                <circle cx="16" cy="17" r="1" fill="#f97316"/>
+              </svg>
+            {% elif category.icon == 'wrench' %}
+              <svg class="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="none">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" stroke="#eab308" stroke-width="1.1"/>
+              </svg>
+            {% elif category.icon == 'briefcase' %}
+              <svg class="w-4 h-4 text-indigo-400" viewBox="0 0 24 24" fill="none">
+                <rect x="2" y="7" width="20" height="14" rx="2" stroke="#6366f1" stroke-width="1.1"/>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" stroke="#6366f1" stroke-width="1.1"/>
+                <path d="M8 12h8" stroke="#6366f1" stroke-width="1.1" stroke-linecap="round"/>
+              </svg>
+            {% elif category.icon == 'scissors' %}
+              <svg class="w-4 h-4 text-red-400" viewBox="0 0 24 24" fill="none">
+                <circle cx="6" cy="6" r="3" stroke="#ef4444" stroke-width="1.1"/>
+                <circle cx="6" cy="18" r="3" stroke="#ef4444" stroke-width="1.1"/>
+                <path d="M20 4L8.12 15.88M14.47 14.48L20 20M8.12 8.12L12 12" stroke="#ef4444" stroke-width="1.1"/>
+              </svg>
+            {% elif category.icon == 'paint-brush' %}
+              <svg class="w-4 h-4 text-teal-400" viewBox="0 0 24 24" fill="none">
+                <path d="M21 7v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#14b8a6" stroke-width="1.1"/>
+                <path d="M12 5v6" stroke="#14b8a6" stroke-width="1.1"/>
+                <path d="M8 5v6" stroke="#14b8a6" stroke-width="1.1"/>
+                <path d="M16 5v6" stroke="#14b8a6" stroke-width="1.1"/>
+              </svg>
+            {% else %}
+              <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none">
+                <path d="M7 7h10m-5 0v10M5 12a7 7 0 1 0 14 0 7 7 0 0 0-14 0z" stroke="#9ca3af" stroke-width="1.1" stroke-linecap="round"/>
+              </svg>
+            {% endif %}
+            {{ category.name }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- User Links -->
+      {% if user.is_authenticated %}
+      <div class="border-t border-slate-700 pt-4">
+        <div class="space-y-2">
+          <a href="{% url 'dashboard' %}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 text-slate-300 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            Profile
+          </a>
+          <a href="" class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 text-slate-300 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+            </svg>
+            My Ads
+          </a>
+          <a href="{% url 'my_favorites' %}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 text-slate-300 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            </svg>
+            Favorites
+          </a>
+          {% if unread_count > 0 %}
+          <a href="{% url 'notification_center' %}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 text-slate-300 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+            </svg>
+            Notifications
+            <span class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">{{ unread_count }}</span>
+          </a>
+          {% endif %}
+        </div>
+        
+        <!-- Logout -->
+        <div class="border-t border-slate-700 mt-4 pt-4">
+          <form method="post" action="{% url 'logout' %}" class="block">
+            {% csrf_token %}
+            <button type="submit" class="flex items-center w-full text-left gap-3 p-3 rounded-lg hover:bg-slate-800 text-red-400 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+              </svg>
+              Logout
+            </button>
+          </form>
+        </div>
+      </div>
+      {% else %}
+      <div class="border-t border-slate-700 pt-4">
+        <a href="{% url 'login' %}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 text-slate-300 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+          </svg>
+          Login
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAVIGATION BAR - Mobile only -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-slate-900 border-t border-slate-700">
+  <div class="flex items-center justify-around py-2">
+    <!-- Home -->
+    <a href="{% url 'index' %}" class="flex flex-col items-center p-2 text-slate-400 hover:text-white transition-colors">
+      <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none">
+        <path d="M3 10.5L12 4l9 6.5V20a1 1 0 0 1-1 1h-5V13H9v8H4a1 1 0 0 1-1-1V10.5z" fill="#3b82f6"/>
+      </svg>
+      <span class="text-xs mt-1">Home</span>
+    </a>
+
+    <!-- Categories -->
+    <button id="mobileCategoriesBtn" class="flex flex-col items-center p-2 text-slate-400 hover:text-white transition-colors">
+      <svg class="w-6 h-6" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#aaf36b">
+          <circle cx="12" cy="6.5" r="1.6"/>
+          <circle cx="8" cy="11.5" r="1.6"/>
+          <circle cx="16" cy="11.5" r="1.6"/>
+        </g>
+      </svg>
+      <span class="text-xs mt-1">Categories</span>
+    </button>
+
+    <!-- Search -->
+    <button id="mobileSearchBtnBottom" class="flex flex-col items-center p-2 text-slate-400 hover:text-white transition-colors">
+      <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none">
+        <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="11" cy="11" r="5" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      <span class="text-xs mt-1">Search</span>
+    </button>
+
+    <!-- Favorites -->
+    {% if user.is_authenticated %}
+    <a href="{% url 'my_favorites' %}" class="flex flex-col items-center p-2 text-slate-400 hover:text-white transition-colors relative">
+      <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+      </svg>
+      {% if favorites_count > 0 %}
+        <span class="absolute -top-1 -right-1 inline-flex items-center justify-center h-4 w-4 rounded-full bg-red-500 text-[8px] text-white font-medium">
+          {{ favorites_count }}
+        </span>
+      {% endif %}
+      <span class="text-xs mt-1">Favorites</span>
+    </a>
+    {% endif %}
+
+    <!-- Profile -->
+    {% if user.is_authenticated %}
+    <button id="mobileProfileBtn" class="flex flex-col items-center p-2 text-slate-400 hover:text-white transition-colors">
+      <div class="w-6 h-6 rounded-full bg-gradient-to-r from-cyan-400 to-teal-500 flex items-center justify-center text-xs font-semibold text-slate-900">
+        {{ user.full_name|first|default:user.username|first|upper }}
+      </div>
+      <span class="text-xs mt-1">Profile</span>
+    </button>
+    {% else %}
+    <a href="{% url 'login' %}" class="flex flex-col items-center p-2 text-slate-400 hover:text-white transition-colors">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+      </svg>
+      <span class="text-xs mt-1">Login</span>
+    </a>
+    {% endif %}
+  </div>
+</nav>
+
+
+
 <script>
-    // Toggle mobile menu
-    document.getElementById('hamburger').addEventListener('click', function () {
-        const mobileMenu = document.getElementById('mobile-menu');
-        mobileMenu.classList.toggle('hidden');
+document.addEventListener('DOMContentLoaded', function() {
+  // Mobile Sidebar Drawer
+  const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+  const mobileSidebar = document.getElementById('mobileSidebar');
+  const mobileSidebarClose = document.getElementById('mobileSidebarClose');
+  const mobileSidebarBackdrop = document.getElementById('mobileSidebarBackdrop');
+
+  if (mobileMenuToggle && mobileSidebar) {
+    mobileMenuToggle.addEventListener('click', function() {
+      mobileSidebar.classList.remove('-translate-x-full');
+      document.body.style.overflow = 'hidden';
     });
 
-    // Toggle mobile settings dropdown
-    document.getElementById('mobileDropdownLink').addEventListener('click', function () {
-        const dropdownContent = document.getElementById('mobileDropdownContent');
-        dropdownContent.classList.toggle('hidden');
+    function closeSidebar() {
+      mobileSidebar.classList.add('-translate-x-full');
+      document.body.style.overflow = '';
+    }
+
+    mobileSidebarClose.addEventListener('click', closeSidebar);
+    mobileSidebarBackdrop.addEventListener('click', closeSidebar);
+
+    // Close with Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && !mobileSidebar.classList.contains('-translate-x-full')) {
+        closeSidebar();
+      }
+    });
+  }
+
+  // BEAUTIFUL MOBILE SEARCH PANEL FUNCTIONALITY - From your original template
+  const mobileSearchBtn = document.getElementById('mobileSearchBtn');
+  const mobileSearchPanel = document.getElementById('mobileSearchPanel');
+  const mobileSearchClose = document.getElementById('mobileSearchClose');
+  const mobileClearBtn = document.getElementById('mobileClearBtn');
+
+  if (mobileSearchBtn && mobileSearchPanel) {
+    // Toggle search panel
+    mobileSearchBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      mobileSearchPanel.classList.remove('hidden');
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
     });
 
-    // Toggle mobile ads dropdown
-    document.getElementById('mobileAdsDropdown').addEventListener('click', function () {
-        const dropdownContent = document.getElementById('mobileAdsContent');
-        dropdownContent.classList.toggle('hidden');
+    // Close search panel with close button
+    mobileSearchClose.addEventListener('click', function() {
+      mobileSearchPanel.classList.add('hidden');
+      document.body.style.overflow = ''; // Restore scrolling
     });
 
-    // Toggle mobile side menu
-    document.getElementById('toggleButton').addEventListener('click', function () {
-        const togglerMenu = document.getElementById('togglerMenu');
-        togglerMenu.classList.toggle('hidden');
+    // Close search panel when clicking on backdrop
+    mobileSearchPanel.addEventListener('click', function(e) {
+      if (e.target === mobileSearchPanel) {
+        mobileSearchPanel.classList.add('hidden');
+        document.body.style.overflow = ''; // Restore scrolling
+      }
     });
+
+    // Clear button functionality
+    if (mobileClearBtn) {
+      mobileClearBtn.addEventListener('click', function() {
+        document.getElementById('mobileKeyword').value = '';
+        document.getElementById('mobileLocation').value = '';
+        document.getElementById('mobileCategory').selectedIndex = 0;
+      });
+    }
+
+    // Close with Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && !mobileSearchPanel.classList.contains('hidden')) {
+        mobileSearchPanel.classList.add('hidden');
+        document.body.style.overflow = ''; // Restore scrolling
+      }
+    });
+  }
+
+  // Bottom navigation actions
+  const mobileSearchBtnBottom = document.getElementById('mobileSearchBtnBottom');
+  if (mobileSearchBtnBottom) {
+    mobileSearchBtnBottom.addEventListener('click', function() {
+      document.getElementById('mobileSearchBtn')?.click();
+    });
+  }
+
+  const mobileCategoriesBtn = document.getElementById('mobileCategoriesBtn');
+  if (mobileCategoriesBtn) {
+    mobileCategoriesBtn.addEventListener('click', function() {
+      document.getElementById('mobileMenuToggle')?.click();
+    });
+  }
+
+  const mobileProfileBtn = document.getElementById('mobileProfileBtn');
+  if (mobileProfileBtn) {
+    mobileProfileBtn.addEventListener('click', function() {
+      window.location.href = "{% url 'dashboard' %}";
+    });
+  }
+
+  // Mobile Post Ad Dropdown functionality
+  function setupDropdown(buttonId, menuId, arrowId = null) {
+    const button = document.getElementById(buttonId);
+    const menu = document.getElementById(menuId);
+    const arrow = arrowId ? document.getElementById(arrowId) : null;
+
+    if (button && menu) {
+      button.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+        button.setAttribute('aria-expanded', !isExpanded);
+        menu.classList.toggle('hidden');
+        
+        if (arrow) {
+          arrow.classList.toggle('rotate-180');
+        }
+      });
+
+      // Close when clicking outside
+      document.addEventListener('click', function() {
+        button.setAttribute('aria-expanded', 'false');
+        menu.classList.add('hidden');
+        if (arrow) {
+          arrow.classList.remove('rotate-180');
+        }
+      });
+
+      // Prevent dropdown from closing when clicking inside
+      menu.addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+    }
+  }
+
+  // Setup mobile post ad dropdown
+  setupDropdown('mobile-post-ad-dropdown', 'mobile-post-ad-menu', 'dropdown-arrow-mobile');
+
+  // Close all mobile dropdowns with Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      const dropdowns = ['mobile-post-ad-menu', 'mobileSidebar', 'mobileSearchPanel'];
+      const buttons = ['mobile-post-ad-dropdown'];
+      
+      dropdowns.forEach(menuId => {
+        const menu = document.getElementById(menuId);
+        if (menu) menu.classList.add('hidden');
+      });
+      
+      buttons.forEach(buttonId => {
+        const button = document.getElementById(buttonId);
+        if (button) button.setAttribute('aria-expanded', 'false');
+      });
+
+      // Close mobile sidebar
+      if (mobileSidebar && !mobileSidebar.classList.contains('-translate-x-full')) {
+        mobileSidebar.classList.add('-translate-x-full');
+        document.body.style.overflow = '';
+      }
+    }
+  });
+});
 </script>
