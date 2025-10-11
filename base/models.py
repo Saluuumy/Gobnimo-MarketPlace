@@ -79,6 +79,104 @@ class User(AbstractUser):
         if self.full_name:
             return self.full_name.split()[0]
         return self.email.split('@')[0]
+
+    # Seller Rating Methods
+    def get_seller_stats(self):
+        """Get or create seller statistics for this user"""
+        from django.db import transaction
+        
+        with transaction.atomic():
+            stats, created = SellerStats.objects.get_or_create(user=self)
+            if created:
+                stats.update_stats()
+            return stats
+    
+    def get_average_rating(self):
+        """Get average rating as float"""
+        stats = self.get_seller_stats()
+        return float(stats.average_rating)
+    
+    def get_rating_count(self):
+        """Get total number of ratings"""
+        stats = self.get_seller_stats()
+        return stats.total_ratings
+    
+    def can_rate_seller(self, rater):
+        """Check if a user can rate this seller"""
+        if self == rater:
+            return False  # Can't rate yourself
+        
+        # Optional: Check if user has previously interacted with this seller
+        # For example, check if they've messaged each other or completed a transaction
+        # This is a placeholder for future business logic
+        
+        # For now, we'll allow any user to rate any seller
+        return True
+    
+    def get_recent_ratings(self, limit=5):
+        """Get recent ratings for this seller"""
+        return SellerRating.objects.filter(seller=self).select_related('rater').order_by('-created_at')[:limit]
+    
+    def has_rated_seller(self, seller):
+        """Check if this user has rated a specific seller"""
+        if not self.is_authenticated:
+            return False
+        return SellerRating.objects.filter(seller=seller, rater=self).exists()
+    
+    def get_rating_for_seller(self, seller):
+        """Get this user's rating for a specific seller if it exists"""
+        try:
+            return SellerRating.objects.get(seller=seller, rater=self)
+        except SellerRating.DoesNotExist:
+            return None
+    
+    def get_rating_distribution(self):
+        """Get distribution of ratings (how many of each star rating)"""
+        from django.db.models import Count
+        return (
+            SellerRating.objects
+            .filter(seller=self)
+            .values('rating')
+            .annotate(count=Count('rating'))
+            .order_by('rating')
+        )
+    
+    def get_positive_rating_percentage(self, threshold=4):
+        """Get percentage of ratings that are positive (>= threshold)"""
+        total_ratings = self.get_rating_count()
+        if total_ratings == 0:
+            return 0
+        
+        positive_ratings = SellerRating.objects.filter(
+            seller=self, 
+            rating__gte=threshold
+        ).count()
+        
+        return (positive_ratings / total_ratings) * 100
+    
+    def is_trusted_seller(self, min_ratings=5, min_rating=4.0):
+        """Check if this user meets criteria to be considered a trusted seller"""
+        if self.get_rating_count() < min_ratings:
+            return False
+        return self.get_average_rating() >= min_rating
+    
+    def get_seller_level(self):
+        """Get seller level based on ratings and performance"""
+        avg_rating = self.get_average_rating()
+        rating_count = self.get_rating_count()
+        
+        if rating_count == 0:
+            return "New Seller"
+        elif rating_count < 3:
+            return "Beginner Seller"
+        elif avg_rating >= 4.8 and rating_count >= 10:
+            return "Top Rated Seller"
+        elif avg_rating >= 4.5 and rating_count >= 5:
+            return "Rated Seller"
+        elif avg_rating >= 4.0:
+            return "Reliable Seller"
+        else:
+            return "Seller"
 class Category(models.Model):
     ICON_CHOICES = [
         ('building', 'Property'),
@@ -466,3 +564,146 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f"{self.user.get_short_name()} → {self.ad.name}"
+        
+class SellerRating(models.Model):
+    RATING_CHOICES = [
+        (1, '1 Star - Poor'),
+        (2, '2 Stars - Fair'),
+        (3, '3 Stars - Good'),
+        (4, '4 Stars - Very Good'),
+        (5, '5 Stars - Excellent'),
+    ]
+    
+    seller = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='ratings_received'
+    )
+    rater = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='ratings_given'
+    )
+    rating = models.PositiveSmallIntegerField(choices=RATING_CHOICES)
+    comment = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    # Optional: Reference to the ad that triggered the rating
+    ad = models.ForeignKey(
+        'Ad', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name='ratings'
+    )
+    
+    class Meta:
+        unique_together = ['seller', 'rater']  # Prevent multiple ratings from same user
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['seller', 'created_at']),
+            models.Index(fields=['rater', 'created_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.rater.get_short_name()} rated {self.seller.get_short_name()} - {self.rating} stars"
+    
+    def save(self, *args, **kwargs):
+        """Override save to update seller stats"""
+        super().save(*args, **kwargs)
+        # Update seller stats
+        self.seller.get_seller_stats().update_stats()
+    
+    def delete(self, *args, **kwargs):
+        """Override delete to update seller stats"""
+        seller = self.seller
+        super().delete(*args, **kwargs)
+        # Update seller stats
+        seller.get_seller_stats().update_stats()
+
+class SellerStats(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='seller_stats'
+    )
+    total_ratings = models.PositiveIntegerField(default=0)
+    average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
+    response_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
+    total_ads = models.PositiveIntegerField(default=0)
+    last_updated = models.DateTimeField(auto_now=True)
+    
+    # Rating distribution (cached for performance)
+    five_star_count = models.PositiveIntegerField(default=0)
+    four_star_count = models.PositiveIntegerField(default=0)
+    three_star_count = models.PositiveIntegerField(default=0)
+    two_star_count = models.PositiveIntegerField(default=0)
+    one_star_count = models.PositiveIntegerField(default=0)
+    
+    class Meta:
+        verbose_name_plural = "Seller Stats"
+        indexes = [
+            models.Index(fields=['average_rating', 'total_ratings']),
+        ]
+    
+    def __str__(self):
+        return f"Stats for {self.user.get_short_name()}"
+    
+    def update_stats(self):
+        """Update all seller statistics"""
+        from django.db.models import Avg, Count, Q
+        
+        # Update rating stats
+        ratings = SellerRating.objects.filter(seller=self.user)
+        self.total_ratings = ratings.count()
+        
+        if self.total_ratings > 0:
+            # Calculate average rating
+            avg_result = ratings.aggregate(avg=Avg('rating'))
+            self.average_rating = avg_result['avg'] or 0.00
+            
+            # Update rating distribution
+            self.five_star_count = ratings.filter(rating=5).count()
+            self.four_star_count = ratings.filter(rating=4).count()
+            self.three_star_count = ratings.filter(rating=3).count()
+            self.two_star_count = ratings.filter(rating=2).count()
+            self.one_star_count = ratings.filter(rating=1).count()
+        else:
+            self.average_rating = 0.00
+            self.five_star_count = 0
+            self.four_star_count = 0
+            self.three_star_count = 0
+            self.two_star_count = 0
+            self.one_star_count = 0
+        
+        # Update ad count (only approved ads)
+        self.total_ads = Ad.objects.filter(
+            advertiser=self.user, 
+            status='approved'
+        ).count()
+        
+        # Update response rate (you can implement this based on your messaging system)
+        # For now, we'll set a placeholder or keep the existing value
+        if not self.response_rate:
+            # Simple heuristic based on ratings and ad count
+            if self.total_ads > 0 and self.total_ratings > 0:
+                self.response_rate = min(100, (self.total_ratings / self.total_ads) * 100)
+            else:
+                self.response_rate = 0.00
+        
+        self.save()
+    
+    def get_rating_percentage(self, star_rating):
+        """Get percentage of a specific star rating"""
+        if self.total_ratings == 0:
+            return 0
+        count = getattr(self, f'{star_rating}_star_count')
+        return (count / self.total_ratings) * 100
+    
+    def get_positive_rating_percentage(self):
+        """Get percentage of 4 and 5 star ratings"""
+        if self.total_ratings == 0:
+            return 0
+        positive_count = self.four_star_count + self.five_star_count
+        return (positive_count / self.total_ratings) * 100

@@ -30,60 +30,53 @@
     }
     
     .card {
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
-      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      border-radius: 8px;
       background: var(--tile-bg);
-      border: 1px solid rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
     }
     
     .gallery-main {
-      height: 300px;
+      height: 400px;
       object-fit: cover;
-      border-radius: 10px;
+      border-radius: 8px;
     }
     
     .gallery-thumb {
       transition: all 0.2s ease;
       cursor: pointer;
-      border-radius: 8px;
+      border-radius: 6px;
       overflow: hidden;
       border: 2px solid transparent;
     }
     
     .gallery-thumb:hover, .gallery-thumb.active {
-      transform: translateY(-2px);
       border-color: var(--accent);
     }
     
+    .attribute-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+    
     .attribute-item {
+      text-align: center;
+      padding: 12px 8px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 6px;
       transition: all 0.2s ease;
-      border-radius: 10px;
     }
     
     .attribute-item:hover {
-      background-color: rgba(255,255,255,0.05);
-      transform: translateY(-1px);
+      background: rgba(255,255,255,0.05);
     }
     
-    .discount-badge {
-      animation: pulse 1.5s infinite;
-    }
-    
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.03); }
-      100% { transform: scale(1); }
-    }
-    
-    .compact-grid {
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    }
-    
-    .attribute-value {
-      font-weight: 500;
-      color: #e6eef8;
-      font-size: 0.9rem;
+    .attribute-icon {
+      font-size: 1.2rem;
+      color: var(--accent);
+      margin-bottom: 6px;
     }
     
     .attribute-label {
@@ -94,49 +87,9 @@
       margin-top: 4px;
     }
     
-    .attribute-icon {
-      font-size: 1.1rem;
-      color: var(--accent);
-      margin-bottom: 2px;
-    }
-    
-    .property-feature {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    
-    .property-feature i {
-      margin-right: 8px;
-      width: 18px;
-      text-align: center;
-      color: var(--accent);
-      font-size: 0.85rem;
-    }
-    
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-    
-    .comment-card {
-      transition: all 0.2s ease;
-      background: var(--tile-bg);
-    }
-    
-    .comment-card:hover {
-      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.1);
-    }
-    
-    .reply-form {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease;
-    }
-    
-    .reply-form.active {
-      max-height: 150px;
+    .attribute-value {
+      font-weight: 500;
+      font-size: 0.9rem;
     }
     
     .gradient-btn {
@@ -147,29 +100,17 @@
     .gradient-btn:hover {
       background: linear-gradient(to right, #0d9488, #0f766e);
       transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(6, 182, 212, 0.3);
     }
     
-    .comment-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
+    .secondary-btn {
+      background: rgba(255,255,255,0.1);
+      color: #e6eef8;
+      transition: all 0.3s ease;
     }
     
-    .comment-actions {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-    
-    .delete-btn {
-      color: #ef4444;
-      transition: all 0.2s;
-    }
-    
-    .delete-btn:hover {
-      color: #dc2626;
-      transform: scale(1.1);
+    .secondary-btn:hover {
+      background: rgba(255,255,255,0.15);
+      transform: translateY(-1px);
     }
     
     .accent-color {
@@ -184,263 +125,150 @@
       border-color: rgba(6, 182, 212, 0.3);
     }
     
-    /* Share section styles */
-    .share-section {
-      margin-top: 1.5rem;
-      padding-top: 1rem;
-      border-top: 1px solid rgba(255,255,255,0.1);
+    /* Compact layout adjustments */
+    .compact-section {
+      margin-bottom: 16px;
     }
     
-    .share-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--muted);
-      margin-bottom: 0.75rem;
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin: 12px 0;
+    }
+    
+    .property-feature {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      padding: 8px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 6px;
     }
     
+    .property-feature i {
+      margin-right: 8px;
+      color: var(--accent);
+      font-size: 0.9rem;
+      width: 16px;
+      text-align: center;
+    }
+    
+    /* Comments section styling */
+    .comments-container {
+       margin-top: -199px;
+    }
+    
+    .comment-card {
+      background: var(--tile-bg);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    
+    .comment-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    
+    .reply-form {
+      margin-top: 12px;
+      padding-left: 16px;
+      border-left: 2px solid var(--accent);
+    }
+    
+    /* Share buttons */
     .share-buttons {
       display: flex;
-      gap: 0.75rem;
-      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
     }
     
     .share-btn {
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.2s ease;
       cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     
     .share-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transform: translateY(-1px);
     }
     
-    .facebook-btn {
-      background-color: #3b5998;
-      color: white;
-    }
-    
-    .whatsapp-btn {
-      background-color: #25d366;
-      color: white;
-    }
-    
-    .twitter-btn {
-      background-color: #1da1f2;
-      color: white;
-    }
-    
-    .email-btn {
-      background-color: #ea4335;
-      color: white;
-    }
-    
-    .copy-btn {
-      background-color: var(--accent);
-      color: white;
-    }
-    
-    .share-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0,0,0,0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-    
-    .share-modal.active {
-      opacity: 1;
-      pointer-events: all;
-    }
-    
-    .share-modal-content {
-      background-color: var(--tile-bg);
-      border-radius: 12px;
-      padding: 1.5rem;
-      max-width: 90%;
-      width: 400px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      transform: translateY(20px);
-      transition: transform 0.3s ease;
-      border: 1px solid rgba(255,255,255,0.05);
-    }
-    
-    .share-modal.active .share-modal-content {
-      transform: translateY(0);
-    }
-    
-    .share-modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-    
-    .share-modal-title {
-      font-weight: 600;
-      font-size: 1.2rem;
-      color: #e6eef8;
-    }
-    
-    .share-modal-close {
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: var(--muted);
-    }
-    
-    .share-input-group {
-      display: flex;
-      margin-bottom: 1.5rem;
-    }
-    
-    .share-input {
-      flex-grow: 1;
-      padding: 0.75rem;
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 8px 0 0 8px;
-      font-size: 0.9rem;
-      background: var(--chip);
-      color: #e6eef8;
-    }
-    
-    .copy-button {
-      background: var(--accent);
-      color: white;
-      border: none;
-      padding: 0 1rem;
-      border-radius: 0 8px 8px 0;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    
-    .copy-button:hover {
-      background: #0891b2;
-    }
-    
-    .share-success {
-      background: rgba(16, 185, 129, 0.1);
-      color: #10b981;
-      padding: 0.75rem;
+    /* Seller info styling */
+    .seller-info {
+      padding: 16px;
+      background: rgba(255,255,255,0.03);
       border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    
+    .seller-stats {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    
+    .stat-item {
       text-align: center;
-      display: none;
-      border: 1px solid rgba(16, 185, 129, 0.2);
+      flex: 1;
     }
     
-    .share-success.active {
-      display: block;
+    .stat-value {
+      font-weight: 600;
+      font-size: 0.9rem;
     }
     
-    /* Mobile layout adjustments */
-    @media (max-width: 768px) {
-      .gallery-main {
-        height: 250px;
-      }
-      
-      .compact-grid {
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      }
-      
-      .feature-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .attribute-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      
-      .comment-header {
-        flex-direction: column;
-        gap: 8px;
-      }
-      
-      .mobile-order-1 {
-        order: 1;
-      }
-      
-      .mobile-order-2 {
-        order: 2;
-      }
-      
-      .mobile-order-3 {
-        order: 3;
-      }
-      
-      .share-buttons {
-        justify-content: center;
-      }
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.7rem;
+      margin-top: 2px;
     }
     
-    @media (max-width: 480px) {
-      .gallery-main {
-        height: 200px;
-      }
-      .max-w-\[90\%\] {
-        max-width: 35%;
-      }
-      
-      .compact-grid {
-        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-      }
-      
-      .attribute-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      
-      .attribute-icon {
-        font-size: 1rem;
-      }
-      
-      .attribute-value {
-        font-size: 0.85rem;
-      }
+    /* Rating stars styling */
+    .star-rating {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 8px;
     }
     
-    /* Reduced spacing between sections */
-    .compact-section {
-      margin-bottom: 0.75rem !important;
+    .star-label {
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
     
-    .compact-card {
-      padding: 1.25rem !important;
+    .star-label:hover i {
+      transform: scale(1.1);
     }
     
-    /* Tighter attribute grid */
-    .attribute-grid {
-      gap: 0.75rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
-
-    @media (min-width: 1024px) {
-      .bg-white.rounded-xl.card.compact {
-        position: relative;
-        top: -190px;
-      }
+    .rating-distribution {
+      margin: 8px 0;
     }
     
-    /* Additional dark theme adjustments */
-    .bg-gray-50 {
-      background: var(--panel) !important;
+    .rating-bar {
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      height: 6px;
+      margin: 4px 0;
+      overflow: hidden;
+    }
+    
+    .rating-fill {
+      background: #f59e0b;
+      height: 100%;
+      border-radius: 4px;
+    }
+    
+    /* Dark theme adjustments */
+    .bg-white {
+      background: var(--tile-bg) !important;
     }
     
     .text-gray-800, .text-gray-900 {
@@ -451,776 +279,678 @@
       color: var(--muted) !important;
     }
     
-    .bg-white {
-      background: var(--tile-bg) !important;
-    }
-    
     .border-gray-200 {
-      border-color: rgba(255,255,255,0.05) !important;
+      border-color: rgba(255,255,255,0.08) !important;
     }
     
     .bg-gray-100 {
       background: var(--chip) !important;
     }
     
-    .bg-purple-50 {
-      background: rgba(6, 182, 212, 0.05) !important;
+    /* Centered layout */
+    .centered-container {
+      max-width: 1200px;
+      margin: 20px 70px auto;
+    }
+    button, input, optgroup, select, textarea {
+  font-family: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  font-size: 100%;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+  background: rgba(87, 48, 48, 0.03);
+    }
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      .gallery-main {
+        height: 300px;
+      }
+          .centered-container {
+      max-width: 1200px;
+      margin: 20px 0 auto !important;
+    }
+      .attribute-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      /* Keep features as 2 columns on mobile */
+      .feature-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      /* Mobile order fix - details before comments */
+      .mobile-order-1 { order: 1; }
+      .mobile-order-2 { order: 2; }
+      .mobile-order-3 { order: 3; }
+      .mobile-order-4 { order: 4; }
+      
+      /* Seller stats stack on mobile */
+      .seller-stats {
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .stat-item {
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
     }
     
-    .border-purple-200, .border-purple-300 {
-      border-color: rgba(6, 182, 212, 0.3) !important;
+    @media (max-width: 480px) {
+      .gallery-main {
+        height: 250px;
+      }
+      
+      /* For very small screens, make features 2 columns but smaller gap */
+      .feature-grid {
+        gap: 8px;
+      }
     }
     
-    .bg-purple-600 {
-      background: var(--accent) !important;
-    }
-    
-    .from-purple-600 {
-      --tw-gradient-from: var(--accent) !important;
-    }
-    
-    .to-indigo-600 {
-      --tw-gradient-to: #0d9488 !important;
-    }
-    
-    .hover\:from-purple-700:hover {
-      --tw-gradient-from: #0891b2 !important;
-    }
-    
-    .hover\:to-indigo-700:hover {
-      --tw-gradient-to: #0f766e !important;
-    }
-    
-    .bg-gradient-to-b {
-      background-image: linear-gradient(to bottom, rgba(6, 182, 212, 0.05), transparent) !important;
-    }
-    
-    .bg-gray-300 {
-      background: var(--chip) !important;
-      color: var(--muted) !important;
+    @media (max-width: 360px) {
+      /* On very small screens, stack features */
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
-  <main class="container mx-auto px-4 py-5 flex-grow">
-    <!-- Fixed grid structure with proper mobile ordering -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-      <!-- Gallery Section -->
-      <div class="lg:col-span-7 mobile-order-1 compact-section">
-        <div class="rounded-xl card p-3">
+  <main class="centered-container px-4 py-4 flex-grow">
+    <!-- Fixed mobile order - using flex with order classes -->
+    <div class="flex flex-col lg:grid lg:grid-cols-3 gap-4">
+      <!-- Left Column: Gallery & Description (Mobile: Order 1) -->
+      <div class="lg:col-span-2 mobile-order-1">
+        <div class="card p-3 compact-section">
           {% if ad.images.all %}
             <img id="mainImage" src="{{ ad.images.first.image.url }}" 
                  alt="{{ ad.name }}" class="gallery-main w-full">
           {% else %}
-            <div class="gallery-main w-full bg-gray-100 rounded-xl flex items-center justify-center">
-              <i class="fas fa-image text-gray-300 text-5xl"></i>
+            <div class="gallery-main w-full bg-gray-100 rounded-lg flex items-center justify-center">
+              <i class="fas fa-image text-gray-300 text-4xl"></i>
             </div>
           {% endif %}
           
-          <div class="grid compact-grid gap-2 mt-3">
+          <div class="grid grid-cols-4 gap-2 mt-3">
             {% for image in ad.images.all %}
               <div class="gallery-thumb {% if forloop.first %}active{% endif %}" 
                    onclick="changeMainImage('{{ image.image.url }}', this)">
                 <img src="{{ image.image.url }}" alt="Thumbnail {{ forloop.counter }}" 
-                     class="w-full h-20 object-cover">
+                     class="w-full h-16 object-cover">
               </div>
             {% empty %}
               {% for i in "1234" %}
-                <div class="gallery-thumb bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center">
-                  <i class="fas fa-image text-gray-300 text-xl"></i>
+                <div class="gallery-thumb bg-gray-100 border border-gray-200 rounded flex items-center justify-center">
+                  <i class="fas fa-image text-gray-300"></i>
                 </div>
               {% endfor %}
             {% endfor %}
           </div>
         </div>
+
+        <!-- Description (Mobile: Order 2) -->
+        <div class="card p-4 compact-section mobile-order-2">
+          <h3 class="text-lg font-semibold mb-3">Description</h3>
+          <p class="text-gray-300 leading-relaxed">{{ ad.description|default:"No description provided." }}</p>
+        </div>
       </div>
 
-      <!-- Details Section -->
-      <div class="lg:col-span-5 mobile-order-2">
-        <div class="rounded-xl card compact-card">
+      <!-- Right Column: Product Details (Mobile: Order 3 - BEFORE comments) -->
+      <div class="lg:col-span-1 mobile-order-3">
+        <div class="card p-4">
+          <!-- Header with title and favorite -->
           <div class="flex justify-between items-start mb-3">
-            <div>
-              <h1 class="text-2xl font-bold mb-1">{{ ad.name }}</h1>
-              <div class="flex items-center text-sm mb-2">
-                <div class="flex items-center mr-3">
-                  <i class="fas fa-eye mr-1"></i> {{ ad.views|default:0 }} views
-                </div>
-                <div class="flex items-center">
-                  <i class="fas fa-map-marker-alt accent-color mr-1"></i> 
-                  <span>{{ ad.location }}</span>
-                  <span class="mx-2 opacity-50">•</span>
-                  <span class="font-medium">{{ ad.get_ad_type_display }}</span>
-                </div>
+            <div class="flex-1">
+              <h1 class="text-xl font-bold mb-1">{{ ad.name }}</h1>
+              <div class="flex items-center text-xs text-gray-400 mb-2">
+                <i class="fas fa-map-marker-alt mr-1"></i> 
+                <span class="mr-2">{{ ad.location }}</span>
+                <i class="fas fa-eye mr-1 ml-2"></i> 
+                <span>{{ ad.views|default:0 }}</span>
               </div>
             </div>
+            
             {% if user.is_authenticated %}
             <form method="POST" action="{% url 'toggle_favorite' ad.id %}" class="favorite-form">
               {% csrf_token %}
-              <button type="submit" class="text-gray-400 hover:text-red-500 transition">
-                <i class="{% if ad.id in user_favorites %}fas{% else %}far{% endif %} fa-bookmark text-lg"></i>
+              <button type="submit" class="text-gray-400 hover:text-red-500">
+                <i class="{% if ad.id in user_favorites %}fas{% else %}far{% endif %} fa-bookmark"></i>
               </button>
             </form>
             {% else %}
-            <a href="{% url 'login' %}" class="text-gray-400 hover:text-red-500 transition">
-              <i class="far fa-bookmark text-lg"></i>
+            <a href="{% url 'login' %}" class="text-gray-400 hover:text-red-500">
+              <i class="far fa-bookmark"></i>
             </a>
             {% endif %}
           </div>
 
           <!-- Price -->
-          <div class="flex items-center mb-4">
-            <span class="text-2xl font-bold mr-2">${{ ad.price }}</span>
+          <div class="mb-4">
+            <span class="text-2xl font-bold">${{ ad.price }}</span>
             {% if ad.ad_type == 'rent' %}
-            <span class="text-sm">per month</span>
+            <span class="text-sm text-gray-400 ml-1">/month</span>
             {% endif %}
           </div>
           
-          <!-- Attributes Grid -->
-          <div class="grid grid-cols-4 gap-3 mb-4 pb-4 attribute-grid">
-            <div class="flex flex-col items-center text-center">
+          <!-- Contact Button -->
+          <div class="mb-4">
+            {% if ad.advertiser.phone_number %}
+            <a href="https://wa.me/{{ ad.advertiser.phone_number }}" 
+               class="gradient-btn text-white w-full py-3 rounded-lg font-medium flex items-center justify-center gap-2">
+              <i class="fab fa-whatsapp"></i> Contact Seller
+            </a>
+            {% else %}
+            <button class="bg-gray-300 w-full py-3 rounded-lg font-medium cursor-not-allowed" disabled>
+              Contact Seller
+            </button>
+            {% endif %}
+          </div>
+
+          <!-- Key Attributes - No Redundancy -->
+          <div class="attribute-grid">
+            <div class="attribute-item">
               <i class="fas fa-tag attribute-icon"></i>
-              <div class="attribute-label">Category</div>
               <div class="attribute-value">{{ ad.category.name }}</div>
+              <div class="attribute-label">Category</div>
             </div>
             
             {% if ad.property_type %}
               {% if ad.num_rooms %}
-              <div class="flex flex-col items-center text-center">
+              <div class="attribute-item">
                 <i class="fas fa-bed attribute-icon"></i>
-                <div class="attribute-label">Rooms</div>
                 <div class="attribute-value">{{ ad.num_rooms }}</div>
+                <div class="attribute-label">Rooms</div>
               </div>
               {% endif %}
               
               {% if ad.num_baths %}
-              <div class="flex flex-col items-center text-center">
+              <div class="attribute-item">
                 <i class="fas fa-bath attribute-icon"></i>
-                <div class="attribute-label">Baths</div>
                 <div class="attribute-value">{{ ad.num_baths }}</div>
+                <div class="attribute-label">Baths</div>
               </div>
               {% endif %}
               
               {% if ad.area_size %}
-              <div class="flex flex-col items-center text-center">
+              <div class="attribute-item">
                 <i class="fas fa-ruler-combined attribute-icon"></i>
-                <div class="attribute-label">Area</div>
                 <div class="attribute-value">{{ ad.area_size }} m²</div>
+                <div class="attribute-label">Area</div>
               </div>
               {% endif %}
+              
+              <div class="attribute-item">
+                <i class="fas fa-couch attribute-icon"></i>
+                <div class="attribute-value">{{ ad.get_furnishing_type_display|default:"-" }}</div>
+                <div class="attribute-label">Furnishing</div>
+              </div>
             {% elif ad.vehicle_type %}
               {% if ad.year %}
-              <div class="flex flex-col items-center text-center">
+              <div class="attribute-item">
                 <i class="fas fa-calendar attribute-icon"></i>
-                <div class="attribute-label">Year</div>
                 <div class="attribute-value">{{ ad.year }}</div>
+                <div class="attribute-label">Year</div>
               </div>
               {% endif %}
               
-              {% if ad.motortype %}
-              <div class="flex flex-col items-center text-center">
+              <div class="attribute-item">
                 <i class="fas fa-cogs attribute-icon"></i>
+                <div class="attribute-value">{{ ad.motortype|default:"-" }}</div>
                 <div class="attribute-label">Engine</div>
-                <div class="attribute-value">{{ ad.motortype }}</div>
               </div>
-              {% endif %}
               
-              <div class="flex flex-col items-center text-center">
+              <div class="attribute-item">
                 <i class="fas fa-cog attribute-icon"></i>
+                <div class="attribute-value">{{ ad.geartype|default:"-" }}</div>
                 <div class="attribute-label">Transmission</div>
-                <div class="attribute-value">{{ ad.geartype }}</div>
               </div>
-                  {% elif ad.land_type %}
+              
+              <div class="attribute-item">
+                <i class="fas fa-car attribute-icon"></i>
+                <div class="attribute-value">{{ ad.get_vehicle_type_display|default:"-" }}</div>
+                <div class="attribute-label">Type</div>
+              </div>
+            {% elif ad.land_type %}
               {% if ad.land_area %}
-              <div class="flex flex-col items-center text-center">
+              <div class="attribute-item">
                 <i class="fas fa-ruler-combined attribute-icon"></i>
-                <div class="attribute-label">Area</div>
                 <div class="attribute-value">{{ ad.land_area }} m²</div>
+                <div class="attribute-label">Area</div>
               </div>
               {% endif %}
               
-              <div class="flex flex-col items-center text-center">
+              <div class="attribute-item">
                 <i class="fas fa-map-marked-alt attribute-icon"></i>
+                <div class="attribute-value">{{ ad.get_land_type_display|default:"-" }}</div>
                 <div class="attribute-label">Land Type</div>
-                <div class="attribute-value">{{ ad.get_land_type_display }}</div>
               </div>
             {% else %}
               {% if ad.year %}
-              <div class="flex flex-col items-center text-center">
+              <div class="attribute-item">
                 <i class="fas fa-calendar attribute-icon"></i>
-                <div class="attribute-label">Year</div>
                 <div class="attribute-value">{{ ad.year }}</div>
+                <div class="attribute-label">Year</div>
               </div>
               {% endif %}
               
               {% if ad.model %}
-              <div class="flex flex-col items-center text-center">
+              <div class="attribute-item">
                 <i class="fas fa-cube attribute-icon"></i>
-                <div class="attribute-label">Model</div>
                 <div class="attribute-value">{{ ad.model }}</div>
+                <div class="attribute-label">Model</div>
               </div>
               {% endif %}
               
               {% if ad.color %}
-              <div class="flex flex-col items-center text-center">
+              <div class="attribute-item">
                 <i class="fas fa-palette attribute-icon"></i>
-                <div class="attribute-label">Color</div>
                 <div class="attribute-value">{{ ad.color }}</div>
+                <div class="attribute-label">Color</div>
               </div>
               {% endif %}
             {% endif %}
           </div>
 
-          {% if ad.vehicle_type %}
-          <div class="mb-4">
-            <h3 class="text-lg font-semibold mb-3">Vehicle Details</h3>
-            <div class="feature-grid">
-              <div class="property-feature">
-                <i class="fas fa-car attribute-icon"></i>
-                <div>
-                  <div class="attribute-label">Type</div>
-                  <div class="attribute-value">{{ ad.get_vehicle_type_display }}</div>
-                </div>
-              </div>
-              
-              {% if ad.motortype %}
-              <div class="property-feature">
-                <i class="fas fa-cogs attribute-icon"></i>
-                <div>
-                  <div class="attribute-label">Engine</div>
-                  <div class="attribute-value">{{ ad.motortype }}</div>
-                </div>
-              </div>
-              {% endif %}
-              
-              {% if ad.geartype %}
-              <div class="property-feature">
-                <i class="fas fa-cog attribute-icon"></i>
-                <div>
-                  <div class="attribute-label">Transmission</div>
-                  <div class="attribute-value">{{ ad.geartype }}</div>
-                </div>
-              </div>
-              {% endif %}
-              
-              <div class="property-feature">
-                <i class="fas fa-bolt attribute-icon"></i>
-                <div>
-                  <div class="attribute-label">Drive Type</div>
-                  <div class="attribute-value">{% if ad.is_automatic %}Automatic{% else %}Manual{% endif %}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          {% endif %}
-
-          {% if ad.property_type and ad.furnishing_type %}
-          <div class="mb-4">
-            <div class="flex items-center bg-gray-100 rounded-lg p-3">
-              <i class="fas fa-couch attribute-icon text-xl mr-3"></i>
-              <div>
-                <div class="attribute-label">Furnishing</div>
-                <div class="attribute-value">{{ ad.get_furnishing_type_display }}</div>
-              </div>
-            </div>
-          </div>
-          {% endif %}
-
+          <!-- Additional Features - Now in pairs on mobile -->
           {% if ad.property_type %}
           <div class="mb-4">
-            <h3 class="text-lg font-semibold mb-3">Property Features</h3>
+            <h3 class="text-sm font-semibold mb-2">Features</h3>
+            <div class="feature-grid">
+              {% if ad.has_parking %}
+              <div class="property-feature">
+                <i class="fas fa-car"></i>
+                <span class="text-sm">Parking</span>
+              </div>
+              {% endif %}
+              
+              {% if ad.has_pool %}
+              <div class="property-feature">
+                <i class="fas fa-swimming-pool"></i>
+                <span class="text-sm">Pool</span>
+              </div>
+              {% endif %}
+              
+              {% if ad.has_water %}
+              <div class="property-feature">
+                <i class="fas fa-faucet"></i>
+                <span class="text-sm">Water</span>
+              </div>
+              {% endif %}
+              
+              {% if ad.has_electricity %}
+              <div class="property-feature">
+                <i class="fas fa-bolt"></i>
+                <span class="text-sm">Electricity</span>
+              </div>
+              {% endif %}
+              
+              <!-- Add more features if needed -->
+              {% if ad.has_garden %}
+              <div class="property-feature">
+                <i class="fas fa-tree"></i>
+                <span class="text-sm">Garden</span>
+              </div>
+              {% endif %}
+              
+              {% if ad.has_security %}
+              <div class="property-feature">
+                <i class="fas fa-shield-alt"></i>
+                <span class="text-sm">Security</span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Enhanced Seller Information with Professional Rating System -->
+          <div class="seller-info mb-4">
+            <div class="flex items-center gap-3 mb-3">
+              <img src="{{ ad.advertiser.avatar.url|default:'/static/images/default-avatar.jpg' }}" 
+                   alt="{{ ad.advertiser.username }}" class="w-12 h-12 rounded-full object-cover border-2 border-accent-border">
+              <div class="flex-1">
+                <h3 class="font-semibold text-sm">{{ ad.advertiser.full_name|default:ad.advertiser.username }}</h3>
+                <div class="flex items-center text-xs text-gray-400 mt-1">
+                  <i class="fas fa-map-marker-alt mr-1"></i>
+                  <span>{{ ad.advertiser.location|default:"Unknown location" }}</span>
+                </div>
+              </div>
+            </div>
             
-            <div class="feature-grid">
-              <div class="property-feature">
-                <i class="fas fa-car attribute-icon"></i>
-                <div>
-                  <div class="attribute-label">Parking</div>
-                  <div class="attribute-value">
-                    {% if ad.has_parking %}Available{% else %}Not Available{% endif %}
-                  </div>
-                </div>
+            <!-- Bio -->
+            {% if ad.advertiser.bio %}
+            <p class="text-xs text-gray-300 mb-3">{{ ad.advertiser.bio }}</p>
+            {% endif %}
+            
+            <!-- Review Stars - Dynamic -->
+            <div class="flex items-center gap-2 mb-3">
+              <div class="flex text-yellow-400">
+                {% with avg_rating=ad.advertiser.get_average_rating %}
+                  {% for i in "12345" %}
+                    {% if forloop.counter <= avg_rating %}
+                      <i class="fas fa-star text-sm"></i>
+                    {% elif forloop.counter|add:"-0.5" <= avg_rating %}
+                      <i class="fas fa-star-half-alt text-sm"></i>
+                    {% else %}
+                      <i class="far fa-star text-sm"></i>
+                    {% endif %}
+                  {% endfor %}
+                {% endwith %}
               </div>
-              
-              <div class="property-feature">
-                <i class="fas fa-swimming-pool attribute-icon"></i>
-                <div>
-                  <div class="attribute-label">Swimming Pool</div>
-                  <div class="attribute-value">
-                    {% if ad.has_pool %}Available{% else %}Not Available{% endif %}
-                  </div>
-                </div>
-              </div>
-              
-              <div class="property-feature">
-                <i class="fas fa-faucet attribute-icon"></i>
-                <div>
-                  <div class="attribute-label">Water Supply</div>
-                  <div class="attribute-value">
-                    {% if ad.has_water %}Available{% else %}Not Available{% endif %}
-                  </div>
-                </div>
-              </div>
-              
-              <div class="property-feature">
-                <i class="fas fa-bolt attribute-icon"></i>
-                <div>
-                  <div class="attribute-label">Electricity</div>
-                  <div class="attribute-value">
-                    {% if ad.has_electricity %}Available{% else %}Not Available{% endif %}
-                  </div>
-                </div>
-              </div>
+              <span class="text-xs text-gray-400">
+                {{ ad.advertiser.get_average_rating|floatformat:1 }} ({{ ad.advertiser.get_rating_count }} review{{ ad.advertiser.get_rating_count|pluralize }})
+              </span>
             </div>
-          </div>
-          {% endif %}
-
-          <!-- Job Details Section -->
-          {% if ad.job_type %}
-          <div class="mb-4">
-            <h3 class="text-lg font-semibold mb-3">Job Details</h3>
-            <div class="feature-grid">
-              <div class="property-feature">
-                <i class="fas fa-briefcase attribute-icon"></i>
-                <div>
-                  <div class="attribute-label">Job Type</div>
-                  <div class="attribute-value">{{ ad.get_job_type_display }}</div>
-                </div>
-              </div>
-              
-              {% if ad.salary %}
-              <div class="property-feature">
-                <i class="fas fa-money-bill-wave attribute-icon"></i>
-                <div>
-                  <div class="attribute-label">Salary</div>
-                  <div class="attribute-value">{{ ad.salary }}</div>
-                </div>
-              </div>
-              {% endif %}
-              
-              {% if ad.experience_required %}
-              <div class="property-feature">
-                <i class="fas fa-chart-line attribute-icon"></i>
-                <div>
-                  <div class="attribute-label">Experience</div>
-                  <div class="attribute-value">{{ ad.experience_required }}</div>
-                </div>
-              </div>
-              {% endif %}
-              
-              {% if ad.education_required %}
-              <div class="property-feature">
-                <i class="fas fa-graduation-cap attribute-icon"></i>
-                <div>
-                  <div class="attribute-label">Education</div>
-                  <div class="attribute-value">{{ ad.education_required }}</div>
-                </div>
-              </div>
-              {% endif %}
-            </div>
-          </div>
-          {% endif %}
-
-          <!-- Service Details Section -->
-          {% if ad.service_type %}
-          <div class="mb-4">
-            <h3 class="text-lg font-semibold mb-3">Service Details</h3>
-            <div class="feature-grid">
-              <div class="property-feature">
-                <i class="fas fa-concierge-bell attribute-icon"></i>
-                <div>
-                  <div class="attribute-label">Service Type</div>
-                  <div class="attribute-value">{{ ad.get_service_type_display }}</div>
-                </div>
-              </div>
-              
-              {% if ad.service_area %}
-              <div class="property-feature">
-                <i class="fas fa-map-marked-alt attribute-icon"></i>
-                <div>
-                  <div class="attribute-label">Service Area</div>
-                  <div class="attribute-value">{{ ad.service_area }}</div>
-                </div>
-              </div>
-              {% endif %}
-              
-              {% if ad.availability %}
-              <div class="property-feature">
-                <i class="fas fa-calendar-check attribute-icon"></i>
-                <div>
-                  <div class="attribute-label">Availability</div>
-                  <div class="attribute-value">{{ ad.availability }}</div>
-                </div>
-              </div>
-              {% endif %}
-            </div>
-          </div>
-          {% endif %}
-
-          <!-- Fashion Details Section -->
-          {% if ad.fashion_type %}
-          <div class="mb-4">
-            <h3 class="text-lg font-semibold mb-3">Fashion Details</h3>
-            <div class="feature-grid">
-              <div class="property-feature">
-                <i class="fas fa-tshirt attribute-icon"></i>
-                <div>
-                  <div class="attribute-label">Fashion Type</div>
-                  <div class="attribute-value">{{ ad.get_fashion_type_display }}</div>
-                </div>
-              </div>
-              
-              {% if ad.size %}
-              <div class="property-feature">
-                <i class="fas fa-ruler attribute-icon"></i>
-                <div>
-                  <div class="attribute-label">Size</div>
-                  <div class="attribute-value">{{ ad.size }}</div>
-                </div>
-              </div>
-              {% endif %}
-              
-              {% if ad.material %}
-              <div class="property-feature">
-                <i class="fas fa-cut attribute-icon"></i>
-                <div>
-                  <div class="attribute-label">Material</div>
-                  <div class="attribute-value">{{ ad.material }}</div>
-                </div>
-              </div>
-              {% endif %}
-              
-              {% if ad.color %}
-              <div class="property-feature">
-                <i class="fas fa-palette attribute-icon"></i>
-                <div>
-                  <div class="attribute-label">Color</div>
-                  <div class="attribute-value">{{ ad.color }}</div>
-                </div>
-              </div>
-              {% endif %}
-            </div>
-          </div>
-          {% endif %}
-
-          <!-- Description -->
-          <div class="mb-4">
-            <h3 class="text-lg font-semibold mb-3">Description</h3>
-            <p class="">{{ ad.description|default:"This meticulously maintained property combines style, comfort, and reliability in one exceptional package." }}</p>
-          </div>
-
-        <!-- Advertiser Card (Enhanced) -->
-<div class="rounded-xl shadow-md p-4 flex flex-col sm:flex-row items-center gap-4 border border-gray-200 hover:shadow-lg transition-shadow">
-  <!-- Avatar -->
-  <img src="{{ ad.advertiser.avatar.url|default:'/static/images/default-avatar.jpg' }}" 
-       alt="{{ ad.advertiser.username }}" class="w-16 h-16 rounded-full object-cover border-2 border-accent-border shadow">
-
-  <!-- Info -->
-  <div class="flex-grow text-center sm:text-left">
-    <h3 class="text-xl font-bold mb-1">{{ ad.advertiser.full_name|default:ad.advertiser.username }}</h3>
-    <p class="text-sm">{{ ad.advertiser.bio|default:"No bio available" }}</p>
-  </div>
-
-  <!-- Contact Button -->
-  {% if ad.advertiser.phone_number %}
-  <a href="https://wa.me/{{ ad.advertiser.phone_number }}" 
-     class="gradient-btn text-white px-5 py-2 rounded-full font-medium transition flex items-center gap-2">
-    <i class="fab fa-whatsapp"></i> Contact Seller
-  </a>
-  {% else %}
-  <button class="bg-gray-300 px-5 py-2 rounded-full font-medium cursor-not-allowed" disabled>
-    Contact Seller
-  </button>
-  {% endif %}
-</div>
-          
-          <!-- Share Section -->
-          <div class="share-section">
-            <div class="share-title">
-              <i class="fas fa-share-alt"></i>
-              Share this ad
-            </div>
-            <div class="share-buttons">
-              <div class="share-btn facebook-btn" onclick="shareOnFacebook()">
-                <i class="fab fa-facebook-f"></i>
-              </div>
-              <div class="share-btn whatsapp-btn" onclick="shareOnWhatsApp()">
-                <i class="fab fa-whatsapp"></i>
-              </div>
-              <div class="share-btn twitter-btn" onclick="shareOnTwitter()">
-                <i class="fab fa-twitter"></i>
-              </div>
-              <div class="share-btn email-btn" onclick="shareViaEmail()">
-                <i class="fas fa-envelope"></i>
-              </div>
-              <div class="share-btn copy-btn" onclick="openShareModal()">
-                <i class="fas fa-link"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Comments Section -->
-      <div class="lg:col-span-7 mobile-order-3">
-        <div class="rounded-xl card compact">
-          <div>
-      
-      <!-- Comment Form -->
-<div class="mb-4 accent-bg p-3 rounded-xl accent-border border">
-  <h3 class="text-sm font-medium mb-2 flex items-center gap-2">
-    <i class="fas fa-comment-dots accent-color"></i>
-    Add a Comment
-  </h3>
-
-  {% if user.is_authenticated %}
-  <form method="post" action="{% url 'add_comment' ad.id %}" class="flex flex-col gap-2">
-    {% csrf_token %}
-    <!-- relative wrapper so we can position the button over the textarea -->
-    <div class="relative">
-      <textarea
-        name="text"
-        rows="3"
-        class="w-full p-3 pr-28 bg-chip text-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-border placeholder-gray-500 resize-none" style="height: 73px;"
-        placeholder="Write your comment..."
-      ></textarea>
-
-      <!-- positioned button that sits inside the textarea area -->
-      <button
-        type="submit"
-        class="absolute right-2 bottom-2 gradient-btn text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 shadow-md"
-      >
-        <i class="fas fa-paper-plane"></i>
-       
-      </button>
-    </div>
-  </form>
-
-  {% else %}
-  <p class="text-sm">Please <a href="{% url 'login' %}" class="accent-color font-medium hover:underline">log in</a> to post a comment.</p>
-  {% endif %}
-</div>
-
-            <!-- Comment List -->
-            <div class="space-y-3">
-              {% for comment in comments %}
-              <div class="comment-card rounded-xl p-3 border border-gray-200" data-comment-id="{{ comment.id }}">
-                <div class="flex items-start gap-3">
-                  <img src="{{ comment.user.avatar.url|default:'/static/images/avatar.svg' }}" 
-                       class="w-10 h-10 rounded-full object-cover border-2 border-accent-border">
-                  <div class="flex-1">
-                    <div class="comment-header">
-                      <div>
-                        <p class="text-base font-semibold">@{{ comment.user.username }}</p>
-                        <p class="text-xs accent-color">{{ comment.timestamp|timesince }} ago</p>
-                      </div>
-                      <div class="comment-actions">
-                        {% if comment.user == request.user %}
-                        <button class="delete-btn text-sm flex items-center gap-1" 
-                                onclick="showDeleteModal('{{ comment.id }}')">
-                          <i class="fas fa-trash-alt"></i>
-                        </button>
-                        {% endif %}
-                        <a href="#" class="text-xs accent-color hover:opacity-80 flex items-center gap-1 reply-link" 
-                           data-comment-id="{{ comment.id }}">
-                          <i class="fas fa-reply"></i>
-                    
-                        </a>
-                      </div>
-                    </div>
-                    
-                    <p class="text-sm mt-2">{{ comment.text }}</p>
-                    
-                    <div class="reply-form mt-2 ml-3 pl-3 border-l-2 border-accent-border" id="reply-form-{{ comment.id }}" style="display: none;">
-                      <form method="post" action="{% url 'reply_to_comment' comment.id %}" class="flex flex-col sm:flex-row sm:items-center gap-2 mt-2 max-w-[90%]">
-                        {% csrf_token %}
-                         <div class="relative">
-      <textarea
-        name="text"
-        rows="3"
-        class="w-full p-3 pr-28 bg-chip text-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-border placeholder-gray-500 resize-none" style="height: 73px;"
-        placeholder="Write your comment..."
-      ></textarea>
-
-      <!-- positioned button that sits inside the textarea area -->
-      <button
-        type="submit"
-        class="absolute right-2 bottom-2 gradient-btn text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 shadow-md"
-      >
-        <i class="fas fa-paper-plane"></i>
-       
-      </button>
-                        </div>
-                       
-                      </form>
-                    </div>
-                    
-                    <!-- Replies -->
-                    {% for reply in comment.replies.all %}
-                    <div class="accent-bg rounded-xl p-2 mt-2 ml-3 pl-3 border-l-2 border-accent-border reply" data-reply-id="{{ reply.id }}" style="margin-right: 30px;">
-                      <div class="flex items-start gap-2">
-                        <img src="{{ reply.user.avatar.url|default:'/static/images/avatar.svg' }}" 
-                             class="w-8 h-8 rounded-full object-cover border border-accent-border">
-                        <div class="flex-1">
-                          <div class="comment-header">
-                            <div>
-                              <p class="text-sm font-semibold">@{{ reply.user.username }}</p>
-                              <p class="text-xs accent-color">{{ reply.timestamp|timesince }} ago</p>
-                            </div>
-                            {% if reply.user == request.user %}
-                            <button class="delete-btn text-sm flex items-center gap-1" 
-                                    onclick="showDeleteModal('{{ reply.id }}')">
-                              <i class="fas fa-trash-alt"></i>
-                            </button>
-                            {% endif %}
-                          </div>
-                          <p class="text-sm mt-1">{{ reply.text }}</p>
-                        </div>
-                      </div>
-                    </div>
+            
+            <!-- Rating Form for Authenticated Users (except seller) -->
+            {% if user.is_authenticated and user != ad.advertiser %}
+              <div class="accent-bg p-3 rounded-lg mb-3">
+                <h4 class="text-xs font-semibold mb-2 flex items-center gap-1">
+                  <i class="fas fa-star text-yellow-400"></i>
+                  {% if user_rating %}Your Rating{% else %}Rate This Seller{% endif %}
+                </h4>
+                <form method="post" class="space-y-2">
+                  {% csrf_token %}
+                  <div class="flex items-center gap-1 mb-2" id="star-rating">
+                    {% for value, text in rating_form.rating.field.choices %}
+                      <label class="cursor-pointer star-label" data-rating="{{ value }}">
+                        <input type="radio" name="rating" value="{{ value }}" 
+                               {% if user_rating and user_rating.rating == value %}checked{% endif %}
+                               class="hidden">
+                        <i class="fas fa-star text-lg {% if user_rating and user_rating.rating >= value %}text-yellow-400{% else %}text-gray-400{% endif %} hover:text-yellow-300 transition-colors"></i>
+                      </label>
                     {% endfor %}
                   </div>
+                  <textarea
+                    name="comment"
+                    rows="2"
+                    class="w-full p-2 bg-chip text-white border border-gray-700 rounded focus:outline-none focus:ring-1 focus:ring-accent-border placeholder-gray-500 resize-none text-xs"
+                    placeholder="Share your experience with this seller... (Optional)"
+                  >{% if user_rating %}{{ user_rating.comment }}{% endif %}</textarea>
+                  <div class="flex gap-2">
+                    <button type="submit" name="submit_rating" 
+                            class="gradient-btn text-white px-3 py-1 rounded text-xs font-medium flex items-center gap-1">
+                      <i class="fas fa-{% if user_rating %}check{% else %}star{% endif %} text-xs"></i>
+                      {% if user_rating %}Save Rating{% else %}Submit Rating{% endif %}
+                    </button>
+                    {% if user_rating %}
+                      <a href="{% url 'delete_rating' user_rating.id %}?next={{ ad.id }}" 
+                         class="secondary-btn text-white px-3 py-1 rounded text-xs font-medium flex items-center gap-1">
+                        <i class="fas fa-times text-xs"></i>
+                        Remove
+                      </a>
+                    {% endif %}
+                  </div>
+                </form>
+              </div>
+            {% elif not user.is_authenticated %}
+              <p class="text-xs text-gray-400 text-center py-2 border border-gray-700 rounded">
+                <a href="{% url 'login' %}?next={{ request.path }}" class="accent-color hover:underline">Log in</a> to rate this seller
+              </p>
+            {% endif %}
+            
+            <!-- Recent Ratings Preview -->
+            {% if recent_ratings %}
+              <div class="border-t border-gray-700 pt-3 mt-3">
+                <h4 class="text-xs font-semibold mb-2">Recent Reviews</h4>
+                <div class="space-y-2 max-h-32 overflow-y-auto">
+                  {% for rating in recent_ratings %}
+                    <div class="text-xs">
+                      <div class="flex justify-between items-start">
+                        <span class="font-medium">@{{ rating.rater.get_short_name }}</span>
+                        <div class="flex text-yellow-400">
+                          {% for i in "12345" %}
+                            <i class="fas fa-star text-xs {% if forloop.counter <= rating.rating %}text-yellow-400{% else %}text-gray-400{% endif %}"></i>
+                          {% endfor %}
+                        </div>
+                      </div>
+                      {% if rating.comment %}
+                        <p class="text-gray-300 mt-1 text-xs">{{ rating.comment|truncatewords:10 }}</p>
+                      {% endif %}
+                      <p class="text-gray-500 text-xs mt-1">{{ rating.created_at|timesince }} ago</p>
+                    </div>
+                  {% endfor %}
                 </div>
               </div>
-              {% empty %}
-              <div class="text-center py-5">
-                <i class="fas fa-comment-slash text-gray-300 text-4xl mb-2"></i>
-                <p class="">No comments yet. Be the first to comment!</p>
+            {% endif %}
+            
+            <!-- Seller Stats -->
+            <div class="seller-stats">
+              <div class="stat-item">
+                <div class="stat-value">{{ seller_stats.response_rate|default:"0" }}%</div>
+                <div class="stat-label">Response</div>
               </div>
-              {% endfor %}
+              <div class="stat-item">
+                <div class="stat-value">{{ seller_stats.total_ads }}</div>
+                <div class="stat-label">Listings</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">{{ seller_stats.get_positive_rating_percentage|default:0|floatformat:0 }}%</div>
+                <div class="stat-label">Positive</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Share Section -->
+          <div class="border-t border-gray-700 pt-3 mt-3">
+            <div class="text-xs text-gray-400 mb-2">Share this ad</div>
+            <div class="share-buttons">
+              <div class="share-btn bg-blue-600 text-white" onclick="shareOnFacebook()">
+                <i class="fab fa-facebook-f text-xs"></i>
+              </div>
+              <div class="share-btn bg-green-500 text-white" onclick="shareOnWhatsApp()">
+                <i class="fab fa-whatsapp text-xs"></i>
+              </div>
+              <div class="share-btn bg-blue-400 text-white" onclick="shareOnTwitter()">
+                <i class="fab fa-twitter text-xs"></i>
+              </div>
+              <div class="share-btn bg-red-500 text-white" onclick="shareViaEmail()">
+                <i class="fas fa-envelope text-xs"></i>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-      <!-- NEW: Similar Items Section -->
-    <div class="mt-8 mobile-order-4" style="position: relative; top: -175px;">
-      <div class="bg-gradient-to-b from-purple-50 to-transparent rounded-xl p-4 mb-6">
-        <div class="text-center mb-5" style="margin-top: 159px;">
-          <h2 class="text-2xl font-bold mb-1">You Might Also Like</h2>
-          <p class="text-sm max-w-2xl mx-auto">Browse similar items based on your interests</p>
-        </div>
-        
-        <div class="relative -mt-1">
-          <div class="product-container flex overflow-x-auto pb-3 space-x-3 scroll-container">
-            {% for item in similar_items %}
-            <!-- Compact Product Card -->
-            <div class="rounded-lg shadow overflow-hidden border border-gray-200 hover:shadow-md transition flex-shrink-0 w-56">
-              <div class="relative">
-                {% if item.images.first %}
-                <a href="{% url 'product_detail' item.id %}">
-                  <img src="{{ item.images.first.image.url }}" alt="{{ item.name }}" class="w-full h-40 object-cover">
-                </a>
-                {% else %}
-                <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-40 flex items-center justify-center">
-                  <i class="fas fa-image text-gray-400 text-3xl"></i>
-                </div>
-                {% endif %}
-                
-                {% if item.is_featured %}
-                <span class="absolute top-1 left-1 bg-pink-500 text-white text-xs font-bold px-1.5 py-0.5 rounded">
-                  Featured
-                </span>
-                {% endif %}
-                
-                <span class="absolute top-1 right-1 bg-black bg-opacity-70 text-white text-xs font-bold px-1.5 py-0.5 rounded">
-                  ${{ item.price }}
-                </span>
+      <!-- Comments Section (Mobile: Order 4 - AFTER product details) -->
+      <div class="lg:col-span-2 mobile-order-4">
+        <div class="card p-4 comments-container">
+          <h2 class="text-xl font-bold mb-4">Comments</h2>
+      
+          <!-- Comment Form -->
+          <div class="accent-bg p-3 rounded-lg mb-4">
+            <h3 class="text-sm font-medium mb-2 flex items-center gap-2">
+              <i class="fas fa-comment-dots accent-color"></i>
+              Add a Comment
+            </h3>
+
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'add_comment' ad.id %}" class="flex">
+              {% csrf_token %}
+              <div class="flex-1 relative">
+                <textarea
+                  name="text"
+                  rows="2"
+                  class="w-full p-3 pr-16 bg-chip text-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-accent-border placeholder-gray-500 resize-none"
+                  placeholder="Write your comment..."
+                ></textarea>
+                <button
+                  type="submit"
+                  class="absolute right-2 bottom-2 gradient-btn text-white px-3 py-1 rounded text-sm font-medium flex items-center gap-1"
+                >
+                  <i class="fas fa-paper-plane text-xs"></i>
+                  Post
+                </button>
               </div>
-              
-              <div class="p-3">
-                <h3 class="font-bold text-sm mb-1 truncate">
-                  <a href="{% url 'product_detail' item.id %}" class="hover:accent-color transition">
-                    {{ item.name }}
-                  </a>
-                </h3>
-                
-                <div class="flex items-center text-xs mb-1">
-                  <i class="fas fa-map-marker-alt mr-1 text-xs accent-color"></i>
-                  <span class="truncate">{{ item.location }}</span>
-                </div>
-                
-                <div class="flex items-center text-xs">
-                  <i class="far fa-clock mr-1 text-xs accent-color"></i>
-                  <span>{{ item.created_at|timesince }} ago</span>
-                </div>
-                
-                <div class="flex justify-between items-center mt-2">
-                  <span class="text-xs bg-chip px-1.5 py-0.5 rounded">
-                    {{ item.category.name }}
-                  </span>
-                  <a href="{% url 'product_detail' item.id %}" 
-                     class="accent-color hover:opacity-80 font-medium text-xs">
-                    View Details
-                  </a>
+            </form>
+            {% else %}
+            <p class="text-sm">Please <a href="{% url 'login' %}" class="accent-color font-medium hover:underline">log in</a> to post a comment.</p>
+            {% endif %}
+          </div>
+
+          <!-- Comment List -->
+          <div class="space-y-3">
+            {% for comment in comments %}
+            <div class="comment-card" data-comment-id="{{ comment.id }}">
+              <div class="flex items-start gap-3">
+                <img src="{{ comment.user.avatar.url|default:'/static/images/avatar.svg' }}" 
+                     class="w-8 h-8 rounded-full object-cover border border-accent-border">
+                <div class="flex-1">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <p class="text-sm font-semibold">@{{ comment.user.username }}</p>
+                      <p class="text-xs accent-color">{{ comment.timestamp|timesince }} ago</p>
+                    </div>
+                    {% if comment.user == request.user %}
+                    <button class="text-red-500 text-xs hover:text-red-400" 
+                            onclick="showDeleteModal('{{ comment.id }}')">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                    {% endif %}
+                  </div>
+                  
+                  <p class="text-sm mt-2">{{ comment.text }}</p>
+                  
+                  <div class="comment-actions">
+                    <a href="#" class="text-xs accent-color hover:opacity-80 flex items-center gap-1 reply-link" 
+                       data-comment-id="{{ comment.id }}">
+                      <i class="fas fa-reply text-xs"></i>
+                      Reply
+                    </a>
+                  </div>
+                  
+                  <!-- Reply Form -->
+                  <div class="reply-form" id="reply-form-{{ comment.id }}" style="display: none;">
+                    <form method="post" action="{% url 'reply_to_comment' comment.id %}" class="flex mt-2">
+                      {% csrf_token %}
+                      <div class="flex-1 relative">
+                        <textarea
+                          name="text"
+                          rows="1"
+                          class="w-full p-2 pr-16 bg-chip text-white border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-accent-border placeholder-gray-500 resize-none text-sm"
+                          placeholder="Write your reply..."
+                        ></textarea>
+                        <button
+                          type="submit"
+                          class="absolute right-2 bottom-2 gradient-btn text-white px-2 py-1 rounded text-xs font-medium flex items-center gap-1"
+                        >
+                          <i class="fas fa-paper-plane text-xs"></i>
+                          Reply
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                  
+                  <!-- Replies -->
+                  {% for reply in comment.replies.all %}
+                  <div class="accent-bg rounded p-2 mt-2 ml-3 reply" data-reply-id="{{ reply.id }}">
+                    <div class="flex items-start gap-2">
+                      <img src="{{ reply.user.avatar.url|default:'/static/images/avatar.svg' }}" 
+                           class="w-6 h-6 rounded-full object-cover border border-accent-border">
+                      <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                          <div>
+                            <p class="text-xs font-semibold">@{{ reply.user.username }}</p>
+                            <p class="text-xs accent-color">{{ reply.timestamp|timesince }} ago</p>
+                          </div>
+                          {% if reply.user == request.user %}
+                          <button class="text-red-500 text-xs hover:text-red-400" 
+                                  onclick="showDeleteModal('{{ reply.id }}')">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                          {% endif %}
+                        </div>
+                        <p class="text-xs mt-1">{{ reply.text }}</p>
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
                 </div>
               </div>
             </div>
             {% empty %}
-            <div class="flex flex-col items-center justify-center w-full py-6">
-              <i class="fas fa-box-open text-gray-300 text-4xl mb-3"></i>
-              <p class="text-sm">No similar items found</p>
+            <div class="text-center py-4">
+              <i class="fas fa-comment-slash text-gray-300 text-2xl mb-2"></i>
+              <p class="text-gray-400 text-sm">No comments yet. Be the first to comment!</p>
             </div>
             {% endfor %}
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Similar Items - Compact Section -->
+    <div class="mt-6">
+      <div class="mb-4">
+        <h2 class="text-lg font-bold">Similar Items</h2>
+        <p class="text-sm text-gray-400">You might also like</p>
+      </div>
+      
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        {% for item in similar_items %}
+        <div class="card overflow-hidden hover:shadow-md transition-shadow">
+          <div class="relative">
+            {% if item.images.first %}
+            <a href="{% url 'product_detail' item.id %}">
+              <img src="{{ item.images.first.image.url }}" alt="{{ item.name }}" class="w-full h-32 object-cover">
+            </a>
+            {% else %}
+            <div class="bg-gray-200 w-full h-32 flex items-center justify-center">
+              <i class="fas fa-image text-gray-400"></i>
+            </div>
+            {% endif %}
+            
+            <span class="absolute top-2 right-2 bg-black bg-opacity-70 text-white text-xs px-1.5 py-0.5 rounded">
+              ${{ item.price }}
+            </span>
+          </div>
+          
+          <div class="p-2">
+            <h3 class="font-medium text-sm mb-1 truncate">
+              <a href="{% url 'product_detail' item.id %}" class="hover:accent-color">
+                {{ item.name }}
+              </a>
+            </h3>
+            
+            <div class="flex items-center text-xs text-gray-400">
+              <i class="fas fa-map-marker-alt mr-1"></i>
+              <span class="truncate">{{ item.location }}</span>
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-4">
+          <p class="text-gray-400 text-sm">No similar items found</p>
+        </div>
+        {% endfor %}
       </div>
     </div>
   </main>
   
   <!-- Delete Confirmation Modal -->
   <div id="delete-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-    <div class="rounded-xl p-5 shadow-lg max-w-sm w-full border border-gray-200">
+    <div class="bg-tile-bg rounded-lg p-4 shadow-lg max-w-xs w-full border border-gray-200">
       <div class="text-center mb-3">
-        <i class="fas fa-exclamation-circle accent-color text-4xl mb-2"></i>
-        <h3 class="text-lg font-semibold">Delete Comment</h3>
-        <p class="text-sm mt-1">Are you sure you want to delete this comment?</p>
+        <i class="fas fa-exclamation-circle accent-color text-2xl mb-2"></i>
+        <h3 class="text-sm font-semibold">Delete Comment</h3>
+        <p class="text-xs text-gray-400 mt-1">Are you sure?</p>
       </div>
       <div class="flex justify-center gap-2">
-        <button id="cancel-delete" class="bg-chip px-4 py-2 rounded-lg text-sm font-medium hover:opacity-80 transition-colors">
+        <button id="cancel-delete" class="bg-chip px-3 py-1.5 rounded text-xs font-medium hover:opacity-80">
           Cancel
         </button>
-        <button id="confirm-delete" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 transition-colors">
+        <button id="confirm-delete" class="bg-red-600 text-white px-3 py-1.5 rounded text-xs font-medium hover:bg-red-700">
           Delete
         </button>
       </div>
     </div>
   </div>
-  
-  <!-- Share Modal -->
-  <div class="share-modal" id="shareModal">
-    <div class="share-modal-content">
-      <div class="share-modal-header">
-        <h3 class="share-modal-title">Share this ad</h3>
-        <button class="share-modal-close" onclick="closeShareModal()">&times;</button>
-      </div>
-      <div class="share-input-group">
-        <input type="text" id="shareableLink" class="share-input" value="{{ request.build_absolute_uri }}" readonly>
-        <button class="copy-button" onclick="copyToClipboard()">
-          <i class="fas fa-copy"></i>
-        </button>
-      </div>
-      <div class="share-success" id="copySuccess">
-        <i class="fas fa-check-circle mr-2"></i>
-        Link copied to clipboard!
-      </div>
-      <div class="share-buttons justify-center mt-4">
-        <div class="share-btn facebook-btn" onclick="shareOnFacebook()">
-          <i class="fab fa-facebook-f"></i>
-        </div>
-        <div class="share-btn whatsapp-btn" onclick="shareOnWhatsApp()">
-          <i class="fab fa-whatsapp"></i>
-        </div>
-        <div class="share-btn twitter-btn" onclick="shareOnTwitter()">
-          <i class="fab fa-twitter"></i>
-        </div>
-        <div class="share-btn email-btn" onclick="shareViaEmail()">
-          <i class="fas fa-envelope"></i>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
 
   <script>
     // Image gallery functionality
@@ -1236,22 +966,13 @@
       element.classList.add('active');
     }
     
+    // Reply functionality
     document.querySelectorAll('.reply-link').forEach(link => {
       link.addEventListener('click', function(e) {
         e.preventDefault();
         const commentId = this.getAttribute('data-comment-id');
         const form = document.getElementById(`reply-form-${commentId}`);
-        if (form.style.display === 'none') {
-          form.style.display = 'block';
-          setTimeout(() => {
-            form.classList.add('active');
-          }, 10);
-        } else {
-          form.classList.remove('active');
-          setTimeout(() => {
-            form.style.display = 'none';
-          }, 300);
-        }
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
       });
     });
     
@@ -1260,8 +981,7 @@
     
     function showDeleteModal(id) {
       currentDeleteId = id;
-      const modal = document.getElementById('delete-modal');
-      modal.classList.remove('hidden');
+      document.getElementById('delete-modal').classList.remove('hidden');
     }
     
     document.getElementById('cancel-delete').addEventListener('click', function() {
@@ -1281,20 +1001,12 @@
     });
     
     // Share functionality
-    function openShareModal() {
-      document.getElementById('shareModal').classList.add('active');
-    }
-    
-    function closeShareModal() {
-      document.getElementById('shareModal').classList.remove('active');
-    }
-    
     function getShareableLink() {
       return "{{ request.build_absolute_uri }}";
     }
     
     function getShareText() {
-      return "Check out this ad: {{ ad.name }} on SomaliShoppe";
+      return "Check out: {{ ad.name }} on SomaliShoppe";
     }
     
     function shareOnFacebook() {
@@ -1314,31 +1026,53 @@
     }
     
     function shareViaEmail() {
-      const subject = encodeURIComponent("Check out this ad on SomaliShoppe");
+      const subject = encodeURIComponent("Check out this ad");
       const body = encodeURIComponent(`${getShareText()}\n\n${getShareableLink()}`);
       window.location.href = `mailto:?subject=${subject}&body=${body}`;
     }
-    
-    function copyToClipboard() {
-      const input = document.getElementById('shareableLink');
-      input.select();
-      document.execCommand('copy');
+
+    // Interactive star rating functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const starLabels = document.querySelectorAll('.star-label');
       
-      // Show success message
-      const success = document.getElementById('copySuccess');
-      success.classList.add('active');
-      
-      // Hide after 2 seconds
-      setTimeout(() => {
-        success.classList.remove('active');
-      }, 2000);
-    }
-    
-    // Close modal when clicking outside content
-    document.getElementById('shareModal').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeShareModal();
-      }
+      starLabels.forEach(label => {
+        label.addEventListener('click', function() {
+          const rating = this.getAttribute('data-rating');
+          
+          // Update all stars
+          starLabels.forEach(star => {
+            const starRating = star.getAttribute('data-rating');
+            const icon = star.querySelector('i');
+            
+            if (starRating <= rating) {
+              icon.classList.remove('text-gray-400', 'far');
+              icon.classList.add('text-yellow-400', 'fas');
+            } else {
+              icon.classList.remove('text-yellow-400', 'fas');
+              icon.classList.add('text-gray-400', 'far');
+            }
+          });
+        });
+        
+        // Hover effect
+        label.addEventListener('mouseenter', function() {
+          const rating = this.getAttribute('data-rating');
+          starLabels.forEach(star => {
+            const starRating = star.getAttribute('data-rating');
+            const icon = star.querySelector('i');
+            if (starRating <= rating) {
+              icon.classList.add('text-yellow-300');
+            }
+          });
+        });
+        
+        label.addEventListener('mouseleave', function() {
+          starLabels.forEach(star => {
+            const icon = star.querySelector('i');
+            icon.classList.remove('text-yellow-300');
+          });
+        });
+      });
     });
   </script>
 </body>

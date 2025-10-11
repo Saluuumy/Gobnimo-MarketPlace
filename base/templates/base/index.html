@@ -2,9 +2,9 @@
 {% load static %}
 
 {% block content %}
-<body class="antialiased">
+<body class="antialiased overflow-x-hidden"> <!-- <- prevent page-level horizontal scroll -->
     <!-- content -->
-  <main class="site-main relative left-0 md:left-[62px] flex-1 overflow-auto p-3 md:p-6 scrollbar-thin">
+  <main class="site-main relative ml-0 md:ml-[62px] min-w-0 flex-1 overflow-auto p-3 md:p-6 scrollbar-thin">
       <section class="mb-4 md:mb-6" style="margin-top: 42px">
         <div class="flex items-center justify-between">
           <h2 class="text-lg md:text-2xl font-semibold">Advanced Search</h2>
@@ -153,6 +153,12 @@
   </div>
 
   <style>
+    /* Prevent overflow on root - kept safe for desktop and mobile */
+    html, body { overflow-x: hidden; }
+
+    /* Ensure main can shrink inside flex layout (prevents flex overflow) */
+    .site-main { min-width: 0; }
+
     .category-scroll-container {
       scroll-behavior: smooth;
       -webkit-overflow-scrolling: touch;
@@ -217,8 +223,6 @@
       -ms-user-select: none;
       user-select: none;
     }
-
-   
   </style>
 
 <script>
@@ -485,4 +489,5 @@
       }
     });
   </script>
+</body>
 {% endblock %}

@@ -4,7 +4,7 @@ from django.forms import ModelForm, ClearableFileInput
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
-from .models import Ad, User, Comment
+from .models import Ad, User, Comment ,SellerRating
 import re
 ALLOWED_EMAIL_DOMAINS = [
     'gmail.com',
@@ -373,3 +373,23 @@ class UserProfileForm(forms.ModelForm):
         widgets = {
             'bio': forms.Textarea(attrs={'rows': 4}),
         }
+
+
+
+
+class RatingForm(forms.ModelForm):
+    class Meta:
+        model = SellerRating
+        fields = ['rating', 'comment']
+        widgets = {
+            'rating': forms.RadioSelect(choices=SellerRating.RATING_CHOICES),
+            'comment': forms.Textarea(attrs={
+                'rows': 3, 
+                'placeholder': 'Share your experience with this seller... (Optional)',
+                'class': 'w-full p-2 bg-chip text-white border border-gray-700 rounded focus:outline-none focus:ring-1 focus:ring-accent-border resize-none'
+            }),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['rating'].widget.attrs.update({'class': 'hidden'})

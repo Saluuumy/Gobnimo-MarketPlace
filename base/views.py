@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Category, AdImage, Ad, User, Comment, FeaturedAd, FeaturedAdHistory, PendingFeaturedAd, Notification, Favorite
+from .models import Category, AdImage, Ad, User, Comment, FeaturedAd, FeaturedAdHistory, PendingFeaturedAd, Notification, Favorite ,SellerRating, SellerStats
 from .forms import AdForm, SignupForm, LoginForm, AuthenticationForm, CommentForm, AdPaidForm, UserProfileForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -10,6 +10,8 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.conf import settings
 from django.http import JsonResponse
 from django.utils.encoding import force_bytes
+from .forms import RatingForm
+from django.db.models import Avg, Count
 from django.views.decorators.http import require_POST
 from django.contrib.auth.views import PasswordResetView
 from django.core.mail import send_mail
@@ -683,7 +685,7 @@ def product_detail(request, ad_id):
     # Increment view count
     Ad.objects.filter(pk=ad.pk).update(views=F('views') + 1)
     
-    # Get similar items (same category, exclude current ad)
+    # Get similar items
     similar_items = Ad.objects.filter(
         category=ad.category, 
         status='approved'
@@ -692,10 +694,67 @@ def product_detail(request, ad_id):
     # Get user's favorites if authenticated
     if request.user.is_authenticated:
         user_favorites = set(request.user.favorites.values_list('ad_id', flat=True))
+        
+        # Check if user has already rated this seller
+        user_rating = None
+        if request.user != ad.advertiser:
+            try:
+                user_rating = SellerRating.objects.get(
+                    seller=ad.advertiser, 
+                    rater=request.user
+                )
+            except SellerRating.DoesNotExist:
+                user_rating = None
     else:
         user_favorites = set()
+        user_rating = None
     
-    if request.method == 'POST':
+    # Get seller stats
+    seller_stats = ad.advertiser.get_seller_stats()
+    
+    # Get recent ratings for this seller
+    recent_ratings = SellerRating.objects.filter(
+        seller=ad.advertiser
+    ).select_related('rater').order_by('-created_at')[:5]
+    
+    # Rating form handling
+    rating_form = RatingForm()
+    if request.method == 'POST' and 'submit_rating' in request.POST:
+        if not request.user.is_authenticated:
+            messages.error(request, 'Please log in to rate this seller.')
+            return redirect('login')
+        
+        if request.user == ad.advertiser:
+            messages.error(request, 'You cannot rate yourself.')
+        else:
+            rating_form = RatingForm(request.POST)
+            if rating_form.is_valid():
+                # Check if user already rated this seller
+                existing_rating = SellerRating.objects.filter(
+                    seller=ad.advertiser,
+                    rater=request.user
+                ).first()
+                
+                if existing_rating:
+                    # Update existing rating
+                    existing_rating.rating = rating_form.cleaned_data['rating']
+                    existing_rating.comment = rating_form.cleaned_data['comment']
+                    existing_rating.save()
+                    messages.success(request, 'Your rating has been updated.')
+                else:
+                    # Create new rating
+                    rating = rating_form.save(commit=False)
+                    rating.seller = ad.advertiser
+                    rating.rater = request.user
+                    rating.save()
+                    messages.success(request, 'Thank you for your rating!')
+                
+                # Update seller stats
+                seller_stats.update_stats()
+                return redirect('product_detail', ad_id=ad_id)
+    
+    # Comment form handling (your existing code)
+    if request.method == 'POST' and 'submit_comment' in request.POST:
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
@@ -714,8 +773,24 @@ def product_detail(request, ad_id):
         'form': form,
         'comments': comments,
         'user_favorites': user_favorites,
-        'similar_items': similar_items  # Add similar items to context
+        'similar_items': similar_items,
+        'seller_stats': seller_stats,
+        'recent_ratings': recent_ratings,
+        'rating_form': rating_form,
+        'user_rating': user_rating,
     })
+@login_required
+def delete_rating(request, rating_id):
+    rating = get_object_or_404(SellerRating, id=rating_id, rater=request.user)
+    seller = rating.seller
+    rating.delete()
+    
+    # Update seller stats
+    seller_stats = seller.get_seller_stats()
+    seller_stats.update_stats()
+    
+    messages.success(request, 'Your rating has been deleted.')
+    return redirect('base/product_detail', ad_id=request.GET.get('next', ''))
 def search_ads(request):
     # Get search parameters
     categories = Category.objects.all()
