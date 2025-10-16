@@ -72,7 +72,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'Ecommerce.wsgi.application'
 
 # Database configuration
-DATABASE_URL = os.environ.get("postgresql://gobonimo_database_user:miTmKgiVXnmmz26XvDfe2vC78Bz0wbTu@dpg-d32unqer433s73bcj6lg-a.oregon-postgres.render.com/gobonimo_database")
+DATABASE_URL = os.environ.get("postgresql://gobonimo_latest_db_user:LgBIBfbcziafYNT4O4KTYvNCGmMroIDN@dpg-d3o98dmr433s739t7eh0-a.oregon-postgres.render.com/gobonimo_latest_db")
 
 if DATABASE_URL:
     # Use dj_database_url to parse the URL reliably
