@@ -72,27 +72,22 @@ TEMPLATES = [
 WSGI_APPLICATION = 'Ecommerce.wsgi.application'
 
 # Database configuration
-DATABASE_URL = os.environ.get("postgresql://gobonimo_latest_db_user:LgBIBfbcziafYNT4O4KTYvNCGmMroIDN@dpg-d3o98dmr433s739t7eh0-a.oregon-postgres.render.com/gobonimo_latest_db")
-
-if DATABASE_URL:
-    # Use dj_database_url to parse the URL reliably
+if 'DATABASE_URL' in os.environ:
     DATABASES = {
-        "default": dj_database_url.parse(
-            DATABASE_URL,
+        'default': dj_database_url.config(
+            default=os.environ.get('postgresql://gobonimo_latest_db_user:LgBIBfbcziafYNT4O4KTYvNCGmMroIDN@dpg-d3o98dmr433s739t7eh0-a.oregon-postgres.render.com/gobonimo_latest_db'),
             conn_max_age=600,
             conn_health_checks=True,
         )
     }
-    # Ensure sslmode=require so psycopg2 uses TLS
-    DATABASES["default"].setdefault("OPTIONS", {})
-    DATABASES["default"]["OPTIONS"].setdefault("sslmode", "require")
 else:
     DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
