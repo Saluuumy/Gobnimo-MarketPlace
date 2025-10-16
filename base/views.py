@@ -590,6 +590,8 @@ def handle_ad_redirect(request, subcategory_id):
     
 @login_required(login_url='login')
 def notification_center(request):
+    categories = Category.objects.all()
+
     notifications = Notification.objects.filter(
         user=request.user
     ).order_by('-created_at')
@@ -609,7 +611,7 @@ def notification_center(request):
     for notification in page_obj:
         notification.was_unread = notification.id in unread_ids
     
-    return render(request, 'base/notification_center.html', {'page_obj': page_obj})
+    return render(request, 'base/notification_center.html', {'page_obj': page_obj ,'categories': categories,})
 
 @login_required(login_url='login')
 def delete_notification(request, pk):

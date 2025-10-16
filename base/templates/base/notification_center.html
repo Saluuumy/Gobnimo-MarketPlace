@@ -1,107 +1,638 @@
-   {% extends 'main.html' %}
+{% extends 'main.html' %}
 {% load static %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto px-4 py-8">
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-        <!-- Header with Mark All Read button -->
-        <div class="bg-gradient-to-r from-purple-600 to-pink-600 p-6 text-white">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-2xl font-bold">Notification Center</h1>
-                    <p>Your ad status updates and notifications</p>
-                </div>
-                <form method="post" action="{% url 'mark_all_read' %}">
-                    {% csrf_token %}
-                    <button type="submit" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-md text-sm transition-colors">
-                        Mark All as Read
-                    </button>
-                </form>
-            </div>
-        </div>
-        
-        <div class="p-6">
-            {% if page_obj.object_list %}
-            <div class="space-y-4">
-                {% for notification in page_obj %}
-                <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors 
-                            {% if notification.was_unread %}bg-blue-50 border-blue-200{% endif %}">
-                    <div class="flex items-start">
-                        <div class="mr-4">
-                            {% if notification.notification_type == 'approval' %}
-                            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                                <i class="fas fa-check text-green-600"></i>
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 py-4 sm:py-8">
+    <div class="max-w-6xl mx-auto px-3 sm:px-4">
+        <!-- Premium Header with Glass Morphism -->
+        <div class="relative mb-8 sm:mb-12 overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10 rounded-2xl sm:rounded-3xl blur-xl"></div>
+            <div class="relative bg-white/80 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl border border-white/20 p-6 sm:p-8">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center">
+                    <div class="flex items-center mb-4 sm:mb-6 lg:mb-0">
+                        <div class="relative mr-4 sm:mr-6">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg">
+                                <i class="fas fa-bell text-white text-lg sm:text-2xl"></i>
                             </div>
-                            {% elif notification.notification_type == 'rejection' %}
-                            <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                                <i class="fas fa-times text-red-600"></i>
-                            </div>
-                            {% elif notification.notification_type == 'featured' %}
-                            <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                                <i class="fas fa-star text-purple-600"></i>
-                            </div>
-                            {% else %}
-                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                <i class="fas fa-info-circle text-blue-600"></i>
+                            {% if unread_count > 0 %}
+                            <div class="absolute -top-1 -right-1 w-6 h-6 sm:w-8 sm:h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-bold shadow-lg animate-bounce">
+                                {{ unread_count }}
                             </div>
                             {% endif %}
                         </div>
-                        
-                        <div class="flex-1">
-                            <h3 class="font-medium text-gray-800">{{ notification.message }}</h3>
-                            <p class="text-sm text-gray-500 mt-1">
-                                {{ notification.created_at|timesince }} ago
-                                {% if notification.ad %}
-                                · <a href="{% url 'product_detail' notification.ad.id %}" class="text-indigo-600 hover:underline">View Ad</a>
-                                {% endif %}
-                            </p>
+                        <div>
+                            <h1 class="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                Your Activity
+                            </h1>
+                            <p class="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">Your activity dashboard</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                        {% if unread_count > 0 %}
+                        <form method="post" action="{% url 'mark_all_read' %}" class="w-full sm:w-auto">
+                            {% csrf_token %}
+                            <button type="submit" class="group w-full sm:w-auto px-4 py-2.5 sm:px-6 sm:py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-semibold transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                                <i class="fas fa-check-double mr-2 sm:mr-3 group-hover:rotate-12 transition-transform"></i>
+                                Mark All Read
+                            </button>
+                        </form>
+                        {% endif %}
+                      
+                    </div>
+                </div>
+                
+                <!-- Stats Cards - Mobile Horizontal Scroll -->
+                <div class="mt-6 sm:mt-8">
+                    <div class="flex sm:grid sm:grid-cols-3 gap-4 overflow-x-auto pb-2 sm:pb-0 -mx-1 px-1 sm:mx-0 sm:px-0">
+                        <div class="min-w-[200px] sm:min-w-0 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-4 sm:p-5 border border-blue-200/50 flex-shrink-0 sm:flex-shrink">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-blue-600 font-semibold text-sm sm:text-base">Total</p>
+                                    <p class="text-2xl sm:text-3xl font-bold text-gray-800 mt-1 sm:mt-2">{{ page_obj.paginator.count }}</p>
+                                </div>
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-layer-group text-blue-600 text-lg sm:text-xl"></i>
+                                </div>
+                            </div>
                         </div>
                         
-                        <div>
-                            <a href="{% url 'delete_notification' notification.id %}" class="text-gray-400 hover:text-gray-600">
-                                <i class="fas fa-trash"></i>
+                        <div class="min-w-[200px] sm:min-w-0 bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl p-4 sm:p-5 border border-green-200/50 flex-shrink-0 sm:flex-shrink">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-green-600 font-semibold text-sm sm:text-base">Unread</p>
+                                    <p class="text-2xl sm:text-3xl font-bold text-gray-800 mt-1 sm:mt-2">{{ unread_count }}</p>
+                                </div>
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-eye text-green-600 text-lg sm:text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="min-w-[200px] sm:min-w-0 bg-gradient-to-br from-purple-50 to-fuchsia-100 rounded-2xl p-4 sm:p-5 border border-purple-200/50 flex-shrink-0 sm:flex-shrink">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-purple-600 font-semibold text-sm sm:text-base">This Week</p>
+                                    <p class="text-2xl sm:text-3xl font-bold text-gray-800 mt-1 sm:mt-2">{{ weekly_count }}</p>
+                                </div>
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-500/20 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-calendar-week text-purple-600 text-lg sm:text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Panel -->
+        <div id="filter-panel" class="hidden mb-6 sm:mb-8 bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-4 sm:p-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2 sm:mb-3">Filter by Type</label>
+                    <div class="space-y-1 sm:space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="notification-type rounded text-blue-600" value="all" checked>
+                            <span class="ml-2 text-gray-700 text-sm sm:text-base">All Types</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="notification-type rounded text-green-600" value="approval" checked>
+                            <span class="ml-2 text-gray-700 text-sm sm:text-base">Approvals</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="notification-type rounded text-red-600" value="rejection" checked>
+                            <span class="ml-2 text-gray-700 text-sm sm:text-base">Rejections</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="notification-type rounded text-purple-600" value="featured" checked>
+                            <span class="ml-2 text-gray-700 text-sm sm:text-base">Featured</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2 sm:mb-3">Status</label>
+                    <div class="space-y-1 sm:space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="status-filter rounded text-blue-600" value="all" checked>
+                            <span class="ml-2 text-gray-700 text-sm sm:text-base">All Status</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="status-filter rounded text-green-600" value="unread" checked>
+                            <span class="ml-2 text-gray-700 text-sm sm:text-base">Unread Only</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="status-filter rounded text-gray-600" value="read" checked>
+                            <span class="ml-2 text-gray-700 text-sm sm:text-base">Read</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2 sm:mb-3">Time Range</label>
+                    <select class="time-filter w-full rounded-xl border-2 border-gray-200 px-3 py-2 sm:px-4 sm:py-2.5 focus:border-blue-500 focus:ring-0 text-sm sm:text-base">
+                        <option value="all">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2 sm:mb-3">Sort By</label>
+                    <select class="sort-by w-full rounded-xl border-2 border-gray-200 px-3 py-2 sm:px-4 sm:py-2.5 focus:border-blue-500 focus:ring-0 text-sm sm:text-base">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="type">Notification Type</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 mt-4 sm:mt-6">
+                <button id="apply-filters" class="order-2 sm:order-1 px-4 py-2 sm:px-6 sm:py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors text-sm sm:text-base w-full sm:w-auto">
+                    Apply Filters
+                </button>
+                <button id="reset-filters" class="order-1 sm:order-2 px-4 py-2 sm:px-6 sm:py-2.5 bg-gray-500 hover:bg-gray-600 text-white rounded-xl font-semibold transition-colors text-sm sm:text-base w-full sm:w-auto">
+                    Reset All
+                </button>
+            </div>
+        </div>
+
+        <!-- Notifications Grid - Mobile: 2 columns, Desktop: 2 columns -->
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-3 sm:gap-4 md:gap-6 mb-8 sm:mb-12">
+            {% if page_obj.object_list %}
+                {% for notification in page_obj %}
+                <div class="notification-card group relative bg-white rounded-xl sm:rounded-2xl shadow-md hover:shadow-xl border border-gray-100 overflow-hidden transition-all duration-500 transform hover:-translate-y-1 
+                            {% if not notification.is_read %}ring-1 sm:ring-2 ring-blue-500/20 bg-gradient-to-br from-blue-50 to-white{% endif %}"
+                     data-notification-id="{{ notification.id }}"
+                     data-type="{{ notification.notification_type }}"
+                     data-status="{% if notification.is_read %}read{% else %}unread{% endif %}"
+                     data-time="{{ notification.created_at|date:'Y-m-d' }}">
+                    
+                    <!-- Animated Background -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-white to-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <!-- Notification Header -->
+                    <div class="relative p-3 sm:p-4 md:p-6 border-b border-gray-100/50">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center space-x-2 sm:space-x-3 md:space-x-4 w-full">
+                                <!-- Dynamic Icon -->
+                                <div class="relative flex-shrink-0">
+                                    <div class="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 rounded-lg sm:rounded-xl md:rounded-2xl bg-gradient-to-br 
+                                                {% if notification.notification_type == 'approval' %}from-green-500 to-emerald-600
+                                                {% elif notification.notification_type == 'rejection' %}from-red-500 to-rose-600
+                                                {% elif notification.notification_type == 'featured' %}from-purple-500 to-fuchsia-600
+                                                {% elif notification.notification_type == 'comment' %}from-blue-500 to-indigo-600
+                                                {% elif notification.notification_type == 'reply' %}from-indigo-500 to-purple-600
+                                                {% else %}from-gray-500 to-slate-600{% endif %} 
+                                                flex items-center justify-center shadow-md group-hover:scale-105 transition-transform duration-300">
+                                        
+                                        {% if notification.notification_type == 'approval' %}
+                                        <i class="fas fa-check-circle text-white text-xs sm:text-sm md:text-lg"></i>
+                                        {% elif notification.notification_type == 'rejection' %}
+                                        <i class="fas fa-times-circle text-white text-xs sm:text-sm md:text-lg"></i>
+                                        {% elif notification.notification_type == 'featured' %}
+                                        <i class="fas fa-crown text-white text-xs sm:text-sm md:text-lg"></i>
+                                        {% elif notification.notification_type == 'comment' %}
+                                        <i class="fas fa-comments text-white text-xs sm:text-sm md:text-lg"></i>
+                                        {% elif notification.notification_type == 'reply' %}
+                                        <i class="fas fa-reply-all text-white text-xs sm:text-sm md:text-lg"></i>
+                                        {% else %}
+                                        <i class="fas fa-info-circle text-white text-xs sm:text-sm md:text-lg"></i>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    {% if not notification.is_read %}
+                                    <div class="absolute -top-0.5 -right-0.5 w-2 h-2 sm:w-3 sm:h-3 md:w-5 md:h-5 bg-red-500 rounded-full border-1 sm:border-2 border-white animate-pulse shadow-lg"></div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="font-bold text-gray-900 text-xs sm:text-sm md:text-base leading-tight line-clamp-2">{{ notification.message }}</h3>
+                                    <div class="flex flex-wrap items-center mt-1 text-xs text-gray-500 gap-1">
+                                        <i class="far fa-clock mr-1 hidden sm:inline"></i>
+                                        <span class="text-xs">{{ notification.created_at|timesince }} ago</span>
+                                        <span class="hidden sm:inline">•</span>
+                                        <span class="px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-xs font-semibold 
+                                                    {% if notification.notification_type == 'approval' %}bg-green-100 text-green-800
+                                                    {% elif notification.notification_type == 'rejection' %}bg-red-100 text-red-800
+                                                    {% elif notification.notification_type == 'featured' %}bg-purple-100 text-purple-800
+                                                    {% elif notification.notification_type == 'comment' %}bg-blue-100 text-blue-800
+                                                    {% elif notification.notification_type == 'reply' %}bg-indigo-100 text-indigo-800
+                                                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                            {{ notification.notification_type|title }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Action Buttons - Show on hover only on desktop -->
+                            <div class="hidden sm:flex items-center space-x-1 md:space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex-shrink-0 ml-2">
+                                {% if not notification.is_read %}
+                                <button class="mark-as-read w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg md:rounded-xl transition-all duration-300 flex items-center justify-center shadow-sm hover:shadow" 
+                                        data-notification-id="{{ notification.id }}"
+                                        title="Mark as Read">
+                                    <i class="fas fa-check text-xs md:text-sm"></i>
+                                </button>
+                                {% else %}
+                                <span class="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 bg-gray-100 text-gray-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-sm">
+                                    <i class="fas fa-check text-xs md:text-sm"></i>
+                                </span>
+                                {% endif %}
+                                
+                                <a href="{% url 'delete_notification' notification.id %}" class="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 bg-red-100 hover:bg-red-200 text-red-500 rounded-lg md:rounded-xl transition-all duration-300 flex items-center justify-center shadow-sm hover:shadow" title="Delete">
+                                    <i class="fas fa-trash-alt text-xs md:text-sm"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Mobile Action Buttons - Always visible on mobile -->
+                        <div class="flex sm:hidden items-center justify-between mt-2 pt-2 border-t border-gray-100">
+                            <div>
+                                {% if not notification.is_read %}
+                                <button class="mark-as-read bg-blue-100 hover:bg-blue-200 text-blue-600 px-2 py-1 rounded-lg text-xs transition-colors flex items-center" 
+                                        data-notification-id="{{ notification.id }}">
+                                    <i class="fas fa-check mr-1"></i> Read
+                                </button>
+                                {% else %}
+                                <span class="bg-gray-100 text-gray-500 px-2 py-1 rounded-lg text-xs flex items-center">
+                                    <i class="fas fa-check mr-1"></i> Read
+                                </span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="flex items-center space-x-2">
+                                {% if notification.ad %}
+                                <a href="{% url 'product_detail' notification.ad.id %}" class="text-blue-600 hover:text-blue-800 text-xs font-medium">
+                                    View Ad
+                                </a>
+                                {% endif %}
+                                {% if notification.comment and not notification.ad %}
+                                <a href="{% url 'product_detail' notification.comment.ad.id %}#comment-{{ notification.comment.id }}" class="text-blue-600 hover:text-blue-800 text-xs font-medium">
+                                    View Comment
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Notification Content -->
+                    <div class="relative p-3 sm:p-4 md:p-6">
+                        {% if notification.comment and notification.comment.text %}
+                        <div class="mb-3 p-2 sm:p-3 md:p-4 bg-gradient-to-r from-gray-50 to-white rounded-lg md:rounded-xl border border-gray-200/50 shadow-sm">
+                            <div class="flex items-start">
+                                <div class="mr-2 text-blue-400 mt-0.5">
+                                    <i class="fas fa-quote-left text-xs"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-gray-700 text-xs sm:text-sm leading-relaxed line-clamp-2">
+                                        "{{ notification.comment.text|truncatewords:15 }}"
+                                    </p>
+                                    {% if notification.comment.parent %}
+                                    <div class="flex items-center mt-2 text-xs text-gray-500">
+                                        <div class="w-4 h-4 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mr-1">
+                                            <i class="fas fa-reply text-blue-400 text-xs"></i>
+                                        </div>
+                                        Replying to @{{ notification.comment.parent.user.get_short_name }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Action Links - Desktop -->
+                        <div class="hidden sm:flex justify-between items-center">
+                            <div>
+                                {% if notification.ad %}
+                                <a href="{% url 'product_detail' notification.ad.id %}" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-semibold text-xs md:text-sm transition-colors group/link">
+                                    View Ad
+                                    <i class="fas fa-arrow-right ml-1 md:ml-2 group-hover/link:translate-x-0.5 transition-transform"></i>
+                                </a>
+                                {% endif %}
+                                {% if notification.comment and not notification.ad %}
+                                <a href="{% url 'product_detail' notification.comment.ad.id %}#comment-{{ notification.comment.id }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-semibold text-xs md:text-sm transition-colors group/link">
+                                    View Comment
+                                    <i class="fas fa-arrow-right ml-1 md:ml-2 group-hover/link:translate-x-0.5 transition-transform"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                            
+                            {% if not notification.is_read %}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 animate-pulse">
+                                <i class="fas fa-circle mr-1 text-[8px]"></i>
+                                New
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Hover Effect Border -->
+                    <div class="absolute inset-0 border-2 border-transparent group-hover:border-blue-200 rounded-xl pointer-events-none transition-all duration-300"></div>
+                </div>
+                {% endfor %}
+            {% else %}
+            <!-- Premium Empty State -->
+            <div class="col-span-2">
+                <div class="text-center py-12 sm:py-16 md:py-20">
+                    <div class="max-w-md mx-auto px-4">
+                        <div class="relative mb-6 sm:mb-8">
+                            <div class="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full mx-auto flex items-center justify-center shadow-xl">
+                                <i class="fas fa-bell-slash text-3xl sm:text-4xl md:text-6xl text-blue-300"></i>
+                            </div>
+                            <div class="absolute top-0 right-2 sm:right-0 w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-white rounded-full shadow-lg flex items-center justify-center transform rotate-12">
+                                <i class="fas fa-moon text-yellow-500 text-lg sm:text-xl md:text-2xl"></i>
+                            </div>
+                            <div class="absolute bottom-2 left-2 sm:bottom-0 sm:left-0 w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 bg-white rounded-full shadow-lg flex items-center justify-center transform -rotate-12">
+                                <i class="fas fa-star text-purple-400 text-sm sm:text-base md:text-xl"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-3 sm:mb-4">All Clear!</h3>
+                        <p class="text-gray-600 text-sm sm:text-base md:text-lg mb-6 sm:mb-8">No notifications waiting. You're completely up to date with your marketplace activities.</p>
+                        <div class="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
+                            <a href="{% url 'post_ad' %}" class="px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl sm:rounded-2xl font-bold transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-sm sm:text-base">
+                                <i class="fas fa-plus mr-2 sm:mr-3"></i> New Listing
+                            </a>
+                            <a href="{% url 'marketplace' %}" class="px-6 py-3 sm:px-8 sm:py-4 bg-white border-2 border-gray-300 hover:border-blue-400 text-gray-700 hover:text-blue-700 rounded-xl sm:rounded-2xl font-bold transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl text-sm sm:text-base">
+                                <i class="fas fa-compass mr-2 sm:mr-3"></i> Explore
                             </a>
                         </div>
                     </div>
                 </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="text-center py-12">
-                <i class="fas fa-bell-slash text-4xl text-gray-300 mb-4"></i>
-                <p class="text-gray-500">No notifications yet</p>
-            </div>
-            {% endif %}
-            
-            <!-- Pagination -->
-            {% if page_obj.has_other_pages %}
-            <div class="mt-8 flex justify-center">
-                <div class="flex space-x-1">
-                    {% if page_obj.has_previous %}
-                    <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 bg-gray-200 rounded-md hover:bg-purple-600 hover:text-white">
-                        &laquo;
-                    </a>
-                    {% endif %}
-                    
-                    {% for num in page_obj.paginator.page_range %}
-                    {% if page_obj.number == num %}
-                    <span class="px-3 py-1 bg-purple-600 text-white rounded-md">{{ num }}</span>
-                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                    <a href="?page={{ num }}" class="px-3 py-1 bg-gray-200 rounded-md hover:bg-purple-600 hover:text-white">
-                        {{ num }}
-                    </a>
-                    {% endif %}
-                    {% endfor %}
-                    
-                    {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 bg-gray-200 rounded-md hover:bg-purple-600 hover:text-white">
-                        &raquo;
-                    </a>
-                    {% endif %}
-                </div>
             </div>
             {% endif %}
         </div>
+        
+        <!-- Enhanced Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="flex justify-center">
+            <nav class="flex items-center space-x-1 sm:space-x-2 bg-white/80 backdrop-blur-xl rounded-xl sm:rounded-2xl shadow-lg border border-white/20 p-2 sm:p-3">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-2 sm:px-4 sm:py-2.5 md:px-5 md:py-3 rounded-lg sm:rounded-xl bg-white border-2 border-gray-300 text-gray-700 hover:border-blue-500 hover:text-blue-600 transition-all duration-300 flex items-center shadow-sm hover:shadow text-xs sm:text-sm">
+                    <i class="fas fa-chevron-left mr-1 sm:mr-2"></i> 
+                    <span class="hidden sm:inline">Previous</span>
+                </a>
+                {% endif %}
+                
+                <div class="flex space-x-1 sm:space-x-2">
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <span class="px-3 py-2 sm:px-4 sm:py-2.5 md:px-5 md:py-3 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold shadow-lg text-xs sm:text-sm">{{ num }}</span>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <a href="?page={{ num }}" class="px-3 py-2 sm:px-4 sm:py-2.5 md:px-5 md:py-3 rounded-lg sm:rounded-xl bg-white border-2 border-gray-300 text-gray-700 hover:border-blue-500 hover:text-blue-600 transition-all duration-300 shadow-sm hover:shadow text-xs sm:text-sm">
+                            {{ num }}
+                        </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-2 sm:px-4 sm:py-2.5 md:px-5 md:py-3 rounded-lg sm:rounded-xl bg-white border-2 border-gray-300 text-gray-700 hover:border-blue-500 hover:text-blue-600 transition-all duration-300 flex items-center shadow-sm hover:shadow text-xs sm:text-sm">
+                    <span class="hidden sm:inline">Next</span>
+                    <i class="fas fa-chevron-right ml-1 sm:ml-2"></i>
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle filter panel
+    const filterToggle = document.getElementById('filter-toggle');
+    const filterPanel = document.getElementById('filter-panel');
+    
+    if (filterToggle && filterPanel) {
+        filterToggle.addEventListener('click', function() {
+            filterPanel.classList.toggle('hidden');
+            this.classList.toggle('bg-blue-600');
+            this.classList.toggle('text-white');
+            this.classList.toggle('border-blue-600');
+        });
+    }
+    
+    // Mark single notification as read
+    document.querySelectorAll('.mark-as-read').forEach(button => {
+        button.addEventListener('click', function() {
+            const notificationId = this.getAttribute('data-notification-id');
+            const notificationCard = this.closest('.notification-card');
+            
+            // Add animation
+            notificationCard.style.transform = 'scale(0.95)';
+            notificationCard.style.opacity = '0.7';
+            
+            fetch(`/notifications/mark-read/${notificationId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove animation and update UI
+                    setTimeout(() => {
+                        notificationCard.style.transform = '';
+                        notificationCard.style.opacity = '';
+                        
+                        // Update card appearance
+                        notificationCard.classList.remove('ring-1', 'sm:ring-2', 'ring-blue-500/20', 'bg-gradient-to-br', 'from-blue-50', 'to-white');
+                        
+                        // Replace mark as read button with read indicator
+                        const buttonContainer = this.parentNode;
+                        if (buttonContainer) {
+                            const readIndicator = document.createElement('span');
+                            if (window.innerWidth < 640) {
+                                // Mobile version
+                                readIndicator.className = 'bg-gray-100 text-gray-500 px-2 py-1 rounded-lg text-xs flex items-center';
+                                readIndicator.innerHTML = '<i class="fas fa-check mr-1"></i> Read';
+                            } else {
+                                // Desktop version
+                                readIndicator.className = 'w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 bg-gray-100 text-gray-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-sm';
+                                readIndicator.innerHTML = '<i class="fas fa-check text-xs md:text-sm"></i>';
+                            }
+                            buttonContainer.replaceChild(readIndicator, this);
+                        }
+                        
+                        // Remove the "New" badge
+                        const newBadge = notificationCard.querySelector('.bg-blue-100');
+                        if (newBadge) newBadge.remove();
+                        
+                        // Remove the red dot
+                        const redDot = notificationCard.querySelector('.bg-red-500');
+                        if (redDot) redDot.remove();
+                        
+                        // Update notification count in header
+                        updateUnreadCount();
+                    }, 300);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+
+    // Filter functionality
+    const applyFilters = document.getElementById('apply-filters');
+    const resetFilters = document.getElementById('reset-filters');
+    
+    if (applyFilters) {
+        applyFilters.addEventListener('click', function() {
+            const selectedTypes = Array.from(document.querySelectorAll('.notification-type:checked')).map(cb => cb.value);
+            const selectedStatus = Array.from(document.querySelectorAll('.status-filter:checked')).map(cb => cb.value);
+            const timeRange = document.querySelector('.time-filter').value;
+            const sortBy = document.querySelector('.sort-by').value;
+            
+            // Filter logic would go here - this is a simplified version
+            console.log('Applying filters:', { selectedTypes, selectedStatus, timeRange, sortBy });
+            
+            // Close filter panel
+            filterPanel.classList.add('hidden');
+            filterToggle.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
+        });
+    }
+    
+    if (resetFilters) {
+        resetFilters.addEventListener('click', function() {
+            document.querySelectorAll('.notification-type, .status-filter').forEach(cb => {
+                cb.checked = true;
+            });
+            document.querySelector('.time-filter').value = 'all';
+            document.querySelector('.sort-by').value = 'newest';
+        });
+    }
+
+    function updateUnreadCount() {
+        // Update the unread count display
+        fetch('/notifications/unread-count/')
+            .then(response => response.json())
+            .then(data => {
+                const badge = document.querySelector('.bg-red-500');
+                if (badge) {
+                    if (data.unread_count > 0) {
+                        badge.textContent = data.unread_count;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                }
+                
+                // Update stats card
+                const unreadStat = document.querySelectorAll('.text-2xl, .text-3xl')[1];
+                if (unreadStat) {
+                    unreadStat.textContent = data.unread_count;
+                }
+            });
+        
+        // Update navbar badge
+        updateNavbarBadge();
+    }
+
+    function updateNavbarBadge() {
+        // Update the notification badge in the navbar
+        fetch('/notifications/unread-count/')
+            .then(response => response.json())
+            .then(data => {
+                const badge = document.querySelector('.notification-badge');
+                if (badge) {
+                    if (data.unread_count > 0) {
+                        badge.textContent = data.unread_count;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                }
+            });
+    }
+    
+    // Add entrance animations for notifications
+    const notificationCards = document.querySelectorAll('.notification-card');
+    notificationCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px) scale(0.95)';
+        
+        setTimeout(() => {
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0) scale(1)';
+        }, index * 100);
+    });
+});
+</script>
+
+<style>
+.notification-card {
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.notification-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Custom scrollbar for mobile stats */
+@media (max-width: 640px) {
+    .overflow-x-auto {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+    }
+    
+    .overflow-x-auto::-webkit-scrollbar {
+        display: none; /* Chrome, Safari and Opera */
+    }
+}
+
+/* Line clamp utility */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Floating animation for unread notifications */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-3px); }
+    100% { transform: translateY(0px); }
+}
+
+.ring-blue-500\/20 {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Gradient text animation */
+.bg-gradient-to-r {
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Ensure two-column layout works on all screen sizes */
+@media (max-width: 480px) {
+    .grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.5rem;
+    }
+}
+
+/* Improve touch targets on mobile */
+@media (max-width: 640px) {
+    button, a, .mark-as-read {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .notification-card {
+        min-height: 140px;
+    }
+}
+</style>
 {% endblock %}

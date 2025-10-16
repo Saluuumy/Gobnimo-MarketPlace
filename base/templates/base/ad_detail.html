@@ -310,10 +310,7 @@
       .gallery-main {
         height: 300px;
       }
-          .centered-container {
-      max-width: 1200px;
-      margin: 20px 0 auto !important;
-    }
+      
       .attribute-grid {
         grid-template-columns: repeat(2, 1fr);
       }
@@ -613,9 +610,9 @@
           <div class="seller-info mb-4">
             <div class="flex items-center gap-3 mb-3">
               <img src="{{ ad.advertiser.avatar.url|default:'/static/images/default-avatar.jpg' }}" 
-                   alt="{{ ad.advertiser.username }}" class="w-12 h-12 rounded-full object-cover border-2 border-accent-border">
+                   alt="{{ ad.advertiser.full_name }}" class="w-12 h-12 rounded-full object-cover border-2 border-accent-border">
               <div class="flex-1">
-                <h3 class="font-semibold text-sm">{{ ad.advertiser.full_name|default:ad.advertiser.username }}</h3>
+                <h3 class="font-semibold text-sm">{{ ad.advertiser.full_name|default:ad.advertiser.full_name }}</h3>
                 <div class="flex items-center text-xs text-gray-400 mt-1">
                   <i class="fas fa-map-marker-alt mr-1"></i>
                   <span>{{ ad.advertiser.location|default:"Unknown location" }}</span>
@@ -677,7 +674,7 @@
                     <button type="submit" name="submit_rating" 
                             class="gradient-btn text-white px-3 py-1 rounded text-xs font-medium flex items-center gap-1">
                       <i class="fas fa-{% if user_rating %}check{% else %}star{% endif %} text-xs"></i>
-                      {% if user_rating %}Save Rating{% else %}Submit Rating{% endif %}
+                      {% if user_rating %}Submit{% else %}Submit Rating{% endif %}
                     </button>
                     {% if user_rating %}
                       <a href="{% url 'delete_rating' user_rating.id %}?next={{ ad.id }}" 
@@ -804,7 +801,7 @@
                 <div class="flex-1">
                   <div class="flex justify-between items-start">
                     <div>
-                      <p class="text-sm font-semibold">@{{ comment.user.username }}</p>
+                      <p class="text-sm font-semibold">@{{ comment.user.full_name }}</p>
                       <p class="text-xs accent-color">{{ comment.timestamp|timesince }} ago</p>
                     </div>
                     {% if comment.user == request.user %}
@@ -856,7 +853,8 @@
                       <div class="flex-1">
                         <div class="flex justify-between items-start">
                           <div>
-                            <p class="text-xs font-semibold">@{{ reply.user.username }}</p>
+                            <p class="text-xs font-semibold">@{{ reply.user.full_name }}</p>
+
                             <p class="text-xs accent-color">{{ reply.timestamp|timesince }} ago</p>
                           </div>
                           {% if reply.user == request.user %}

@@ -517,10 +517,13 @@ class Notification(models.Model):
         ('featured', 'Ad Featured'),
         ('info', 'Information'),
         ('warning', 'Warning'),
+        ('comment', 'New Comment'),
+        ('reply', 'New Reply'),
     )
     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notifications')
     ad = models.ForeignKey('Ad', on_delete=models.CASCADE, null=True, blank=True, related_name='notifications')
+    comment = models.ForeignKey('Comment', on_delete=models.CASCADE, null=True, blank=True, related_name='notifications')
     message = models.TextField()
     notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES)
     is_read = models.BooleanField(default=False)
@@ -541,7 +544,9 @@ class Notification(models.Model):
             'featured': 'purple',
             'rejection': 'red',
             'warning': 'yellow',
-            'info': 'blue'
+            'info': 'blue',
+            'comment': 'cyan',
+            'reply': 'indigo'
         }
         return colors.get(self.notification_type, 'gray')
     
