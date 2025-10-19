@@ -10,15 +10,13 @@ env = environ.Env(
     ALLOWED_HOSTS=(list, []),
     CSRF_TRUSTED_ORIGINS=(list, []),
 )
-# load .env from project root (adjust path if needed)
 environ.Env.read_env(os.path.join(Path(__file__).resolve().parent.parent, '.env'))
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Security settings
-SECRET_KEY = env('SECRET_KEY')  # must be set in .env or env var
+SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
-# fallback for ALLOWED_HOSTS if not using env library's list parsing
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 INSTALLED_APPS = [
@@ -30,7 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    # whitenoise to serve static files
+    # whitenoise
     'whitenoise.runserver_nostatic',
 
     # your apps
@@ -54,11 +52,15 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+
+    # must come before AccountMiddleware
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+
+    # required by django-allauth (must be present)
+    'allauth.account.middleware.AccountMiddleware',
+
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # allauth doesn't require a middleware normally; keep your custom if needed
-    # 'allauth.account.middleware.AccountMiddleware',  # remove if not present in your project
 ]
 
 ROOT_URLCONF = 'Ecommerce.urls'
@@ -86,12 +88,10 @@ WSGI_APPLICATION = 'Ecommerce.wsgi.application'
 # Database configuration
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
-    # parse the DATABASE_URL (Postgres on Render/Heroku, for example)
     DATABASES = {
         'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600, conn_health_checks=True)
     }
 else:
-    # fallback to sqlite for local development
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -115,7 +115,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# whitenoise
 WHITENOISE_ROOT = STATIC_ROOT
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 WHITENOISE_AUTOREFRESH = DEBUG
@@ -125,8 +124,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Allauth / authentication
 SITE_ID = 1
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',  # default
-    'allauth.account.auth_backends.AuthenticationBackend',  # allauth
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 # Allauth settings
@@ -139,11 +138,10 @@ ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Adver Platform] '
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
-# Use the async adapter (non-blocking) - file: base/adapters.py (see below)
+# Use the async adapter (non-blocking)
 ACCOUNT_ADAPTER = 'base.adapters.AsyncAccountAdapter'
 
 # Email Configuration
-# In DEBUG use console backend so dev signup is instant and doesn't hit SMTP
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
@@ -151,18 +149,15 @@ else:
     EMAIL_HOST = 'smtp.sendgrid.net'
     EMAIL_PORT = 587
     EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = 'apikey'  # literally 'apikey' for SendGrid SMTP
+    EMAIL_HOST_USER = 'apikey'
     EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_API_KEY', '')
-    # Optional: add a timeout to reduce long hangs
     EMAIL_TIMEOUT = 10
 
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'salmamacash@gmail.com')
 
-# CSRF Trusted origins: must include scheme (http:// or https://) for Django 4+
 CSRF_TRUSTED_ORIGINS = [u.strip() for u in os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000,http://127.0.0.1:8000').split(',') if u.strip()]
 
-# File storage (Cloudinary)
-PASSWORD_RESET_TIMEOUT = 172800  # 2 days in seconds
+PASSWORD_RESET_TIMEOUT = 172800  # 2 days
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY', ''),
@@ -170,12 +165,10 @@ CLOUDINARY_STORAGE = {
 }
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-# Security toggles for HTTPS cookies (turn on in production)
 SECURE_SSL_REDIRECT = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 
-# Logging (keep email debug entries helpful)
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
