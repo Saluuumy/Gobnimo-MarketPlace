@@ -14,7 +14,6 @@ from .forms import RatingForm
 from django.db.models import Avg, Count
 from django.views.decorators.http import require_POST
 from django.contrib.auth.views import PasswordResetView
-from django.db import IntegrityError
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
 from django.urls import reverse
@@ -41,36 +40,42 @@ from django.views.generic import DetailView
 from django.db.models import F
 from django.db.models import Q, Count
 from django.core.paginator import Paginator
+from django.core.mail.backends.console import EmailBackend
 import re
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
-import threading
 
 logger = logging.getLogger(__name__)
 
-class EmailThread(threading.Thread):
-    """Thread for sending emails asynchronously"""
-    def __init__(self, subject, message, from_email, recipient_list, html_message=None):
-        self.subject = subject
-        self.message = message
-        self.from_email = from_email
-        self.recipient_list = recipient_list
-        self.html_message = html_message
-        threading.Thread.__init__(self)
-
-    def run(self):
-        try:
-            send_mail(
-                self.subject,
-                self.message,
-                self.from_email,
-                self.recipient_list,
-                html_message=self.html_message,
-                fail_silently=True,  # Changed to True to prevent errors
-            )
-            logger.info(f"Email sent successfully to {self.recipient_list}")
-        except Exception as e:
-            logger.error(f"Failed to send email: {e}")
+def send_email_in_thread(subject, text_content, from_email, recipient_list, html_content, user_id, debug=False):
+    """
+    Helper function to send email in a separate thread.
+    """
+    try:
+        send_mail(
+            subject,
+            text_content,
+            from_email,
+            recipient_list,
+            html_message=html_content,
+            fail_silently=False,
+        )
+        logger.info(f"Verification email sent to {recipient_list[0]} (ID: {user_id})")
+    except Exception as e:
+        logger.error(f"Failed to send verification email to {recipient_list[0]}: {e}")
+        if debug:
+            try:
+                backend = EmailBackend()
+                backend.send_messages([EmailMultiAlternatives(
+                    subject,
+                    text_content,
+                    from_email,
+                    recipient_list,
+                    alternatives=[(html_content, 'text/html')]
+                )])
+                logger.info(f"Console backend used for verification email to {recipient_list[0]}")
+            except Exception as e:
+                logger.error(f"Console backend failed for {recipient_list[0]}: {e}")
 
 def signup(request):
     if request.method == 'POST':
@@ -78,35 +83,60 @@ def signup(request):
         
         if form.is_valid():
             try:
-                # Log form data for debugging
-                logger.info(f"Form data: {form.cleaned_data}")
-                
-                # Save user
-                user = form.save()
-                
-                # Log successful user creation
-                logger.info(f"User created successfully: {user.email} (ID: {user.id})")
-                
-                # Login user immediately
-                login(request, user)
-                
-                messages.success(request, f"Welcome to Gobnimo Marketplace, {user.username}!")
-                return redirect('home')
-                    
-            except IntegrityError as e:
-                logger.error(f"IntegrityError during registration: {e}")
-                messages.error(request, "A user with this email or username already exists.")
-            except Exception as e:
-                logger.error(f"Unexpected error during registration: {e}", exc_info=True)
-                messages.error(request, 
-                    "Registration failed. Please try again or contact support."
+                user = form.save(commit=False)
+                user.username = form.cleaned_data['email']
+                user.is_active = False
+                user.email_verified = False
+                user.save()
+
+                # Generate verification token and URL
+                token = default_token_generator.make_token(user)
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                verification_url = request.build_absolute_uri(
+                    reverse('verify_email', kwargs={'uidb64': uid, 'token': token})
                 )
+
+                # Render HTML email content
+                html_content = render_to_string('base/verification_email.html', {
+                    'verification_url': verification_url,
+                    'user': user,
+                })
+                text_content = strip_tags(html_content)
+
+                # Send email in a separate thread
+                email_thread = threading.Thread(
+                    target=send_email_in_thread,
+                    args=(
+                        'Verify Your Email - Gobonimo Marketplace',
+                        text_content,
+                        settings.DEFAULT_FROM_EMAIL,
+                        [user.email],
+                        html_content,
+                        user.id,
+                        settings.DEBUG
+                    )
+                )
+                email_thread.start()
+
+                # Log successful registration
+                logger.info(f"New user registered: {user.email} (ID: {user.id})")
+                
+                # Add success message
+                messages.success(request, f"Verification email sent to {user.email}. Please check your inbox.")
+                return render(request, 'base/verification_sent.html')
+                
+            except Exception as e:
+                logger.error(f"Error during user registration: {e}")
+                messages.error(request, 
+                    "An unexpected error occurred during registration. "
+                    "Please try again or contact support if the problem continues."
+                )
+                return render(request, 'base/signup.html', {'form': form})
+                
         else:
-            # Log form errors in detail
-            logger.error(f"Form validation errors: {form.errors}")
-            for field, errors in form.errors.items():
-                for error in errors:
-                    messages.error(request, f"{field}: {error}")
+            # Let the form handle its own error messages
+            logger.warning(f"Form validation failed: {form.errors}")
+            
     else:
         form = SignupForm()
     
