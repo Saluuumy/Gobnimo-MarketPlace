@@ -43,7 +43,7 @@ from django.core.paginator import Paginator
 import re
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
-
+logger = logging.getLogger(__name__)
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST, request.FILES)
