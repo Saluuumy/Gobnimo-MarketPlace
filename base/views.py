@@ -58,6 +58,12 @@ def send_email_in_thread(subject, text_content, from_email, recipient_list, html
     Helper function to send email in a separate thread.
     """
     try:
+        if not from_email:
+            raise ValueError("DEFAULT_FROM_EMAIL is not set")
+        if not settings.EMAIL_HOST_PASSWORD:
+            raise ValueError("SENDGRID_API_KEY is not set")
+        
+        logger.debug(f"Attempting to send email to {recipient_list[0]} (ID: {user_id})")
         send_mail(
             subject,
             text_content,
@@ -66,22 +72,23 @@ def send_email_in_thread(subject, text_content, from_email, recipient_list, html
             html_message=html_content,
             fail_silently=False,
         )
-        logger.info(f"Verification email sent to {recipient_list[0]} (ID: {user_id})")
+        logger.info(f"Verification email sent successfully to {recipient_list[0]} (ID: {user_id})")
     except Exception as e:
-        logger.error(f"Failed to send verification email to {recipient_list[0]}: {str(e)}")
+        logger.error(f"Failed to send verification email to {recipient_list[0]}: {str(e)}\n{traceback.format_exc()}")
         if debug:
             try:
                 backend = EmailBackend()
-                backend.send_messages([EmailMultiAlternatives(
+                email = EmailMultiAlternatives(
                     subject,
                     text_content,
                     from_email,
                     recipient_list,
                     alternatives=[(html_content, 'text/html')]
-                )])
+                )
+                backend.send_messages([email])
                 logger.info(f"Console backend used for verification email to {recipient_list[0]}")
             except Exception as e:
-                logger.error(f"Console backend failed for {recipient_list[0]}: {str(e)}")
+                logger.error(f"Console backend failed for {recipient_list[0]}: {str(e)}\n{traceback.format_exc()}")
 
 def signup(request):
     if request.method == 'POST':
@@ -117,31 +124,50 @@ def signup(request):
                     })
                     text_content = strip_tags(html_content)
                 except TemplateDoesNotExist as e:
-                    logger.error(f"Template error: {str(e)}")
+                    logger.error(f"Template error: {str(e)}\n{traceback.format_exc()}")
                     user.delete()  # Clean up the user if template rendering fails
                     messages.error(request, "Error preparing the verification email. Please try again or contact support.")
                     return render(request, 'base/signup.html', {'form': form})
 
-                # Send email in a separate thread
-                email_thread = threading.Thread(
-                    target=send_email_in_thread,
-                    args=(
-                        'Verify Your Email - Gobonimo Marketplace',
-                        text_content,
-                        settings.DEFAULT_FROM_EMAIL,
-                        [user.email],
-                        html_content,
-                        user.id,
-                        settings.DEBUG
+                # Log email sending attempt
+                logger.debug(f"Starting email thread for {user.email} (ID: {user.id})")
+
+                # Send email synchronously in debug mode for easier debugging
+                if settings.DEBUG:
+                    try:
+                        send_email_in_thread(
+                            'Verify Your Email - Gobonimo Marketplace',
+                            text_content,
+                            settings.DEFAULT_FROM_EMAIL,
+                            [user.email],
+                            html_content,
+                            user.id,
+                            settings.DEBUG
+                        )
+                    except Exception as e:
+                        logger.error(f"Synchronous email sending failed for {user.email}: {str(e)}\n{traceback.format_exc()}")
+                        messages.warning(request, f"Verification email could not be sent to {user.email}. Check console logs for details.")
+                else:
+                    # Send email in a separate thread
+                    email_thread = threading.Thread(
+                        target=send_email_in_thread,
+                        args=(
+                            'Verify Your Email - Gobonimo Marketplace',
+                            text_content,
+                            settings.DEFAULT_FROM_EMAIL,
+                            [user.email],
+                            html_content,
+                            user.id,
+                            settings.DEBUG
+                        )
                     )
-                )
-                email_thread.start()
+                    email_thread.start()
 
                 # Log successful registration
                 logger.info(f"New user registered: {user.email} (ID: {user.id})")
                 
                 # Add success message
-                messages.success(request, f"Verification email sent to {user.email}. Please check your inbox.")
+                messages.success(request, f"Verification email sent to {user.email}. Please check your inbox and spam/junk folder.")
                 return render(request, 'base/verification_sent.html')
                 
             except IntegrityError as e:
