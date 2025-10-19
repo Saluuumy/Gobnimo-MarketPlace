@@ -14,6 +14,7 @@ from .forms import RatingForm
 from django.db.models import Avg, Count
 from django.views.decorators.http import require_POST
 from django.contrib.auth.views import PasswordResetView
+from django.db import IntegrityError
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
 from django.urls import reverse
@@ -77,57 +78,35 @@ def signup(request):
         
         if form.is_valid():
             try:
-                user = form.save(commit=False)
-                # Don't use email as username if you have a separate username field
-                # user.username = form.cleaned_data['email']  # Comment this out if you have username field
-                user.is_active = True  # Set to True temporarily
-                user.email_verified = False  # We'll verify later
-                user.save()
-
-                # LOGIN USER IMMEDIATELY without email verification
+                # Log form data for debugging
+                logger.info(f"Form data: {form.cleaned_data}")
+                
+                # Save user
+                user = form.save()
+                
+                # Log successful user creation
+                logger.info(f"User created successfully: {user.email} (ID: {user.id})")
+                
+                # Login user immediately
                 login(request, user)
                 
-                # Try to send verification email in background (non-blocking)
-                try:
-                    # Send verification email in thread
-                    token = default_token_generator.make_token(user)
-                    uid = urlsafe_base64_encode(force_bytes(user.pk))
-                    verification_url = request.build_absolute_uri(
-                        reverse('verify_email', kwargs={'uidb64': uid, 'token': token})
-                    )
-
-                    html_content = render_to_string('base/verification_email.html', {
-                        'verification_url': verification_url,
-                        'user': user,
-                    })
-                    text_content = strip_tags(html_content)
-
-                    # Send email in background thread
-                    EmailThread(
-                        'Verify Your Email - Gobnimo Marketplace',
-                        text_content,
-                        settings.DEFAULT_FROM_EMAIL,
-                        [user.email],
-                        html_content
-                    ).start()
+                messages.success(request, f"Welcome to Gobnimo Marketplace, {user.username}!")
+                return redirect('home')
                     
-                    messages.info(request, "Welcome! You can verify your email later from your profile.")
-                    
-                except Exception as e:
-                    logger.error(f"Email setup failed but user created: {e}")
-                    # Don't show error to user since account was created successfully
-                
-                logger.info(f"New user registered: {user.email} (ID: {user.id})")
-                return redirect('home')  # Redirect to home page
-                    
+            except IntegrityError as e:
+                logger.error(f"IntegrityError during registration: {e}")
+                messages.error(request, "A user with this email or username already exists.")
             except Exception as e:
-                logger.error(f"Error during user registration: {e}")
+                logger.error(f"Unexpected error during registration: {e}", exc_info=True)
                 messages.error(request, 
-                    "An error occurred during registration. Please try again."
+                    "Registration failed. Please try again or contact support."
                 )
         else:
-            logger.warning(f"Form validation failed: {form.errors}")
-            messages.error(request, "Please correct the errors below.")
+            # Log form errors in detail
+            logger.error(f"Form validation errors: {form.errors}")
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
     else:
         form = SignupForm()
     
