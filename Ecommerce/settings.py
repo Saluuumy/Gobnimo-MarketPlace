@@ -75,7 +75,7 @@ WSGI_APPLICATION = 'Ecommerce.wsgi.application'
 if 'DATABASE_URL' in os.environ:
     DATABASES = {
         'default': dj_database_url.config(
-            default=os.environ.get('postgresql://gobonim_db_user:xoJhR0Xie1YmqtYK9f0XxKx7ZherHXLX@dpg-d3pt6sc9c44c73cbeukg-a.oregon-postgres.render.com/gobonim_db'),
+            default=os.environ.get('postgresql://gobonimo_database_8buh_user:5M0mWw19kn4CkaCgFTd6Qu0nhP1OwJQO@dpg-d3qb8v49c44c73ckefag-a.oregon-postgres.render.com/gobonimo_database_8buh'),
             conn_max_age=600,
             conn_health_checks=True,
         )
