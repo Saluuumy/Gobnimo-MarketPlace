@@ -140,13 +140,11 @@ ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Gobonimo Marketplace] '
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
-# Email Configuration for SendGrid SMTP
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'apikey'
-EMAIL_HOST_PASSWORD = env('SENDGRID_API_KEY', default='')
+# Email Configuration for SendGrid (switched to faster API via Anymail)
+EMAIL_BACKEND = 'anymail.backends.sendgrid.EmailBackend'
+ANYMAIL = {
+    "SENDGRID_API_KEY": env('SENDGRID_API_KEY', default=''),
+}
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='salmamacash@gmail.com')
 
 # CSRF settings
