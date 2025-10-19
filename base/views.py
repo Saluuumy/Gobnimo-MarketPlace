@@ -53,28 +53,34 @@ import traceback
 
 logger = logging.getLogger(__name__)
 
-def send_email_in_thread(subject, text_content, from_email, recipient_list, html_content, user_id, debug=False):
+def send_email_in_thread(subject, text_content, html_content, from_email, recipient_email, user_id, debug=False):
     """
-    Helper function to send email in a separate thread.
+    Helper function to send email using SendGrid API in a separate thread.
     """
     try:
+        if not settings.SENDGRID_API_KEY:
+            raise ValueError("SENDGRID_API_KEY is not set")
         if not from_email:
             raise ValueError("DEFAULT_FROM_EMAIL is not set")
-        if not settings.EMAIL_HOST_PASSWORD:
-            raise ValueError("SENDGRID_API_KEY is not set")
-        
-        logger.debug(f"Attempting to send email to {recipient_list[0]} (ID: {user_id})")
-        send_mail(
-            subject,
-            text_content,
-            from_email,
-            recipient_list,
-            html_message=html_content,
-            fail_silently=False,
+
+        logger.debug(f"Attempting to send email to {recipient_email} (ID: {user_id})")
+
+        message = Mail(
+            from_email=from_email,
+            to_emails=recipient_email,
+            subject=subject,
+            plain_text_content=text_content,
+            html_content=html_content
         )
-        logger.info(f"Verification email sent successfully to {recipient_list[0]} (ID: {user_id})")
+
+        sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
+        response = sg.send(message)
+        if response.status_code != 202:
+            raise Exception(f"SendGrid returned status code {response.status_code}: {response.body}")
+
+        logger.info(f"Verification email sent successfully to {recipient_email} (ID: {user_id})")
     except Exception as e:
-        logger.error(f"Failed to send verification email to {recipient_list[0]}: {str(e)}\n{traceback.format_exc()}")
+        logger.error(f"Failed to send verification email to {recipient_email}: {str(e)}\n{traceback.format_exc()}")
         if debug:
             try:
                 backend = EmailBackend()
@@ -82,13 +88,13 @@ def send_email_in_thread(subject, text_content, from_email, recipient_list, html
                     subject,
                     text_content,
                     from_email,
-                    recipient_list,
+                    [recipient_email],
                     alternatives=[(html_content, 'text/html')]
                 )
                 backend.send_messages([email])
-                logger.info(f"Console backend used for verification email to {recipient_list[0]}")
+                logger.info(f"Console backend used for verification email to {recipient_email}")
             except Exception as e:
-                logger.error(f"Console backend failed for {recipient_list[0]}: {str(e)}\n{traceback.format_exc()}")
+                logger.error(f"Console backend failed for {recipient_email}: {str(e)}\n{traceback.format_exc()}")
 
 def signup(request):
     if request.method == 'POST':
@@ -123,45 +129,36 @@ def signup(request):
                         'user': user,
                     })
                     text_content = strip_tags(html_content)
+                    if not html_content:
+                        raise ValueError("Rendered HTML content is empty")
                 except TemplateDoesNotExist as e:
                     logger.error(f"Template error: {str(e)}\n{traceback.format_exc()}")
                     user.delete()  # Clean up the user if template rendering fails
                     messages.error(request, "Error preparing the verification email. Please try again or contact support.")
                     return render(request, 'base/signup.html', {'form': form})
+                except Exception as e:
+                    logger.error(f"Template rendering error: {str(e)}\n{traceback.format_exc()}")
+                    user.delete()
+                    messages.error(request, "Error preparing the email content. Please try again.")
+                    return render(request, 'base/signup.html', {'form': form})
 
                 # Log email sending attempt
                 logger.debug(f"Starting email thread for {user.email} (ID: {user.id})")
 
-                # Send email synchronously in debug mode for easier debugging
-                if settings.DEBUG:
-                    try:
-                        send_email_in_thread(
-                            'Verify Your Email - Gobonimo Marketplace',
-                            text_content,
-                            settings.DEFAULT_FROM_EMAIL,
-                            [user.email],
-                            html_content,
-                            user.id,
-                            settings.DEBUG
-                        )
-                    except Exception as e:
-                        logger.error(f"Synchronous email sending failed for {user.email}: {str(e)}\n{traceback.format_exc()}")
-                        messages.warning(request, f"Verification email could not be sent to {user.email}. Check console logs for details.")
-                else:
-                    # Send email in a separate thread
-                    email_thread = threading.Thread(
-                        target=send_email_in_thread,
-                        args=(
-                            'Verify Your Email - Gobonimo Marketplace',
-                            text_content,
-                            settings.DEFAULT_FROM_EMAIL,
-                            [user.email],
-                            html_content,
-                            user.id,
-                            settings.DEBUG
-                        )
+                # Send email in a separate thread
+                email_thread = threading.Thread(
+                    target=send_email_in_thread,
+                    args=(
+                        'Verify Your Email - Gobonimo Marketplace',
+                        text_content,
+                        html_content,
+                        settings.DEFAULT_FROM_EMAIL,
+                        user.email,
+                        user.id,
+                        settings.DEBUG
                     )
-                    email_thread.start()
+                )
+                email_thread.start()
 
                 # Log successful registration
                 logger.info(f"New user registered: {user.email} (ID: {user.id})")
