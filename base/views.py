@@ -42,8 +42,14 @@ from django.db.models import Q, Count
 from django.core.paginator import Paginator
 from django.core.mail.backends.console import EmailBackend
 import re
+from django.template import TemplateDoesNotExist
+from django.db import IntegrityError
+from django.core.mail.message import EmailMultiAlternatives
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+import threading
+import traceback
+
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +68,7 @@ def send_email_in_thread(subject, text_content, from_email, recipient_list, html
         )
         logger.info(f"Verification email sent to {recipient_list[0]} (ID: {user_id})")
     except Exception as e:
-        logger.error(f"Failed to send verification email to {recipient_list[0]}: {e}")
+        logger.error(f"Failed to send verification email to {recipient_list[0]}: {str(e)}")
         if debug:
             try:
                 backend = EmailBackend()
@@ -75,7 +81,7 @@ def send_email_in_thread(subject, text_content, from_email, recipient_list, html
                 )])
                 logger.info(f"Console backend used for verification email to {recipient_list[0]}")
             except Exception as e:
-                logger.error(f"Console backend failed for {recipient_list[0]}: {e}")
+                logger.error(f"Console backend failed for {recipient_list[0]}: {str(e)}")
 
 def signup(request):
     if request.method == 'POST':
@@ -87,6 +93,13 @@ def signup(request):
                 user.username = form.cleaned_data['email']
                 user.is_active = False
                 user.email_verified = False
+                
+                # Check if email is already registered
+                if User.objects.filter(email=user.email).exists():
+                    logger.warning(f"Email already exists: {user.email}")
+                    messages.error(request, "This email is already registered. Please use a different email or log in.")
+                    return render(request, 'base/signup.html', {'form': form})
+
                 user.save()
 
                 # Generate verification token and URL
@@ -97,11 +110,17 @@ def signup(request):
                 )
 
                 # Render HTML email content
-                html_content = render_to_string('base/verification_email.html', {
-                    'verification_url': verification_url,
-                    'user': user,
-                })
-                text_content = strip_tags(html_content)
+                try:
+                    html_content = render_to_string('base/verification_email.html', {
+                        'verification_url': verification_url,
+                        'user': user,
+                    })
+                    text_content = strip_tags(html_content)
+                except TemplateDoesNotExist as e:
+                    logger.error(f"Template error: {str(e)}")
+                    user.delete()  # Clean up the user if template rendering fails
+                    messages.error(request, "Error preparing the verification email. Please try again or contact support.")
+                    return render(request, 'base/signup.html', {'form': form})
 
                 # Send email in a separate thread
                 email_thread = threading.Thread(
@@ -125,10 +144,14 @@ def signup(request):
                 messages.success(request, f"Verification email sent to {user.email}. Please check your inbox.")
                 return render(request, 'base/verification_sent.html')
                 
+            except IntegrityError as e:
+                logger.error(f"Database error during user registration: {str(e)}\n{traceback.format_exc()}")
+                messages.error(request, "This email or username is already in use. Please try a different one.")
+                return render(request, 'base/signup.html', {'form': form})
             except Exception as e:
-                logger.error(f"Error during user registration: {e}")
+                logger.error(f"Unexpected error during user registration: {str(e)}\n{traceback.format_exc()}")
                 messages.error(request, 
-                    "An unexpected error occurred during registration. "
+                    f"An unexpected error occurred during registration: {str(e)}. "
                     "Please try again or contact support if the problem continues."
                 )
                 return render(request, 'base/signup.html', {'form': form})
