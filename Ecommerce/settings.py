@@ -141,14 +141,18 @@ LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
 # Email Configuration for SendGrid (switched to faster API via Anymail)
-EMAIL_BACKEND = 'anymail.backends.sendgrid.EmailBackend'
-ANYMAIL = {
-    "SENDGRID_API_KEY": env('SENDGRID_API_KEY', default=''),
-}
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='salmamacash@gmail.com')
+# Email Configuration for SendGrid SMTP
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'apikey'  # This is literally the word 'apikey'
+EMAIL_HOST_PASSWORD = os.getenv('SENDGRID_API_KEY')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'salmamacash@gmail.com')
+
 
 # CSRF settings
-CSRF_TRUSTED_ORIGINS = env('CSRF_TRUSTED_ORIGINS', default=['http://localhost:8000', 'http://127.0.0.1:8000', 'https://gobonimo-marketplace.onrender.com'])
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000,http://127.0.0.1:8000').split(',')
 
 # Password reset timeout
 PASSWORD_RESET_TIMEOUT = 172800  # 2 days in seconds
@@ -163,11 +167,11 @@ CLOUDINARY_STORAGE = {
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Security settings
+
 SECURE_SSL_REDIRECT = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+WHITENOISE_AUTOREFRESH = DEBUG
 
 # Logging for debugging
 LOGGING = {
