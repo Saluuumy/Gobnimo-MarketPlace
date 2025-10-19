@@ -72,7 +72,16 @@ TEMPLATES = [
 WSGI_APPLICATION = 'Ecommerce.wsgi.application'
 
 # Database configuration
-DATABASES = {
+if 'DATABASE_URL' in os.environ:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('postgresql://gobonim_db_user:xoJhR0Xie1YmqtYK9f0XxKx7ZherHXLX@dpg-d3pt6sc9c44c73cbeukg-a.oregon-postgres.render.com/gobonim_db'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+else:
+    DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
