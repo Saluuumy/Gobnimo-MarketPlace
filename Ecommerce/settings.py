@@ -19,7 +19,7 @@ DEBUG = env('DEBUG')
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+   'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -38,7 +38,7 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'base.User'
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
+ 'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -114,6 +114,8 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 WHITENOISE_ROOT = STATIC_ROOT 
 
+#MEDIA_URL = '/media/'
+#MEDIA_ROOT = BASE_DIR / 'media'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -125,6 +127,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # Email verification settings
+# Allauth settings (unchanged)
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
@@ -143,8 +146,11 @@ EMAIL_HOST_USER = 'apikey'  # This is literally the word 'apikey'
 EMAIL_HOST_PASSWORD = os.getenv('SENDGRID_API_KEY')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'salmamacash@gmail.com')
 
+
+
 # CSRF settings
 CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000,http://127.0.0.1:8000').split(',')
+# Security settings (unchanged)
 
 PASSWORD_RESET_TIMEOUT = 172800  # 2 days in seconds
 CLOUDINARY_STORAGE = {
@@ -160,7 +166,7 @@ SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 WHITENOISE_AUTOREFRESH = DEBUG
 
-# Logging for debugging
+# Logging for debugging (unchanged)
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
