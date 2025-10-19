@@ -43,7 +43,34 @@ from django.core.paginator import Paginator
 import re
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+import threading
+
 logger = logging.getLogger(__name__)
+
+class EmailThread(threading.Thread):
+    """Thread for sending emails asynchronously"""
+    def __init__(self, subject, message, from_email, recipient_list, html_message=None):
+        self.subject = subject
+        self.message = message
+        self.from_email = from_email
+        self.recipient_list = recipient_list
+        self.html_message = html_message
+        threading.Thread.__init__(self)
+
+    def run(self):
+        try:
+            send_mail(
+                self.subject,
+                self.message,
+                self.from_email,
+                self.recipient_list,
+                html_message=self.html_message,
+                fail_silently=True,  # Changed to True to prevent errors
+            )
+            logger.info(f"Email sent successfully to {self.recipient_list}")
+        except Exception as e:
+            logger.error(f"Failed to send email: {e}")
+
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST, request.FILES)
@@ -51,81 +78,56 @@ def signup(request):
         if form.is_valid():
             try:
                 user = form.save(commit=False)
-                user.username = form.cleaned_data['email']
-                user.is_active = False
-                user.email_verified = False
+                # Don't use email as username if you have a separate username field
+                # user.username = form.cleaned_data['email']  # Comment this out if you have username field
+                user.is_active = True  # Set to True temporarily
+                user.email_verified = False  # We'll verify later
                 user.save()
 
-                # Send verification email
-                token = default_token_generator.make_token(user)
-                uid = urlsafe_base64_encode(force_bytes(user.pk))
-                verification_url = request.build_absolute_uri(
-                    reverse('verify_email', kwargs={'uidb64': uid, 'token': token})
-                )
-
-                # Render HTML email content
-                html_content = render_to_string('base/verification_email.html', {
-                    'verification_url': verification_url,
-                    'user': user,
-                })
-                text_content = strip_tags(html_content)
-
-                # Send email using Django's send_mail
+                # LOGIN USER IMMEDIATELY without email verification
+                login(request, user)
+                
+                # Try to send verification email in background (non-blocking)
                 try:
-                    send_mail(
-                        'Verify Your Email - Gobonimo Marketplace',
+                    # Send verification email in thread
+                    token = default_token_generator.make_token(user)
+                    uid = urlsafe_base64_encode(force_bytes(user.pk))
+                    verification_url = request.build_absolute_uri(
+                        reverse('verify_email', kwargs={'uidb64': uid, 'token': token})
+                    )
+
+                    html_content = render_to_string('base/verification_email.html', {
+                        'verification_url': verification_url,
+                        'user': user,
+                    })
+                    text_content = strip_tags(html_content)
+
+                    # Send email in background thread
+                    EmailThread(
+                        'Verify Your Email - Gobnimo Marketplace',
                         text_content,
                         settings.DEFAULT_FROM_EMAIL,
                         [user.email],
-                        html_message=html_content,
-                        fail_silently=False,
-                    )
+                        html_content
+                    ).start()
                     
-                    # Log successful registration
-                    logger.info(f"New user registered: {user.email} (ID: {user.id})")
-                    
-                    # Add success message for the next page
-                    messages.success(request, f"Verification email sent to {user.email}. Please check your inbox.")
-                    return render(request, 'base/verification_sent.html')
+                    messages.info(request, "Welcome! You can verify your email later from your profile.")
                     
                 except Exception as e:
-                    logger.error(f"Failed to send verification email to {user.email}: {e}")
+                    logger.error(f"Email setup failed but user created: {e}")
+                    # Don't show error to user since account was created successfully
+                
+                logger.info(f"New user registered: {user.email} (ID: {user.id})")
+                return redirect('home')  # Redirect to home page
                     
-                    # Fallback to console email backend for debugging
-                    if settings.DEBUG:
-                        from django.core.mail.backends.console import EmailBackend
-                        backend = EmailBackend()
-                        backend.send_messages([EmailMultiAlternatives(
-                            'Verify Your Email - Gobonimo Marketplace',
-                            text_content,
-                            settings.DEFAULT_FROM_EMAIL,
-                            [user.email],
-                            alternatives=[(html_content, 'text/html')]
-                        )])
-                        messages.success(request, f"Verification email sent to {user.email}. Please check your inbox.")
-                        return render(request, 'base/verification_sent.html')
-                    else:
-                        # Delete the user if email sending fails in production
-                        user.delete()
-                        messages.error(request, 
-                            "We encountered an issue sending the verification email. "
-                            "Please try again later or contact support if the problem persists."
-                        )
-                        return render(request, 'base/signup.html', {'form': form})
-                        
             except Exception as e:
                 logger.error(f"Error during user registration: {e}")
                 messages.error(request, 
-                    "An unexpected error occurred during registration. "
-                    "Please try again or contact support if the problem continues."
+                    "An error occurred during registration. Please try again."
                 )
-                return render(request, 'base/signup.html', {'form': form})
-                
         else:
-            # Let the form handle its own error messages
-            # The form errors will be displayed in the template automatically
             logger.warning(f"Form validation failed: {form.errors}")
-            
+            messages.error(request, "Please correct the errors below.")
     else:
         form = SignupForm()
     

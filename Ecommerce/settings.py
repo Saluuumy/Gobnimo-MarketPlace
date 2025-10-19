@@ -15,10 +15,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Security settings
 SECRET_KEY = env('SECRET_KEY')
-DEBUG = env('DEBUG')
+DEBUG = env('DEBUG', default=False)
 ALLOWED_HOSTS = env('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 
-# Add your actual Render domain
+# Add Render hostname
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
@@ -128,27 +128,31 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-# Allauth configuration with reduced email requirements for faster signup
+# Allauth configuration - DISABLE EMAIL VERIFICATION TEMPORARILY
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'optional'  # Changed from 'mandatory' to prevent blocking
-ACCOUNT_CONFIRM_EMAIL_ON_GET = False  # Changed to False
-ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1  # Reduced from 3
-ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Adver Platform] '
+ACCOUNT_EMAIL_REQUIRED = False  # Changed to False
+ACCOUNT_EMAIL_VERIFICATION = 'none'  # Changed to none
+ACCOUNT_CONFIRM_EMAIL_ON_GET = False
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1
+ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Gobnimo Marketplace] '
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 ACCOUNT_SIGNUP_REDIRECT_URL = '/'
 ACCOUNT_USERNAME_MIN_LENGTH = 3
 
-# Email Configuration with timeout settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'apikey'
-EMAIL_HOST_PASSWORD = os.getenv('SENDGRID_API_KEY')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@yourapp.com')
-EMAIL_TIMEOUT = 10  # Add timeout to prevent hanging
+# Email Configuration - USE CONSOLE BACKEND FOR NOW
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Changed to console
+EMAIL_TIMEOUT = 5
+
+# If you want to try SendGrid later, use these settings:
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.sendgrid.net'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'apikey'
+# EMAIL_HOST_PASSWORD = os.getenv('SENDGRID_API_KEY')
+# DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@gobnimo.com')
+# EMAIL_TIMEOUT = 10
 
 # CSRF settings
 CSRF_TRUSTED_ORIGINS = env('CSRF_TRUSTED_ORIGINS', default=['http://localhost:8000', 'http://127.0.0.1:8000'])
@@ -157,7 +161,7 @@ CSRF_TRUSTED_ORIGINS = env('CSRF_TRUSTED_ORIGINS', default=['http://localhost:80
 if RENDER_EXTERNAL_HOSTNAME:
     CSRF_TRUSTED_ORIGINS.append(f'https://{RENDER_EXTERNAL_HOSTNAME}')
 
-PASSWORD_RESET_TIMEOUT = 86400  # Reduced to 1 day
+PASSWORD_RESET_TIMEOUT = 86400
 
 # Cloudinary configuration
 CLOUDINARY_STORAGE = {
@@ -166,7 +170,6 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', ''),
 }
 
-# Only use Cloudinary if credentials are provided
 if all([os.environ.get('CLOUDINARY_CLOUD_NAME'), 
         os.environ.get('CLOUDINARY_API_KEY'), 
         os.environ.get('CLOUDINARY_API_SECRET')]):
@@ -180,11 +183,7 @@ SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 WHITENOISE_AUTOREFRESH = DEBUG
 
-# Performance optimizations
-ACCOUNT_SESSION_REMEMBER = True  # Remember login sessions
-SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
-
-# Logging for debugging
+# Logging
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -193,19 +192,14 @@ LOGGING = {
             'class': 'logging.StreamHandler',
         },
     },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
     'loggers': {
         'django': {
             'handlers': ['console'],
             'level': 'INFO',
-        },
-        'django.core.mail': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'allauth': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
             'propagate': False,
         },
     },
