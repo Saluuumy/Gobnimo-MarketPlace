@@ -25,38 +25,38 @@ path('reply_to_comment/<int:comment_id>/', views.reply_to_comment, name='reply_t
 path('signup/', views.signup, name='signup'),
 path('login/', views.login_view, name='login'),
 path('logout/', views.logout_user, name='logout'),
-   path('password-reset/',
-         auth_views.PasswordResetView.as_view(
-             template_name='base/password_reset.html',
-             email_template_name='base/password_reset_email.html',
-             subject_template_name='base/password_reset_subject.txt',
-             success_url=reverse_lazy('password_reset_done'),
-             html_email_template_name='base/password_reset_email.html',
-             extra_context={'site_name': 'Gobonimo-Mart'}
-         ),
-         name='password_reset'),
-    
-    path('password-reset/done/',
-         auth_views.PasswordResetDoneView.as_view(
-             template_name='base/password_reset_done.html',
-             extra_context={'site_name': 'Gobonimo-Mart'}
-         ),
-         name='password_reset_done'),
-    
-    path('password-reset-confirm/<uidb64>/<token>/',
-         auth_views.PasswordResetConfirmView.as_view(
-             template_name='base/password_reset_confirm.html',
-             success_url=reverse_lazy('password_reset_complete'),
-             extra_context={'site_name': 'Gobonimo-Mart'}
-         ),
-         name='password_reset_confirm'),
-    
-    path('password-reset-complete/',
-         auth_views.PasswordResetCompleteView.as_view(
-             template_name='base/password_reset_complete.html',
-             extra_context={'site_name': 'Gobonimo-Mart'}
-         ),
-         name='password_reset_complete'),
+path('password-reset/',
+    auth_views.PasswordResetView.as_view(
+        template_name='base/password_reset.html',
+        email_template_name='base/password_reset_email.txt',  # Plain text email
+        subject_template_name='base/password_reset_subject.txt',
+        success_url=reverse_lazy('password_reset_done'),
+        html_email_template_name='base/password_reset_email_html.html',  # HTML email (NEW)
+        extra_context={'site_name': 'Gobonimo-Mart'}
+    ),
+    name='password_reset'),
+
+path('password-reset/done/',
+    auth_views.PasswordResetDoneView.as_view(
+        template_name='base/password_reset_done.html',
+        extra_context={'site_name': 'Gobonimo-Mart'}
+    ),
+    name='password_reset_done'),
+
+path('password-reset-confirm/<uidb64>/<token>/',
+    auth_views.PasswordResetConfirmView.as_view(
+        template_name='base/password_reset_confirm.html',  # ← Make sure this file exists (underscores)
+        success_url=reverse_lazy('password_reset_complete'),
+        extra_context={'site_name': 'Gobonimo-Mart'}
+    ),
+    name='password_reset_confirm'),
+
+path('password-reset-complete/',
+    auth_views.PasswordResetCompleteView.as_view(
+        template_name='base/password_reset_complete.html',
+        extra_context={'site_name': 'Gobonimo-Mart'}
+    ),
+    name='password_reset_complete'),
 path('verify-email/<uidb64>/<token>/', views.verify_email, name='verify_email'),
 path('view_advertiser_profile/<str:username>/', views.view_advertiser_profile, name='view_advertiser_profile'),
 
