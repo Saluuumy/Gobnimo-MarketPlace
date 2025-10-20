@@ -45,11 +45,11 @@ path('logout/', views.logout_user, name='logout'),
     
     path('password-reset-confirm/<uidb64>/<token>/',
          auth_views.PasswordResetConfirmView.as_view(
-             template_name='base/password-reset-confirm.html',
+             template_name='base/password_reset_confirm.html',
              success_url=reverse_lazy('password_reset_complete'),
              extra_context={'site_name': 'Gobonimo-Mart'}
          ),
-         name='password-reset-confirm'),
+         name='password_reset_confirm'),
     
     path('password-reset-complete/',
          auth_views.PasswordResetCompleteView.as_view(
