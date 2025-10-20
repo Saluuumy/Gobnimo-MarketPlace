@@ -11,7 +11,6 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.utils.encoding import force_bytes
 from .forms import RatingForm
-from sendgrid.helpers.mail import Mail, Personalization, To
 from django.db.models import Avg, Count
 from django.views.decorators.http import require_POST
 from django.contrib.auth.views import PasswordResetView
@@ -1081,7 +1080,3 @@ class AdDetailView(DetailView):
         obj = super().get_object(queryset)
         Ad.objects.filter(pk=obj.pk).update(views=F('views') + 1)
         return obj
-    
-
-
-    

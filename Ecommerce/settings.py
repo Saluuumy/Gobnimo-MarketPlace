@@ -16,7 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security settings
 SECRET_KEY = env('SECRET_KEY')  # No default; must be set in env
 DEBUG = env('DEBUG')
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost','127.0.0.1','gobnimo-marketplace-w0z0.onrender.com'])
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -64,6 +64,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'base.context_processors.unread_notifications',
                 'base.context_processors.user_counts',
+               
             ],
         },
     },
@@ -122,6 +123,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SITE_ID = 1
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+
 ]
 
 # Email verification settings
@@ -135,13 +138,20 @@ LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
 # Email Configuration for SendGrid API (using custom backend or direct API calls)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Fallback for debug; change to custom if needed
-SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'apikey'  # This is literally the word 'apikey'
+EMAIL_HOST_PASSWORD = os.getenv('SENDGRID_API_KEY')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'salmamacash@gmail.com')
 
 # CSRF settings
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000,http://127.0.0.1:8000').split(',')
-
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'https://gobnimo-marketplace-w0z0.onrender.com',
+])
 PASSWORD_RESET_TIMEOUT = 172800  # 2 days in seconds
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', ''),
