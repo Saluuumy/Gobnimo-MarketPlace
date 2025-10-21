@@ -290,7 +290,7 @@
     /* Centered layout */
     .centered-container {
       max-width: 1200px;
-      margin: 20px 70px auto;
+     
     }
     button, input, optgroup, select, textarea {
   font-family: inherit;
@@ -350,6 +350,15 @@
         gap: 8px;
       }
     }
+    @media (max-width: 768px) {
+    .mb-4 {
+      margin-bottom: 0rem !important;
+    }
+    .bg-gray-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(19, 128, 128);
+}
+  }
     
     @media (max-width: 360px) {
       /* On very small screens, stack features */

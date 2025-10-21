@@ -164,6 +164,7 @@
 .signup-form input:focus:not([type="checkbox"]):not([type="radio"]),
         .signup-form textarea:focus,
         .signup-form select:focus {
+
             outline: none;
             border-color: #7e22ce;
             box-shadow: 0 0 0 3px rgba(126, 34, 206, 0.2);
@@ -549,13 +550,15 @@
             }
             .font-semibold {
   font-weight: 600;
-font-size: 14px !important;
-line-height: 1.2 !important;
-}
+font-size: 13px !important;
+    line-height: 3.1 !important;
+  }
+  .mobile-negative-margin {
+    margin-top: -10px !important;
+  }
 .sidebar-narrow {
-  width: 40px !important;
-  height: 1000px;
-  min-width: 65px;
+ 
+  display: none !important;
 }
             
             .categories-section {

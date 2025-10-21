@@ -71,13 +71,7 @@
       <a href="{% url 'category_detail' category.id %}" class="flex flex-col items-center focus:outline-none icon-btn" aria-label="{{ category.name }}" tabindex="0">
       {% if category.icon == 'building' %}
         <!-- Property - Blue -->
-        <svg class="side-icon" viewBox="0 0 24 24" fill="none">
-          <rect x="3" y="6.5" width="18" height="11" rx="1.2" stroke="#4ea2ff" stroke-width="1.1"/>
-          <path d="M9 10h1m-1 3h1m3-3h1m-1 3h1m3-3h1m-1 3h1" stroke="#4ea2ff" stroke-width="1.1" stroke-linecap="round"/>
-        </svg>
-      {% elif category.icon == 'land' %}
-        <!-- Lands - Green -->
-        <svg class="side-icon" viewBox="0 0 24 24" fill="none">
+       <svg class="side-icon" viewBox="0 0 24 24" fill="none">
           <path d="M3 10l9-9 9 9M6 10v9a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-9" stroke="#22c55e" stroke-width="1.1"/>
           <rect x="8" y="12" width="2" height="2" rx="0.5" fill="#22c55e"/>
           <rect x="12" y="12" width="2" height="2" rx="0.5" fill="#22c55e"/>
@@ -85,6 +79,13 @@
           <rect x="8" y="16" width="2" height="2" rx="0.5" fill="#22c55e"/>
           <rect x="12" y="16" width="2" height="2" rx="0.5" fill="#22c55e"/>
           <rect x="16" y="16" width="2" height="2" rx="0.5" fill="#22c55e"/>
+        </svg>
+      {% elif category.icon == 'land' %}
+        <!-- Lands - Green -->
+      
+            <svg class="side-icon" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="6.5" width="18" height="11" rx="1.2" stroke="#4ea2ff" stroke-width="1.1"/>
+          <path d="M9 10h1m-1 3h1m3-3h1m-1 3h1m3-3h1m-1 3h1" stroke="#4ea2ff" stroke-width="1.1" stroke-linecap="round"/>
         </svg>
       {% elif category.icon == 'electronics' %}
         <!-- Electronics - Purple -->
@@ -145,26 +146,7 @@
     {% endfor %}
   </div>
 
-  <!-- bottom utilities -->
-  <div class="flex flex-col items-center gap-3 mb-4">
-    <button class="p-1 rounded-md" aria-label="Invite" tabindex="0">
-      <svg class="util-icon" viewBox="0 0 24 24" fill="none"><path d="M15 14a3 3 0 100-6 3 3 0 000 6zM6 20v-1a4 4 0 014-4h4" stroke="#cbd5e1" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-
-    <button class="p-1 rounded-md" aria-label="App Marketplace" tabindex="0">
-      <svg class="util-icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#cbd5e1" stroke-width="1.2"/></svg>
-    </button>
-
-    <button class="p-1 rounded-md" aria-label="Help" tabindex="0">
-      <svg class="util-icon" viewBox="0 0 24 24" fill="none"><path d="M12 17v.01M12 7a4 4 0 00-1 7.874V15" stroke="#cbd5e1" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-
-    <button class="p-1 rounded-md" aria-label="Settings" tabindex="0">
-      <svg class="util-icon" viewBox="0 0 24 24" fill="none"><path d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7z" stroke="#cbd5e1" stroke-width="0.9"/></svg>
-    </button>
-
-    <div class="mt-1 rounded-full w-10 h-10 flex items-center justify-center bg-[#2fe1dd] text-slate-900 font-semibold">SS</div>
-  </div>
+ 
 </aside>
 
 <!-- =========================
@@ -179,7 +161,7 @@
           </button>
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center font-bold text-slate-900">
-              G
+              GO
             </div>
             <div class="text-xl font-bold text-white">Gobonimo Marketplace</div>
           </div>
@@ -415,10 +397,13 @@
             <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
         </button>
-        <div class="text-lg font-bold text-white">
-          <a href="{% url 'index' %}">Gobonimo Marketplace</a>
+      <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center font-bold text-slate-900">
+              GO
+            </div>
+            <div class="text-xl font-bold text-white">Gobonimo Marketplace</div>
+          </div>
         </div>
-      </div>
 
       <!-- Right Actions -->
       <div class="flex items-center gap-2">
@@ -1016,6 +1001,24 @@ margin-top: -0.0rem !important;}
     border-radius: 12px;
     height: auto;
   }
+    @media (max-width: 768px) {
+            .sidebar-narrow {
+display: none !important;
+            }
+            .mb-10 {
+  margin-bottom: 2.5rem;
+  position: relative;
+  right: 26px;
+}
+            .font-semibold {
+  font-weight: 600;
+font-size: 13px !important;
+    line-height: 3.1 !important;
+  }
+  .mb-4 {
+  margin-bottom: -1rem;
+}
+          }
   #desktopSearchForm > * { height: 44px; border-left: none !important; border-radius: 8px; }
   #desktopSearchForm > button.search-btn { width: 100%; margin-left: 0; border-radius: 8px; }
   #desktopKeyword, #desktopLocation, #desktopSearchForm > .custom-dropdown { width: 100%; flex: unset; }
