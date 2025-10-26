@@ -9,14 +9,14 @@ env = environ.Env(
     ALLOWED_HOSTS=(list, []),
     CSRF_TRUSTED_ORIGINS=(list, []),
 )
-environ.Env.read_env(os.path.join(Path(__file__).resolve().parent.parent, '.env'))
+environ.Env.read_env(os.path.join(Path(__file__).resolve().parent.parent, '.env'))  # Explicit path for clarity
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Security settings
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = env('SECRET_KEY')  # No default; must be set in env
 DEBUG = env('DEBUG')
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1', 'gobnimo-marketplace-w0z0.onrender.com'])
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -75,7 +75,7 @@ WSGI_APPLICATION = 'Ecommerce.wsgi.application'
 if 'DATABASE_URL' in os.environ:
     DATABASES = {
         'default': dj_database_url.config(
-            default=os.environ.get('DATABASE_URL', 'postgresql://gobonimo_database_8buh_user:5M0mWw19kn4CkaCgFTd6Qu0nhP1OwJQO@dpg-d3qb8v49c44c73ckefag-a.oregon-postgres.render.com/gobonimo_database_8buh'),
+            default=os.environ.get('postgresql://gobonimo_database_8buh_user:5M0mWw19kn4CkaCgFTd6Qu0nhP1OwJQO@dpg-d3qb8v49c44c73ckefag-a.oregon-postgres.render.com/gobonimo_database_8buh'),
             conn_max_age=600,
             conn_health_checks=True,
         )
@@ -111,7 +111,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-WHITENOISE_ROOT = STATIC_ROOT
+
+WHITENOISE_ROOT = STATIC_ROOT 
+
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -120,7 +122,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SITE_ID = 1
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 # Email verification settings
@@ -132,20 +133,14 @@ ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
 ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Adver Platform] '
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
-ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
-ACCOUNT_SIGNUP_REDIRECT_URL = '/accounts/verify-email-sent/'
 
-# Email Configuration for SendGrid
+# Email Configuration for SendGrid API (using custom backend or direct API calls)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Fallback for debug; change to custom if needed
 SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'salmamacash@gmail.com')
-EMAIL_BACKEND = 'base.email_backends.SendGridEmailBackend'
 
 # CSRF settings
-CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-    'https://gobnimo-marketplace-w0z0.onrender.com',
-])
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000,http://127.0.0.1:8000').split(',')
 
 PASSWORD_RESET_TIMEOUT = 172800  # 2 days in seconds
 CLOUDINARY_STORAGE = {
@@ -176,11 +171,6 @@ LOGGING = {
             'level': 'INFO',
         },
         'django.core.mail': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'base.email_backends': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False,
