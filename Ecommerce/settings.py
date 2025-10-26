@@ -16,7 +16,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security settings
 SECRET_KEY = env('SECRET_KEY')  # No default; must be set in env
 DEBUG = env('DEBUG')
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost','127.0.0.1','gobnimo-marketplace-w0z0.onrender.com'])
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost','127.0.0.1',  '.vercel.app',
+    '.now.sh',     'gobnimo-marketplace-w0z0.onrender.com'])
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -151,6 +152,8 @@ CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[
     'http://localhost:8000',
     'http://127.0.0.1:8000',
     'https://gobnimo-marketplace-w0z0.onrender.com',
+    'https://*.vercel.app',
+    'https://*.now.sh',
 ])
 PASSWORD_RESET_TIMEOUT = 172800  # 2 days in seconds
 CLOUDINARY_STORAGE = {
