@@ -138,12 +138,14 @@ LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
 # Email Configuration for SendGrid API (using custom backend or direct API calls)
+# Email Configuration for SendGrid API (using custom backend or direct API calls)
+SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')  # Add this line
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'apikey'  # This is literally the word 'apikey'
-EMAIL_HOST_PASSWORD = os.getenv('SENDGRID_API_KEY')
+EMAIL_HOST_PASSWORD = SENDGRID_API_KEY  # Use the variable here
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'salmamacash@gmail.com')
 
 # CSRF settings
