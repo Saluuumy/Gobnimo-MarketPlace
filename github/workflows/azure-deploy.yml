@@ -30,20 +30,6 @@ jobs:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           DEBUG: 'False'
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
-          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
-          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
-
-      - name: Run migrations
-        run: |
-          python manage.py migrate
-        env:
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          DEBUG: 'False'
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
-          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
-          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
 
       - name: Create superuser
         run: |
