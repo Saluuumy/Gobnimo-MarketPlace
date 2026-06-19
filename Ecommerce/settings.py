@@ -1,5 +1,4 @@
 from pathlib import Path
-
 import environ
 import dj_database_url
 
@@ -62,6 +61,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    # ── NEW — must be after AuthenticationMiddleware ──────────────────────────
+    "base.middleware.ProfileCompletionMiddleware",
+    # ─────────────────────────────────────────────────────────────────────────
 ]
 
 ROOT_URLCONF = "Ecommerce.urls"
@@ -87,8 +89,6 @@ TEMPLATES = [
 WSGI_APPLICATION = "Ecommerce.wsgi.application"
 
 # Database
-# Local: SQLite
-# Azure: set DATABASE_URL in App Service app settings
 DATABASE_URL = env("DATABASE_URL", default="")
 
 if DATABASE_URL:
@@ -130,11 +130,11 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Security on Azure
+# Security for Azure / production
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=not DEBUG)
-SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=not DEBUG)
-CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=not DEBUG)
+SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
+SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=False)
+CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=False)
 USE_X_FORWARDED_HOST = True
 
 # Allauth
@@ -146,7 +146,7 @@ AUTHENTICATION_BACKENDS = [
 
 ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_VERIFICATION = "none"        # ← changed: no email gate needed
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
 ACCOUNT_EMAIL_SUBJECT_PREFIX = "[Adver Platform] "
@@ -163,17 +163,6 @@ EMAIL_HOST_USER = "apikey"
 EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="salmamacash@gmail.com")
 
-# CSRF
-CSRF_TRUSTED_ORIGINS = env.list(
-    "CSRF_TRUSTED_ORIGINS",
-    default=[
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-    ],
-)
-
-PASSWORD_RESET_TIMEOUT = 172800
-
 # Cloudinary
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": env("CLOUDINARY_CLOUD_NAME", default=""),
@@ -181,6 +170,8 @@ CLOUDINARY_STORAGE = {
     "API_SECRET": env("CLOUDINARY_API_SECRET", default=""),
 }
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
+PASSWORD_RESET_TIMEOUT = 172800
 
 # Logging
 LOGGING = {
@@ -200,4 +191,4 @@ LOGGING = {
             "propagate": False,
         },
     },
-} 
+}

@@ -30,8 +30,8 @@ class CustomUserManager(BaseUserManager):
 class User(AbstractUser):
     # Remove username and first/last name fields
     username = None
-    first_name = None  # Explicitly remove first_name
-    last_name = None   # Explicitly remove last_name
+    first_name = None
+    last_name = None
     
     full_name = models.CharField(
         _('full name'), 
@@ -62,8 +62,15 @@ class User(AbstractUser):
     )
     email_verified = models.BooleanField(_('email verified'), default=False)
 
+    # ── NEW FIELD ──────────────────────────────────────────────────────────────
+    # Tracks whether the user has completed Step 2 profile setup.
+    # False  → user can browse but cannot post ads.
+    # True   → full access granted.
+    profile_completed = models.BooleanField(_('profile completed'), default=False)
+    # ──────────────────────────────────────────────────────────────────────────
+
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS =  ['full_name']
+    REQUIRED_FIELDS = ['full_name']
 
     objects = CustomUserManager()
 
@@ -104,13 +111,7 @@ class User(AbstractUser):
     def can_rate_seller(self, rater):
         """Check if a user can rate this seller"""
         if self == rater:
-            return False  # Can't rate yourself
-        
-        # Optional: Check if user has previously interacted with this seller
-        # For example, check if they've messaged each other or completed a transaction
-        # This is a placeholder for future business logic
-        
-        # For now, we'll allow any user to rate any seller
+            return False
         return True
     
     def get_recent_ratings(self, limit=5):
@@ -146,12 +147,10 @@ class User(AbstractUser):
         total_ratings = self.get_rating_count()
         if total_ratings == 0:
             return 0
-        
         positive_ratings = SellerRating.objects.filter(
             seller=self, 
             rating__gte=threshold
         ).count()
-        
         return (positive_ratings / total_ratings) * 100
     
     def is_trusted_seller(self, min_ratings=5, min_rating=4.0):
@@ -177,6 +176,8 @@ class User(AbstractUser):
             return "Reliable Seller"
         else:
             return "Seller"
+
+
 class Category(models.Model):
     ICON_CHOICES = [
         ('building', 'Property'),
@@ -192,14 +193,12 @@ class Category(models.Model):
     
     name = models.CharField(max_length=100, unique=True)
     icon = models.CharField(max_length=20, choices=ICON_CHOICES, default='tag')
-    # Keep image field for backward compatibility if needed
 
     def __str__(self):
         return self.name
 
 
 class Ad(models.Model):
-    # ----- Status and Types -----
     STATUS_CHOICES = (
         ('pending', 'Pending'),
         ('approved', 'Approved'),
@@ -213,8 +212,6 @@ class Ad(models.Model):
         ('job', 'Job'),
         ('other', 'Other'),
     )
-
-    # ----- Property Choices -----
     FURNISHING_CHOICES = (
         ('fully_furnished', 'Fully Furnished'),
         ('semi_furnished', 'Semi Furnished'),
@@ -236,16 +233,12 @@ class Ad(models.Model):
         ('commercial', 'Commercial'),
         ('industrial', 'Industrial'),
     )
-
-    # ----- Vehicle Choices -----
     VEHICLE_TYPE_CHOICES = (
         ('car', 'Car'),
         ('motorcycle', 'Motorcycle'),
         ('bus', 'Bus'),
         ('truck', 'Truck'),
     )
-
-    # ----- Electronics Choices -----
     ELECTRONICS_TYPE_CHOICES = (
         ('phone', 'Mobile Phone'),
         ('laptop', 'Laptop'),
@@ -271,8 +264,6 @@ class Ad(models.Model):
         ('dual', 'Dual SIM'),
         ('e_sim', 'eSIM'),
     )
-
-    # ----- Job Choices -----
     JOB_TYPE_CHOICES = (
         ('full_time', 'Full Time'),
         ('part_time', 'Part Time'),
@@ -280,8 +271,6 @@ class Ad(models.Model):
         ('internship', 'Internship'),
         ('remote', 'Remote'),
     )
-
-    # ----- Service Choices -----
     SERVICE_TYPE_CHOICES = (
         ('cleaning', 'Cleaning'),
         ('moving', 'Moving & Storage'),
@@ -290,8 +279,6 @@ class Ad(models.Model):
         ('beauty', 'Beauty & Wellness'),
         ('tutoring', 'Tutoring & Lessons'),
     )
-
-    # ----- Fashion Choices -----
     FASHION_TYPE_CHOICES = (
         ('men', "Men's Fashion"),
         ('women', "Women's Fashion"),
@@ -301,139 +288,67 @@ class Ad(models.Model):
         ('bags', 'Bags & Accessories'),
     )
 
-    # ----- Core Ad Fields -----
     advertiser = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     location = models.CharField(max_length=255)
-    ad_type = models.CharField(
-        max_length=10,
-        choices=AD_TYPE_CHOICES,
-        default='sell'
-    )
+    ad_type = models.CharField(max_length=10, choices=AD_TYPE_CHOICES, default='sell')
     description = models.TextField(blank=True)
     views = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
-    
 
-    # ----- Common Item Fields -----
     model = models.CharField(max_length=100, blank=True, null=True)
     color = models.CharField(max_length=50, blank=True, null=True)
     year = models.PositiveIntegerField(blank=True, null=True)
 
-    # ----- Property-Specific -----
-    num_rooms = models.PositiveIntegerField(
-        blank=True, null=True,
-        help_text="Whole numbers only (e.g. 3)"
-    )
-    num_baths = models.PositiveIntegerField(
-        blank=True, null=True,
-        help_text="Whole numbers only (e.g. 2)"
-    )
-    area_size  = models.PositiveIntegerField(
-        blank=True, null=True,
-        help_text="Whole numbers only (e.g. 2)"
-    )
-    furnishing_type = models.CharField(
-        max_length=20, choices=FURNISHING_CHOICES,
-        blank=True, null=True
-    )
-    property_type = models.CharField(
-        max_length=20, choices=PROPERTY_TYPE_CHOICES,
-        blank=True, null=True
-    )
+    num_rooms = models.PositiveIntegerField(blank=True, null=True)
+    num_baths = models.PositiveIntegerField(blank=True, null=True)
+    area_size = models.PositiveIntegerField(blank=True, null=True)
+    furnishing_type = models.CharField(max_length=20, choices=FURNISHING_CHOICES, blank=True, null=True)
+    property_type = models.CharField(max_length=20, choices=PROPERTY_TYPE_CHOICES, blank=True, null=True)
     has_parking = models.BooleanField(default=False)
     has_pool = models.BooleanField(default=False)
     has_water = models.BooleanField(default=False)
     has_electricity = models.BooleanField(default=False)
-  
 
-    # ----- Land-Specific -----
-    land_type = models.CharField(
-        max_length=20, choices=LAND_TYPE_CHOICES,
-        blank=True, null=True
-    )
-    land_area = models.PositiveIntegerField(
-        blank=True, null=True,
-        help_text="Whole numbers only (e.g. 0.5)"
-    )
-    
-   
+    land_type = models.CharField(max_length=20, choices=LAND_TYPE_CHOICES, blank=True, null=True)
+    land_area = models.PositiveIntegerField(blank=True, null=True)
 
-    # ----- Vehicle-Specific -----
-    vehicle_type = models.CharField(
-        max_length=20, choices=VEHICLE_TYPE_CHOICES,
-        blank=True, null=True
-    )
+    vehicle_type = models.CharField(max_length=20, choices=VEHICLE_TYPE_CHOICES, blank=True, null=True)
     motortype = models.CharField(max_length=100, blank=True, null=True)
     geartype = models.CharField(max_length=100, blank=True, null=True)
     is_automatic = models.BooleanField(default=False)
 
-    
-
-    # ----- Electronics-Specific -----
-    electronics_type = models.CharField(
-        max_length=20, choices=ELECTRONICS_TYPE_CHOICES,
-        blank=True, null=True
-    )
-    operating_system = models.CharField(
-        max_length=20, choices=OS_CHOICES,
-        blank=True, null=True
-    )
+    electronics_type = models.CharField(max_length=20, choices=ELECTRONICS_TYPE_CHOICES, blank=True, null=True)
+    operating_system = models.CharField(max_length=20, choices=OS_CHOICES, blank=True, null=True)
     storage_capacity = models.CharField(max_length=20, blank=True, null=True)
-    screen_size = models.DecimalField(
-        max_digits=5, decimal_places=2,
-        blank=True, null=True,
-        help_text="Screen size in inches"
-    )
+    screen_size = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     ram = models.CharField(max_length=20, blank=True, null=True)
     processor = models.CharField(max_length=100, blank=True, null=True)
     camera_resolution = models.CharField(max_length=50, blank=True, null=True)
-    electronics_condition = models.CharField(
-        max_length=20, choices=CONDITION_CHOICES,
-        blank=True, null=True
-    )
+    electronics_condition = models.CharField(max_length=20, choices=CONDITION_CHOICES, blank=True, null=True)
     has_warranty = models.BooleanField(default=False)
     warranty_period = models.CharField(max_length=50, blank=True, null=True)
-    sim_type = models.CharField(
-        max_length=20, choices=SIM_TYPE_CHOICES,
-        blank=True, null=True
-    )
+    sim_type = models.CharField(max_length=20, choices=SIM_TYPE_CHOICES, blank=True, null=True)
 
-    # ----- Job-Specific -----
-    job_type = models.CharField(
-        max_length=20, choices=JOB_TYPE_CHOICES,
-        blank=True, null=True
-    )
+    job_type = models.CharField(max_length=20, choices=JOB_TYPE_CHOICES, blank=True, null=True)
     salary = models.CharField(max_length=100, blank=True, null=True)
     experience_required = models.CharField(max_length=100, blank=True, null=True)
     education_required = models.CharField(max_length=100, blank=True, null=True)
 
-    # ----- Service-Specific -----
-    service_type = models.CharField(
-        max_length=20, choices=SERVICE_TYPE_CHOICES,
-        blank=True, null=True
-    )
+    service_type = models.CharField(max_length=20, choices=SERVICE_TYPE_CHOICES, blank=True, null=True)
     service_area = models.CharField(max_length=255, blank=True, null=True)
     availability = models.CharField(max_length=100, blank=True, null=True)
 
-    # ----- Fashion-Specific -----
-    fashion_type = models.CharField(
-        max_length=20, choices=FASHION_TYPE_CHOICES,
-        blank=True, null=True
-    )
+    fashion_type = models.CharField(max_length=20, choices=FASHION_TYPE_CHOICES, blank=True, null=True)
     size = models.CharField(max_length=20, blank=True, null=True)
     material = models.CharField(max_length=100, blank=True, null=True)
 
-    # ----- Metadata -----
     is_approved = models.BooleanField(default=False)
     is_featured = models.BooleanField(default=False)
-    status = models.CharField(
-        max_length=10, choices=STATUS_CHOICES,
-        default='pending'
-    )
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
 
     def __str__(self):
         return f"{self.name} - {self.get_ad_type_display()} ({self.location})"
@@ -444,8 +359,8 @@ class Ad(models.Model):
 
     def is_currently_featured(self):
         return hasattr(self, 'featuredad') and self.featuredad.is_active()
+
     class Meta:
-        
         ordering = ['-created_at']
         indexes = [
             models.Index(fields=["is_featured"]),
@@ -475,6 +390,7 @@ class FeaturedAd(models.Model):
     def __str__(self):
         return f"{self.ad.name} featured until {self.featured_expiry_date}"
 
+
 class FeaturedAdHistory(models.Model):
     ad = models.ForeignKey(Ad, on_delete=models.CASCADE, related_name='featured_history')
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
@@ -485,6 +401,7 @@ class FeaturedAdHistory(models.Model):
     def __str__(self):
         return f"{self.ad.name} featured until {self.expires_at}"
 
+
 class PendingFeaturedAd(models.Model):
     ad = models.OneToOneField(Ad, on_delete=models.CASCADE, related_name='pending_featured')
     payment_screenshot = models.ImageField(upload_to='payment_screenshots/')
@@ -494,11 +411,14 @@ class PendingFeaturedAd(models.Model):
     def __str__(self):
         return f"Pending feature for {self.ad.name}"
 
+
 class AdImage(models.Model):
     ad = models.ForeignKey(Ad, on_delete=models.CASCADE, related_name='images')
     image = CloudinaryField('image', blank=True, null=True)
+
     def __str__(self):
         return f"Image for {self.ad.name}"
+
 
 class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -509,6 +429,7 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.user.email} on {self.ad.name}"
+
 
 class Notification(models.Model):
     NOTIFICATION_TYPES = (
@@ -549,7 +470,8 @@ class Notification(models.Model):
             'reply': 'indigo'
         }
         return colors.get(self.notification_type, 'gray')
-    
+
+
 class Favorite(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -569,7 +491,8 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f"{self.user.get_short_name()} → {self.ad.name}"
-        
+
+
 class SellerRating(models.Model):
     RATING_CHOICES = [
         (1, '1 Star - Poor'),
@@ -593,8 +516,6 @@ class SellerRating(models.Model):
     comment = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
-    # Optional: Reference to the ad that triggered the rating
     ad = models.ForeignKey(
         'Ad', 
         on_delete=models.SET_NULL, 
@@ -604,7 +525,7 @@ class SellerRating(models.Model):
     )
     
     class Meta:
-        unique_together = ['seller', 'rater']  # Prevent multiple ratings from same user
+        unique_together = ['seller', 'rater']
         ordering = ['-created_at']
         indexes = [
             models.Index(fields=['seller', 'created_at']),
@@ -615,17 +536,14 @@ class SellerRating(models.Model):
         return f"{self.rater.get_short_name()} rated {self.seller.get_short_name()} - {self.rating} stars"
     
     def save(self, *args, **kwargs):
-        """Override save to update seller stats"""
         super().save(*args, **kwargs)
-        # Update seller stats
         self.seller.get_seller_stats().update_stats()
     
     def delete(self, *args, **kwargs):
-        """Override delete to update seller stats"""
         seller = self.seller
         super().delete(*args, **kwargs)
-        # Update seller stats
         seller.get_seller_stats().update_stats()
+
 
 class SellerStats(models.Model):
     user = models.OneToOneField(
@@ -638,8 +556,6 @@ class SellerStats(models.Model):
     response_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     total_ads = models.PositiveIntegerField(default=0)
     last_updated = models.DateTimeField(auto_now=True)
-    
-    # Rating distribution (cached for performance)
     five_star_count = models.PositiveIntegerField(default=0)
     four_star_count = models.PositiveIntegerField(default=0)
     three_star_count = models.PositiveIntegerField(default=0)
@@ -656,19 +572,14 @@ class SellerStats(models.Model):
         return f"Stats for {self.user.get_short_name()}"
     
     def update_stats(self):
-        """Update all seller statistics"""
         from django.db.models import Avg, Count, Q
         
-        # Update rating stats
         ratings = SellerRating.objects.filter(seller=self.user)
         self.total_ratings = ratings.count()
         
         if self.total_ratings > 0:
-            # Calculate average rating
             avg_result = ratings.aggregate(avg=Avg('rating'))
             self.average_rating = avg_result['avg'] or 0.00
-            
-            # Update rating distribution
             self.five_star_count = ratings.filter(rating=5).count()
             self.four_star_count = ratings.filter(rating=4).count()
             self.three_star_count = ratings.filter(rating=3).count()
@@ -682,16 +593,12 @@ class SellerStats(models.Model):
             self.two_star_count = 0
             self.one_star_count = 0
         
-        # Update ad count (only approved ads)
         self.total_ads = Ad.objects.filter(
             advertiser=self.user, 
             status='approved'
         ).count()
         
-        # Update response rate (you can implement this based on your messaging system)
-        # For now, we'll set a placeholder or keep the existing value
         if not self.response_rate:
-            # Simple heuristic based on ratings and ad count
             if self.total_ads > 0 and self.total_ratings > 0:
                 self.response_rate = min(100, (self.total_ratings / self.total_ads) * 100)
             else:
@@ -700,14 +607,12 @@ class SellerStats(models.Model):
         self.save()
     
     def get_rating_percentage(self, star_rating):
-        """Get percentage of a specific star rating"""
         if self.total_ratings == 0:
             return 0
         count = getattr(self, f'{star_rating}_star_count')
         return (count / self.total_ratings) * 100
     
     def get_positive_rating_percentage(self):
-        """Get percentage of 4 and 5 star ratings"""
         if self.total_ratings == 0:
             return 0
         positive_count = self.four_star_count + self.five_star_count

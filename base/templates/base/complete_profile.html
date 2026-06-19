@@ -1,0 +1,437 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Complete Your Profile — Gobnimo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0f14;
+      --card:      #1a1e2b;
+      --border:    #252a3a;
+      --accent:    #6c63ff;
+      --accent-lt: #8b85ff;
+      --error:     #ef4444;
+      --success:   #22c55e;
+      --text:      #e8eaf0;
+      --muted:     #7b82a0;
+      --input-bg:  #111420;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(108,99,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(108,99,255,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 400px;
+      background: radial-gradient(ellipse, rgba(108,99,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 520px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .logo-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      border-radius: 14px;
+      margin-bottom: 0.75rem;
+    }
+    .logo-mark svg { width: 24px; height: 24px; fill: #fff; }
+    .logo-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .logo-name span { color: var(--accent); }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+    }
+
+    .card-header { margin-bottom: 2rem; }
+    .card-header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
+    }
+    .card-header p { color: var(--muted); font-size: 0.875rem; line-height: 1.5; }
+
+    /* step indicator */
+    .steps {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .step.done { color: var(--success); }
+    .step.active { color: var(--accent); }
+    .step-dot {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 600;
+    }
+    .step.done .step-dot { border-color: var(--success); background: var(--success); color: #fff; }
+    .step.active .step-dot { border-color: var(--accent); background: var(--accent); color: #fff; }
+    .step-line { flex: 1; height: 1px; background: var(--border); }
+
+    /* avatar upload */
+    .avatar-upload {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+      padding: 1.25rem;
+      background: var(--input-bg);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .avatar-upload:hover { border-color: var(--accent); }
+    .avatar-preview {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .avatar-preview svg { width: 28px; height: 28px; stroke: var(--muted); fill: none; stroke-width: 1.5; stroke-linecap: round; }
+    .avatar-preview img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .avatar-text strong { display: block; font-size: 0.875rem; margin-bottom: 0.2rem; }
+    .avatar-text span { font-size: 0.75rem; color: var(--muted); }
+    #id_avatar { display: none; }
+
+    /* fields */
+    .field { margin-bottom: 1.25rem; }
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .input-wrap { position: relative; }
+    .input-wrap svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px; height: 16px;
+      stroke: var(--muted); fill: none;
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+      pointer-events: none;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    textarea {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem 0.875rem 0.75rem 2.6rem;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    textarea {
+      padding: 0.75rem 0.875rem;
+      resize: vertical;
+      min-height: 90px;
+    }
+    input:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
+    }
+    input::placeholder, textarea::placeholder { color: var(--muted); }
+
+    .hint { font-size: 0.75rem; color: var(--muted); margin-top: 0.35rem; }
+
+    .field-errors { margin-top: 0.4rem; }
+    .field-error {
+      font-size: 0.75rem; color: var(--error);
+      display: flex; align-items: center; gap: 0.3rem;
+    }
+    .field-error::before {
+      content: '!';
+      display: inline-flex; width: 14px; height: 14px;
+      background: var(--error); color: #fff;
+      border-radius: 50%; font-size: 0.6rem; font-weight: 700;
+      align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    .alert {
+      border-radius: 10px; padding: 0.75rem 1rem;
+      font-size: 0.85rem; margin-bottom: 1.25rem;
+    }
+    .alert-error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #fca5a5; }
+    .alert-success { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); color: #86efac; }
+
+    /* browse access note */
+    .browse-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      padding: 0.875rem 1rem;
+      background: rgba(108,99,255,0.08);
+      border: 1px solid rgba(108,99,255,0.2);
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--accent-lt);
+      line-height: 1.5;
+    }
+    .browse-note svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; stroke: var(--accent-lt); fill: none; stroke-width: 2; }
+
+    .btn {
+      width: 100%;
+      padding: 0.875rem;
+      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-top: 0.5rem;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn:active { transform: scale(0.99); }
+
+    .skip-link {
+      display: block;
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .skip-link a { color: var(--muted); text-decoration: underline; }
+    .skip-link a:hover { color: var(--text); }
+
+    @media (max-width: 480px) {
+      .card { padding: 1.75rem 1.25rem; }
+      .field-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </div>
+    <div class="logo-name">Gobn<span>i</span>mo</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h1>Complete your profile</h1>
+      <p>Almost there, {{ request.user.get_short_name }}! Add a few more details so buyers and sellers can trust you.</p>
+    </div>
+
+    <!-- Step indicator -->
+    <div class="steps">
+      <div class="step done">
+        <div class="step-dot">✓</div>
+        <span>Account</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step active">
+        <div class="step-dot">2</div>
+        <span>Profile</span>
+      </div>
+    </div>
+
+    <!-- Info note -->
+    <div class="browse-note">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      You can browse the marketplace now. Complete your profile to start posting ads.
+    </div>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    {% if form.non_field_errors %}
+      {% for error in form.non_field_errors %}
+        <div class="alert alert-error">{{ error }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+
+      <!-- Avatar upload -->
+      <div class="field">
+        <label>Profile Photo</label>
+        <div class="avatar-upload" onclick="document.getElementById('id_avatar').click()">
+          <div class="avatar-preview" id="avatarPreview">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <img id="avatarImg" src="" alt="Preview">
+          </div>
+          <div class="avatar-text">
+            <strong>Upload a photo</strong>
+            <span>JPG, PNG or GIF — shown on your ads and profile</span>
+          </div>
+        </div>
+        <input type="file" name="{{ form.avatar.html_name }}" id="id_avatar" accept="image/*" onchange="previewAvatar(this)">
+        {% if form.avatar.errors %}
+          <div class="field-errors">
+            {% for e in form.avatar.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Phone + Location row -->
+      <div class="field-row">
+        <div class="field">
+          <label for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+          <div class="input-wrap">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 5.49 5.49l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16.92z"/></svg>
+            <input type="tel" name="{{ form.phone_number.html_name }}" id="{{ form.phone_number.id_for_label }}"
+              placeholder="+25212345678"
+              value="{{ form.phone_number.value|default:'' }}"
+              autocomplete="tel">
+          </div>
+          <div class="hint">International format e.g. +252...</div>
+          {% if form.phone_number.errors %}
+            <div class="field-errors">
+              {% for e in form.phone_number.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="field">
+          <label for="{{ form.location.id_for_label }}">Location</label>
+          <div class="input-wrap">
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <input type="text" name="{{ form.location.html_name }}" id="{{ form.location.id_for_label }}"
+              placeholder="City, Country"
+              value="{{ form.location.value|default:'' }}"
+              autocomplete="address-level2">
+          </div>
+          {% if form.location.errors %}
+            <div class="field-errors">
+              {% for e in form.location.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Bio -->
+      <div class="field">
+        <label for="{{ form.bio.id_for_label }}">About You</label>
+        <textarea name="{{ form.bio.html_name }}" id="{{ form.bio.id_for_label }}"
+          placeholder="Tell buyers and sellers a bit about yourself...">{{ form.bio.value|default:'' }}</textarea>
+        {% if form.bio.errors %}
+          <div class="field-errors">
+            {% for e in form.bio.errors %}<div class="field-error">{{ e }}</div>{% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <button type="submit" class="btn">Complete Profile →</button>
+    </form>
+
+    <div class="skip-link">
+      <a href="{% url 'index' %}">Skip for now — browse the marketplace</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function previewAvatar(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = document.getElementById('avatarImg');
+        img.src = e.target.result;
+        img.style.display = 'block';
+        document.querySelector('#avatarPreview svg').style.display = 'none';
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+</script>
+</body>
+</html>
