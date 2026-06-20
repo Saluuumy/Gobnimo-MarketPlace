@@ -30,6 +30,8 @@ jobs:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           DEBUG: 'False'
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          DEFAULT_FROM_EMAIL: ${{ secrets.DEFAULT_FROM_EMAIL }}
           CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
           CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
@@ -41,6 +43,8 @@ jobs:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           DEBUG: 'False'
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          DEFAULT_FROM_EMAIL: ${{ secrets.DEFAULT_FROM_EMAIL }}
           CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
           CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
@@ -50,29 +54,22 @@ jobs:
           python manage.py shell -c "
           from django.contrib.auth import get_user_model
           User = get_user_model()
-          if not User.objects.filter(username='admin').exists():
-              User.objects.create_superuser('admin', 'salmamacash@gmail.com', 'salma12345')
+          if not User.objects.filter(email='salmamacash@gmail.com').exists():
+              User.objects.create_superuser(
+                  email='salmamacash@gmail.com',
+                  password='salma12345',
+                  full_name='Admin'
+              )
+              print('Superuser created')
+          else:
+              print('Superuser already exists')
           "
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           DEBUG: 'False'
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
-          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
-          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
-
-      - name: Create superuser
-        run: |
-          python manage.py shell -c "
-          from django.contrib.auth import get_user_model
-          User = get_user_model()
-          if not User.objects.filter(username='admin').exists():
-              User.objects.create_superuser('admin', 'salmamacash@gmail.com', 'salma12345')
-          "
-        env:
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          DEBUG: 'False'
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          DEFAULT_FROM_EMAIL: ${{ secrets.DEFAULT_FROM_EMAIL }}
           CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
           CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
