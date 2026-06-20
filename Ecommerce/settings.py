@@ -4,22 +4,23 @@ import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Environment
+# =========================
+# ENVIRONMENT
+# =========================
 env = environ.Env(
     DEBUG=(bool, False),
 )
 environ.Env.read_env(str(BASE_DIR / ".env"))
 
-# Security
+# =========================
+# SECURITY
+# =========================
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env.bool("DEBUG", default=False)
 
 ALLOWED_HOSTS = env.list(
     "ALLOWED_HOSTS",
-    default=[
-        "localhost",
-        "127.0.0.1",
-    ],
+    default=["localhost", "127.0.0.1"],
 )
 
 CSRF_TRUSTED_ORIGINS = env.list(
@@ -30,7 +31,9 @@ CSRF_TRUSTED_ORIGINS = env.list(
     ],
 )
 
-# Applications
+# =========================
+# APPLICATIONS
+# =========================
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -39,18 +42,26 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
+
     "whitenoise.runserver_nostatic",
+
     "base.apps.BaseConfig",
+
+    # ALLAUTH
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+
+    # CLOUDINARY
     "cloudinary_storage",
     "cloudinary",
 ]
 
 AUTH_USER_MODEL = "base.User"
 
-# Middleware
+# =========================
+# MIDDLEWARE
+# =========================
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -60,14 +71,16 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+
+    # REQUIRED FOR ALLAUTH
     "allauth.account.middleware.AccountMiddleware",
-    # ── NEW — must be after AuthenticationMiddleware ──────────────────────────
-    "base.middleware.ProfileCompletionMiddleware",
-    # ─────────────────────────────────────────────────────────────────────────
 ]
 
 ROOT_URLCONF = "Ecommerce.urls"
 
+# =========================
+# TEMPLATES
+# =========================
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -88,15 +101,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "Ecommerce.wsgi.application"
 
-# Database
+# =========================
+# DATABASE
+# =========================
 DATABASE_URL = env("DATABASE_URL", default="")
 
 if DATABASE_URL:
     DATABASES = {
-        "default": dj_database_url.parse(
-            DATABASE_URL,
-            conn_max_age=600,
-        )
+        "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600)
     }
 else:
     DATABASES = {
@@ -106,7 +118,9 @@ else:
         }
     }
 
-# Password validation
+# =========================
+# PASSWORD VALIDATION
+# =========================
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -114,31 +128,42 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# Internationalization
+# =========================
+# INTERNATIONALIZATION
+# =========================
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-# Static files
+# =========================
+# STATIC FILES
+# =========================
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-WHITENOISE_AUTOREFRESH = DEBUG
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+# =========================
+# DEFAULT AUTO FIELD
+# =========================
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Security for Azure / production
+# =========================
+# SECURITY (AZURE)
+# =========================
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
 SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=False)
 CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=False)
 USE_X_FORWARDED_HOST = True
 
-# Allauth
+# =========================
+# SITE / ALLAUTH
+# =========================
 SITE_ID = 1
+
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
@@ -146,34 +171,52 @@ AUTHENTICATION_BACKENDS = [
 
 ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = "none"        # ← changed: no email gate needed
+
+# change to "mandatory" if you want forced verification
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
 ACCOUNT_EMAIL_SUBJECT_PREFIX = "[Adver Platform] "
+
 LOGIN_REDIRECT_URL = "/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 
-# Email — SendGrid
-SENDGRID_API_KEY = env("SENDGRID_API_KEY", default="")
+# =========================
+# EMAIL (SENDGRID FIXED)
+# =========================
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
 EMAIL_HOST = "smtp.sendgrid.net"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "apikey"
-EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="salmamacash@gmail.com")
 
-# Cloudinary
+EMAIL_HOST_USER = "apikey"
+EMAIL_HOST_PASSWORD = env("SENDGRID_API_KEY")
+
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="salmamacash@gmail.com")
+SENDGRID_API_KEY = env("SENDGRID_API_KEY", default="")
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+# =========================
+# CLOUDINARY
+# =========================
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": env("CLOUDINARY_CLOUD_NAME", default=""),
     "API_KEY": env("CLOUDINARY_API_KEY", default=""),
     "API_SECRET": env("CLOUDINARY_API_SECRET", default=""),
 }
+
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
+# =========================
+# PASSWORD RESET
+# =========================
 PASSWORD_RESET_TIMEOUT = 172800
 
-# Logging
+# =========================
+# LOGGING (EMAIL DEBUG)
+# =========================
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -181,14 +224,9 @@ LOGGING = {
         "console": {"class": "logging.StreamHandler"},
     },
     "loggers": {
-        "django": {
-            "handlers": ["console"],
-            "level": "INFO",
-        },
         "django.core.mail": {
             "handlers": ["console"],
             "level": "DEBUG",
-            "propagate": False,
         },
     },
 }
