@@ -1,6 +1,7 @@
 from pathlib import Path
 import environ
 import dj_database_url
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -52,7 +53,8 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
 
-    #
+    # STORAGE
+    "storages",
 ]
 
 AUTH_USER_MODEL = "base.User"
@@ -142,14 +144,16 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # =========================
+# AZURE BLOB STORAGE (MEDIA FILES)
 # =========================
+AZURE_ACCOUNT_NAME = env("AZURE_ACCOUNT_NAME")
+AZURE_ACCOUNT_KEY = env("AZURE_ACCOUNT_KEY")
+AZURE_CONTAINER = env("AZURE_CONTAINER", default="media")
 
-
-# =========================
-# AZURE (PREPARED BUT NOT ACTIVE)
-# =========================
 AZURE_STORAGE_CONNECTION_STRING = env("AZURE_STORAGE_CONNECTION_STRING", default="")
-AZURE_BLOB_CONTAINER = "media"
+
+# ✅ This is the correct storage backend
+DEFAULT_FILE_STORAGE = "storages.backends.azure_storage.AzureStorage"
 
 # =========================
 # DEFAULT AUTO FIELD
@@ -179,10 +183,6 @@ ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 
-ACCOUNT_CONFIRM_EMAIL_ON_GET = True
-ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
-ACCOUNT_EMAIL_SUBJECT_PREFIX = "[Adver Platform] "
-
 LOGIN_REDIRECT_URL = "/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 
@@ -205,28 +205,6 @@ SERVER_EMAIL = DEFAULT_FROM_EMAIL
 # PASSWORD RESET
 # =========================
 PASSWORD_RESET_TIMEOUT = 172800
-
-
-# =========================
-# AZURE BLOB STORAGE (MEDIA)
-# =========================
-
-AZURE_ACCOUNT_NAME = "salmadjangostorage"
-AZURE_CONTAINER = "media"
-
-AZURE_CONNECTION_STRING = env("AZURE_STORAGE_CONNECTION_STRING", default="")
-
-if AZURE_CONNECTION_STRING:
-    DEFAULT_FILE_STORAGE = "storages.backends.azure_storage.AzureStorage"
-
-    AZURE_STORAGE_OPTIONS = {
-        "connection_string": AZURE_CONNECTION_STRING,
-        "azure_container": AZURE_CONTAINER,
-    }
-else:
-    # fallback for local development
-    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-
 
 # =========================
 # LOGGING
