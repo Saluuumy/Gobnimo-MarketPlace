@@ -2,492 +2,697 @@
 {% load static %}
 
 {% block content %}
-<body class="antialiased overflow-x-hidden"> <!-- <- prevent page-level horizontal scroll -->
-    <!-- content -->
-  <main class="site-main relative ml-0 md:ml-[62px] min-w-0 flex-1 overflow-auto p-3 md:p-6 scrollbar-thin">
-<section class="mb-4 md:mb-6 mobile-negative-margin" style="margin-top: 42px">
-          <div class="flex items-center justify-between">
-          <h2 class="text-lg md:text-2xl font-semibold">Advanced Search</h2>
-      
-        </div>
+<style>
+  html, body { overflow-x: hidden; }
+  .site-main  { min-width: 0; }
 
-        <div class="mt-3 md:mt-4 flex flex-wrap gap-2 items-center">
-          <input id="filterInput" class="rounded-md bg-slate-800 px-2 py-2 w-48 md:w-64 placeholder:text-[color:var(--muted)] text-sm" placeholder="Type to filter" />
-          <div class="flex gap-2 flex-wrap">
-            <button id="sortButton" class="px-2 py-1 rounded-full bg-[color:var(--chip)] text-[color:var(--muted)] text-xs md:text-sm">Display name ▾</button>
-       </div>
-    <div class="ml-auto text-xs md:text-sm text-[color:var(--muted)] flex items-center gap-3">
-    <span>Showing <strong id="assetCount">{{ featured_products|length }}</strong> assets</span>   
+  :root {
+    --card-bg:     #131b2e;
+    --card-border: rgba(255,255,255,0.07);
+    --accent:      #3b82f6;
+    --text:        #e2e8f0;
+    --muted:       #64748b;
+    --tag-bg:      rgba(59,130,246,0.12);
+    --tag-text:    #93c5fd;
+  }
 
-        </div>
-        </div>
-      </section>
+  /* ── HERO ───────────────────────────────────────────── */
+  .hero {
+    background: linear-gradient(135deg, #0f1623 0%, #111827 60%, #0c1a2e 100%);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 3rem 1.5rem 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(59,130,246,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(59,130,246,0.1);
+    border: 1px solid rgba(59,130,246,0.25);
+    border-radius: 99px;
+    padding: 0.25rem 0.875rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #93c5fd;
+    margin-bottom: 1.25rem;
+  }
+  .hero-eyebrow span { width: 6px; height: 6px; background: #3b82f6; border-radius: 50%; display: inline-block; }
+  .hero h1 {
+    font-size: clamp(1.6rem, 5vw, 2.75rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    color: #f1f5f9;
+    margin-bottom: 0.75rem;
+  }
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(90deg, #3b82f6, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    color: var(--muted);
+    font-size: 0.95rem;
+    max-width: 400px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+  }
 
-      <!-- Categories and Products Grid -->
-      <section class="categories-section py-6 px-4 relative z-0">
-        <div class="container mx-auto max-w-6xl">
-          {% for category in categories %}
-            {% if category.approved_ads %}
-            <div class="mb-10 category-section" data-category-name="{{ category.name|lower }}">
-              <div class="flex justify-between items-center mb-5">
-                <h3 class="text-xl font-bold text-white category-header pl-3">{{ category.name }}</h3>
-              </div>
+  /* ── HERO SEARCH BOX ────────────────────────────────── */
+  .hero-search-box {
+    max-width: 680px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 1rem;
+    backdrop-filter: blur(10px);
+  }
+  .hero-search-fields {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
 
-              <!-- Horizontal scroll container -->
-              <div class="relative">
-                <div class="category-scroll-container overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800" data-category-id="{{ category.id }}">
-                  <div class="flex space-x-5 min-w-max px-2">
-                    {% for product in category.approved_ads %}
-                    <article class="asset-card bg-slate-800 rounded-lg shadow-md overflow-hidden border border-slate-700 flex-shrink-0 w-64" data-name="{{ product.name|lower }}" data-category="{{ product.category.name|default:''|lower }}" data-location="{{ product.location|default:''|lower }}">
-                      <a href="{% url 'product_detail' product.id %}">
-                        <div class="product-image-container relative h-40">
-                          {% if product.images.first %}
-                          <img src="{{ product.images.first.image.url }}" alt="{{ product.name }} - {{ product.location }} - ${{ product.price }}" class="product-image w-full h-full object-cover" loading="lazy" draggable="false">
-                          {% else %}
-                          <div class="product-placeholder w-full h-full bg-slate-700 flex items-center justify-center">
-                            <i class="fas fa-image text-4xl text-slate-500"></i>
-                          </div>
-                          {% endif %}
+  /* category dropdown */
+  .hero-cat-wrap {
+    position: relative;
+    flex: 0 0 180px;
+  }
+  .hero-cat-btn {
+    width: 100%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 0.65rem 0.875rem;
+    color: #e2e8f0;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color 0.2s;
+  }
+  .hero-cat-btn:hover { border-color: rgba(59,130,246,0.5); }
+  .hero-cat-btn svg { flex-shrink: 0; width: 14px; height: 14px; stroke: #64748b; fill: none; transition: transform 0.2s; }
+  .hero-cat-btn.open svg { transform: rotate(180deg); }
 
-                          {% if product.is_featured %}
-                          <span class="absolute top-2 left-2 bg-pink-500 text-white text-xs font-bold px-2 py-1 rounded">Featured</span>
-                          {% endif %}
+  .hero-cat-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 220px;
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+    z-index: 100;
+    max-height: 260px;
+    overflow-y: auto;
+    padding: 0.5rem;
+    scrollbar-width: thin;
+  }
+  .hero-cat-menu.open { display: block; }
+  .hero-cat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    color: #cbd5e1;
+    font-size: 0.83rem;
+    cursor: pointer;
+    transition: background 0.15s;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+  }
+  .hero-cat-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+  .hero-cat-item svg { flex-shrink: 0; }
 
-                          <span class="absolute top-2 right-2 bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded">${{ product.price }}</span>
-                        </div>
-                      </a>
-                      
-                      <div class="p-4">
-                        <div class="flex items-start justify-between gap-3">
-                          <div class="w-full">
-                            <h3 class="font-semibold text-white mb-1 product-name">{{ product.name }}</h3>
-                            <div class="text-xs text-slate-400 mb-2">
-                              <i class="fas fa-map-marker-alt mr-1"></i>{{ product.location|default:"No location" }}
-                            </div>
-                            <div class="text-xs text-slate-400 mb-3">
-                              <i class="far fa-clock mr-1"></i>{{ product.created_at|timesince }} ago
-                            </div>
-                            <div class="mt-2 flex items-center justify-between">
-                              <span class="text-xs bg-slate-700 px-2 py-1 rounded text-slate-300 product-category">{{ product.category.name }}</span>
-                              <a href="{% url 'product_detail' product.id %}" class="px-3 py-2 rounded-md bg-sky-500 text-white text-xs font-medium hover:bg-sky-600 transition">View Details</a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </article>
-                    {% empty %}
-                    <div class="flex-shrink-0 w-full text-center py-8">
-                      <p class="text-slate-400 text-sm italic">No approved ads in this category.</p>
-                    </div>
-                    {% endfor %}
-                  </div>
-                </div>
-                
-                <!-- Scroll indicators (hidden on mobile) -->
-                <div class="hidden md:flex absolute top-0 bottom-0 left-0 w-8 items-center justify-center bg-gradient-to-r from-slate-900 to-transparent pointer-events-none">
-                  <span class="text-slate-400 text-xl">‹</span>
-                </div>
-                <div class="hidden md:flex absolute top-0 bottom-0 right-0 w-8 items-center justify-center bg-gradient-to-l from-slate-900 to-transparent pointer-events-none">
-                  <span class="text-slate-400 text-xl">›</span>
-                </div>
-              </div>
+  /* keyword + location inputs */
+  .hero-input {
+    flex: 1;
+    min-width: 120px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 0.65rem 0.875rem;
+    color: #e2e8f0;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .hero-input:focus { border-color: rgba(59,130,246,0.6); }
+  .hero-input::placeholder { color: #475569; }
+
+  /* search button */
+  .hero-search-btn {
+    background: linear-gradient(135deg, #3b82f6, #6366f1);
+    border: none;
+    border-radius: 10px;
+    padding: 0.65rem 1.25rem;
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+    transition: opacity 0.2s, transform 0.1s;
+    flex-shrink: 0;
+  }
+  .hero-search-btn:hover { opacity: 0.9; }
+  .hero-search-btn:active { transform: scale(0.98); }
+  .hero-search-btn svg { width: 15px; height: 15px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; }
+
+  /* hero stats */
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    margin-top: 1.75rem;
+    flex-wrap: wrap;
+  }
+  .hero-stat-num { font-size: 1.3rem; font-weight: 800; color: #f1f5f9; letter-spacing: -0.02em; }
+  .hero-stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+  /* ── CATEGORY PILLS ──────────────────────────────────── */
+  .cat-pills {
+    display: flex;
+    gap: 0.4rem;
+    overflow-x: auto;
+    padding: 0.875rem 1.25rem;
+    scrollbar-width: none;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .cat-pills::-webkit-scrollbar { display: none; }
+  .pill {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    white-space: nowrap;
+    padding: 0.35rem 0.8rem;
+    border-radius: 99px;
+    border: 1px solid rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.03);
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+  .pill:hover, .pill.active {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: #fff;
+  }
+
+  /* ── FILTER BAR ──────────────────────────────────────── */
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    flex-wrap: wrap;
+  }
+  .filter-bar input {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 0.4rem 0.875rem;
+    color: var(--text);
+    font-size: 0.82rem;
+    outline: none;
+    width: 200px;
+    transition: border-color 0.2s;
+  }
+  .filter-bar input:focus { border-color: #3b82f6; }
+  .filter-bar input::placeholder { color: var(--muted); }
+  .filter-count { margin-left: auto; font-size: 0.75rem; color: var(--muted); }
+  .filter-count strong { color: var(--text); }
+
+  /* ── SECTION HEAD ────────────────────────────────────── */
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .section-title::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 15px;
+    background: #3b82f6;
+    border-radius: 2px;
+  }
+  .see-all {
+    font-size: 0.73rem;
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .see-all:hover { text-decoration: underline; }
+
+  /* ── CARDS ───────────────────────────────────────────── */
+  .scroll-row {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(100,116,139,0.4) transparent;
+    cursor: grab;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    user-select: none;
+  }
+  .scroll-row:active { cursor: grabbing; }
+  .scroll-row::-webkit-scrollbar { height: 3px; }
+  .scroll-row::-webkit-scrollbar-thumb { background: rgba(100,116,139,0.4); border-radius: 2px; }
+  .scroll-row.dragging { scroll-behavior: auto; cursor: grabbing; }
+  .scroll-row.dragging * { pointer-events: none; }
+  .cards-flex { display: flex; gap: 0.875rem; padding: 0.25rem 0.125rem; width: max-content; }
+
+  .asset-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    overflow: hidden;
+    flex-shrink: 0;
+    width: 215px;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  }
+  .asset-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(59,130,246,0.2);
+    border-color: rgba(59,130,246,0.3);
+  }
+  .card-img {
+    position: relative;
+    height: 144px;
+    background: #1e293b;
+    overflow: hidden;
+  }
+  .card-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  .asset-card:hover .card-img img { transform: scale(1.04); }
+  .badge-featured {
+    position: absolute; top: 7px; left: 7px;
+    background: linear-gradient(90deg, #f59e0b, #ef4444);
+    color: #fff; font-size: 0.62rem; font-weight: 700;
+    padding: 2px 7px; border-radius: 99px;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .badge-price {
+    position: absolute; bottom: 7px; right: 7px;
+    background: rgba(0,0,0,0.72); backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #fff; font-size: 0.78rem; font-weight: 700;
+    padding: 2px 8px; border-radius: 7px;
+  }
+  .placeholder-img {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    background: #1e293b;
+  }
+  .placeholder-img i { font-size: 2rem; color: #334155; }
+  .card-body { padding: 0.8rem; }
+  .card-name {
+    font-size: 0.85rem; font-weight: 600; color: #e2e8f0;
+    margin-bottom: 0.3rem;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .card-meta { display: flex; flex-direction: column; gap: 0.18rem; margin-bottom: 0.7rem; }
+  .card-meta span {
+    font-size: 0.68rem; color: var(--muted);
+    display: flex; align-items: center; gap: 0.3rem;
+  }
+  .card-meta i { font-size: 0.62rem; width: 10px; }
+  .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.4rem; }
+  .card-tag {
+    font-size: 0.62rem; font-weight: 600;
+    padding: 2px 8px; border-radius: 99px;
+    background: var(--tag-bg); color: var(--tag-text);
+  }
+  .card-btn {
+    font-size: 0.68rem; font-weight: 600;
+    padding: 0.3rem 0.7rem; border-radius: 7px;
+    background: #3b82f6; color: #fff;
+    text-decoration: none; transition: background 0.15s;
+  }
+  .card-btn:hover { background: #2563eb; }
+
+  .cat-section { margin-bottom: 2.25rem; }
+  .empty-row {
+    padding: 2rem; text-align: center;
+    color: var(--muted); font-size: 0.85rem;
+    border: 1px dashed rgba(255,255,255,0.06); border-radius: 12px;
+  }
+
+  @media (max-width: 768px) {
+    .hero { padding: 2rem 1rem 1.75rem; }
+    .hero-search-fields { flex-direction: column; }
+    .hero-cat-wrap { flex: 1 1 100%; }
+    .hero-input { width: 100%; }
+    .hero-search-btn { width: 100%; justify-content: center; }
+    .asset-card { width: 180px; }
+    .card-img { height: 128px; }
+  }
+</style>
+
+<main class="site-main relative ml-0 md:ml-[62px] min-w-0 flex-1 overflow-auto">
+
+  <!-- ── HERO ──────────────────────────────────────────── -->
+  <div class="hero">
+    <div class="hero-eyebrow"><span></span> Gobonimo Marketplace</div>
+    <h1>Buy, sell &amp; discover<br><em>everything local</em></h1>
+    <p class="hero-sub">From property and vehicles to electronics and fashion — find the best deals in your city.</p>
+
+    <!-- ── 3-FIELD SEARCH (from your navbar) ──────────── -->
+    <div class="hero-search-box">
+      <form method="GET" action="{% url 'search_ads' %}">
+        <div class="hero-search-fields">
+
+          <!-- Category dropdown -->
+          <div class="hero-cat-wrap">
+            <button type="button" class="hero-cat-btn" id="heroCatBtn">
+              <span id="heroCatLabel">Select category</span>
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="hero-cat-menu" id="heroCatMenu">
+              {% for category in categories %}
+              <button type="button" class="hero-cat-item" data-value="{{ category.id }}" data-label="{{ category.name }}">
+                {% if category.icon == 'building' %}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="6.5" width="18" height="11" rx="1.2" stroke="#4ea2ff" stroke-width="1.4"/><path d="M9 10h1m-1 3h1m3-3h1m-1 3h1m3-3h1m-1 3h1" stroke="#4ea2ff" stroke-width="1.4" stroke-linecap="round"/></svg>
+                {% elif category.icon == 'land' %}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 10l9-9 9 9M6 10v9a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-9" stroke="#22c55e" stroke-width="1.4"/><rect x="8" y="12" width="2" height="2" rx="0.5" fill="#22c55e"/><rect x="12" y="12" width="2" height="2" rx="0.5" fill="#22c55e"/><rect x="16" y="12" width="2" height="2" rx="0.5" fill="#22c55e"/></svg>
+                {% elif category.icon == 'electronics' %}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="#a855f7" stroke-width="1.4"/><circle cx="12" cy="10" r="1" fill="#a855f7"/><rect x="8" y="13" width="8" height="2" rx="1" fill="#a855f7"/></svg>
+                {% elif category.icon == 'fashion' %}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 12h4.5a3.5 3.5 0 1 1 0 7H12V12z" stroke="#ec4899" stroke-width="1.4"/><path d="M12 12H7.5a3.5 3.5 0 1 0 0 7H12V12z" stroke="#ec4899" stroke-width="1.4"/><circle cx="12" cy="9" r="1.5" fill="#ec4899"/></svg>
+                {% elif category.icon == 'car' %}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l1.5-4.5A2 2 0 0 1 8.5 7h7a2 2 0 0 1 2 1.5L19 13M5 13h14M5 13v5a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-1m8 1v1a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-1m0 0H9" stroke="#f97316" stroke-width="1.4"/><circle cx="8" cy="17" r="1" fill="#f97316"/><circle cx="16" cy="17" r="1" fill="#f97316"/></svg>
+                {% elif category.icon == 'wrench' %}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" stroke="#eab308" stroke-width="1.4"/></svg>
+                {% elif category.icon == 'briefcase' %}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="20" height="14" rx="2" stroke="#6366f1" stroke-width="1.4"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" stroke="#6366f1" stroke-width="1.4"/></svg>
+                {% elif category.icon == 'scissors' %}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="6" r="3" stroke="#ef4444" stroke-width="1.4"/><circle cx="6" cy="18" r="3" stroke="#ef4444" stroke-width="1.4"/><path d="M20 4L8.12 15.88M14.47 14.48L20 20M8.12 8.12L12 12" stroke="#ef4444" stroke-width="1.4"/></svg>
+                {% elif category.icon == 'paint-brush' %}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 7v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#14b8a6" stroke-width="1.4"/></svg>
+                {% else %}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#9ca3af" stroke-width="1.4"/></svg>
+                {% endif %}
+                {{ category.name }}
+              </button>
+              {% endfor %}
             </div>
-            {% endif %}
-          {% endfor %}
+            <input type="hidden" name="category" id="heroCatValue">
+          </div>
+
+          <!-- Keyword -->
+          <input class="hero-input" type="search" name="q"
+            placeholder="Keyword — car, apartment, phone…"
+            value="{{ request.GET.q|default:'' }}" autocomplete="off">
+
+          <!-- Location -->
+          <input class="hero-input" type="text" name="location"
+            placeholder="Location — city or area"
+            value="{{ request.GET.location|default:'' }}" style="flex: 0 0 150px;">
+
+          <!-- Submit -->
+          <button type="submit" class="hero-search-btn">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="5"/><path d="M21 21l-4.35-4.35" stroke-linecap="round"/></svg>
+            Search
+          </button>
         </div>
-      </section>
-    </main>
-  </div>
+      </form>
+    </div>
+    <!-- ─────────────────────────────────────────────────── -->
 
-  <!-- mobile slide-over -->
-  <div id="mobileSidebar" class="fixed inset-0 z-50 hidden md:hidden">
-    <div id="mobileOverlay" class="absolute inset-0 bg-black/50"></div>
-    <aside class="absolute left-0 top-0 bottom-0 w-64 bg-[color:var(--sidebar-bg)] p-4">
-      <div class="flex items-center gap-3 mb-4">
-        {% if user.is_authenticated %}
-          <div class="rounded-full bg-slate-700 w-10 h-10 flex items-center justify-center">
-            {{ user.full_name|first|default:user.username|first|upper }}
-          </div>
-          <div>
-            <div class="text-sm font-semibold">{{ user.full_name|default:user.username }}</div>
-            <div class="text-xs text-[color:var(--muted)]">Welcome!</div>
-          </div>
-        {% else %}
-          <div class="rounded-full bg-slate-700 w-10 h-10 flex items-center justify-center">DH</div>
-          <div>
-            <div class="text-sm font-semibold">Guest</div>
-            <div class="text-xs text-[color:var(--muted)]">Please log in</div>
-          </div>
-        {% endif %}
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num">{{ categories|length }}+</div>
+        <div class="hero-stat-label">Categories</div>
       </div>
-      
-    
-    
-      
-      <nav class="space-y-2">
-        <a href="{% url 'about_us' %}" class="block px-3 py-2 rounded text-[color:var(--muted)] hover:bg-white/3">About Us</a>
-        {% if user.is_authenticated %}
-          <a href="{% url 'dashboard' %}" class="block px-3 py-2 rounded text-[color:var(--muted)] hover:bg-white/3">Profile</a>
-          <a href="{% url 'notification_center' %}" class="block px-3 py-2 rounded text-[color:var(--muted)] hover:bg-white/3">Notifications
-            {% if unread_count > 0 %}
-              <span class="ml-2 inline-flex items-center justify-center h-4 w-4 rounded-full bg-red-500 text-[9px] text-white">
-                {{ unread_count }}
-              </span>
-            {% endif %}
-          </a>
-          <a href="{% url 'my_favorites' %}" class="block px-3 py-2 rounded text-[color:var(--muted)] hover:bg-white/3">Favorites
-            {% if favorites_count > 0 %}
-              <span class="ml-2 inline-flex items-center justify-center h-4 w-4 rounded-full bg-red-500 text-[9px] text-white">
-                {{ favorites_count }}
-              </span>
-            {% endif %}
-          </a>
-          <form method="post" action="{% url 'logout' %}" class="block">{% csrf_token %}
-            <button type="submit" class="w-full text-left px-3 py-2 rounded text-[color:var(--muted)] hover:bg-white/3">Logout</button>
-          </form>
-        {% else %}
-          <a href="{% url 'login' %}" class="block px-3 py-2 rounded text-[color:var(--muted)] hover:bg-white/3">Login</a>
-        {% endif %}
-      </nav>
-    </aside>
+      <div class="hero-stat">
+        <div class="hero-stat-num">{{ featured_products|length }}+</div>
+        <div class="hero-stat-label">Featured Ads</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">100%</div>
+        <div class="hero-stat-label">Free to Browse</div>
+      </div>
+    </div>
   </div>
 
-  <style>
-    /* Prevent overflow on root - kept safe for desktop and mobile */
-    html, body { overflow-x: hidden; }
+  <!-- ── CATEGORY PILLS ────────────────────────────────── -->
+  <div class="cat-pills">
+    <a href="{% url 'index' %}" class="pill active">All</a>
+    {% for category in categories %}
+    <a href="{% url 'category_detail' category.id %}" class="pill">{{ category.name }}</a>
+    {% endfor %}
+  </div>
 
-    /* Ensure main can shrink inside flex layout (prevents flex overflow) */
-    .site-main { min-width: 0; }
+  <!-- ── FILTER BAR ─────────────────────────────────────── -->
+  <div class="filter-bar">
+    <input id="filterInput" placeholder="Filter listings…" autocomplete="off">
+    <div class="filter-count">Showing <strong id="assetCount">0</strong> listings</div>
+  </div>
 
-    .category-scroll-container {
-      scroll-behavior: smooth;
-      -webkit-overflow-scrolling: touch;
-      cursor: grab;
-      position: relative;
-      z-index: 1;
-      min-height: 300px;
-      touch-action: pan-y;
-      -webkit-user-select: none;
-      user-select: none;
-    }
-    
-    .category-scroll-container:active {
-      cursor: grabbing;
-    }
-    
-    .category-scroll-container .flex {
-      position: relative;
-      z-index: 2;
-    }
-    
-    .category-scroll-container::-webkit-scrollbar {
-      height: 6px;
-    }
-    
-    .category-scroll-container::-webkit-scrollbar-track {
-      background: rgba(30, 41, 59, 0.5);
-      border-radius: 3px;
-    }
-    
-    .category-scroll-container::-webkit-scrollbar-thumb {
-      background: rgba(100, 116, 139, 0.7);
-      border-radius: 3px;
-    }
-    
-    .category-scroll-container::-webkit-scrollbar-thumb:hover {
-      background: rgba(148, 163, 184, 0.9);
-    }
-    
-    .category-scroll-container {
-      scrollbar-width: thin;
-      scrollbar-color: rgba(100, 116, 139, 0.7) rgba(30, 41, 59, 0.5);
-    }
-    
-    .category-scroll-container.dragging {
-      scroll-behavior: auto;
-      user-select: none;
-      cursor: grabbing;
-    }
-    
-    .category-scroll-container.dragging * {
-      pointer-events: none;
-    }
-    
-    .category-scroll-container.dragging a {
-      pointer-events: none;
-    }
+  <!-- ── LISTINGS ───────────────────────────────────────── -->
+  <div class="px-4 md:px-6 py-5">
+    {% for category in categories %}
+      {% if category.approved_ads %}
+      <div class="cat-section" data-category-name="{{ category.name|lower }}">
 
-    .category-scroll-container img {
-      -webkit-user-drag: none;
-      -user-drag: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-  </style>
+        <div class="section-head">
+          <span class="section-title">{{ category.name }}</span>
+          <a href="{% url 'category_detail' category.id %}" class="see-all">View all →</a>
+        </div>
+
+        <div class="scroll-row">
+          <div class="cards-flex">
+            {% for product in category.approved_ads %}
+            <article class="asset-card"
+              data-name="{{ product.name|lower }}"
+              data-category="{{ product.category.name|default:''|lower }}"
+              data-location="{{ product.location|default:''|lower }}">
+
+              <a href="{% url 'product_detail' product.id %}">
+                <div class="card-img">
+                  {% if product.images.first %}
+                    <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" loading="lazy" draggable="false">
+                  {% else %}
+                    <div class="placeholder-img"><i class="fas fa-image"></i></div>
+                  {% endif %}
+                  {% if product.is_featured %}<span class="badge-featured">⭐ Featured</span>{% endif %}
+                  <span class="badge-price">${{ product.price }}</span>
+                </div>
+              </a>
+
+              <div class="card-body">
+                <div class="card-name" title="{{ product.name }}">{{ product.name }}</div>
+                <div class="card-meta">
+                  <span><i class="fas fa-map-marker-alt"></i>{{ product.location|default:"No location" }}</span>
+                  <span><i class="far fa-clock"></i>{{ product.created_at|timesince }} ago</span>
+                </div>
+                <div class="card-foot">
+                  <span class="card-tag">{{ product.category.name }}</span>
+                  <a href="{% url 'product_detail' product.id %}" class="card-btn">View →</a>
+                </div>
+              </div>
+            </article>
+            {% endfor %}
+          </div>
+        </div>
+
+      </div>
+      {% endif %}
+    {% empty %}
+      <div class="empty-row">
+        No listings yet. <a href="{% url 'menu' %}" style="color:#3b82f6">Post the first ad →</a>
+      </div>
+    {% endfor %}
+  </div>
+
+</main>
 
 <script>
-    // Simple and effective filter function
-    function filterProducts(keyword) {
-      const searchTerm = keyword.toLowerCase().trim();
-      let visibleCount = 0;
-      
-      // Loop through all product cards
-      document.querySelectorAll('.asset-card').forEach(card => {
-        const productName = card.querySelector('.product-name').textContent.toLowerCase();
-        const productCategory = card.querySelector('.product-category').textContent.toLowerCase();
-        const productLocation = card.getAttribute('data-location');
-        
-        const matches = productName.includes(searchTerm) || 
-                       productCategory.includes(searchTerm) || 
-                       productLocation.includes(searchTerm);
-        
-        if (searchTerm === '' || matches) {
-          card.style.display = 'block';
-          visibleCount++;
-        } else {
-          card.style.display = 'none';
-        }
-      });
-      
-      // Update the asset count
-      document.getElementById('assetCount').textContent = visibleCount;
-      
-      // Hide empty category sections
-      document.querySelectorAll('.category-section').forEach(section => {
-        const hasVisibleProducts = section.querySelector('.asset-card[style="display: block"]') || 
-                                  section.querySelector('.asset-card:not([style*="display: none"])');
-        
-        if (!hasVisibleProducts && searchTerm !== '') {
-          section.style.display = 'none';
-        } else {
-          section.style.display = 'block';
-        }
-      });
+(function () {
+
+  /* ── hero category dropdown ───────────────────────────── */
+  const btn   = document.getElementById('heroCatBtn');
+  const menu  = document.getElementById('heroCatMenu');
+  const label = document.getElementById('heroCatLabel');
+  const val   = document.getElementById('heroCatValue');
+
+  btn.addEventListener('click', () => {
+    menu.classList.toggle('open');
+    btn.classList.toggle('open');
+  });
+
+  menu.querySelectorAll('.hero-cat-item').forEach(item => {
+    item.addEventListener('click', () => {
+      label.textContent = item.dataset.label;
+      val.value = item.dataset.value;
+      menu.classList.remove('open');
+      btn.classList.remove('open');
+    });
+  });
+
+  document.addEventListener('click', e => {
+    if (!btn.contains(e.target) && !menu.contains(e.target)) {
+      menu.classList.remove('open');
+      btn.classList.remove('open');
     }
+  });
 
-    // Initialize filter functionality
-    document.addEventListener('DOMContentLoaded', function() {
-      const filterInput = document.getElementById('filterInput');
-      const sortButton = document.getElementById('sortButton');
-      const refreshButton = document.getElementById('refresh');
-      
-      // Filter on input
-      if (filterInput) {
-        filterInput.addEventListener('input', function(e) {
-          filterProducts(e.target.value);
-        });
-      }
-      
-      // Sort functionality
-      if (sortButton) {
-        let sortAscending = false;
-        
-        sortButton.addEventListener('click', function() {
-          sortAscending = !sortAscending;
-          sortButton.textContent = `Display name ${sortAscending ? '▴' : '▾'}`;
-          
-          document.querySelectorAll('.category-scroll-container').forEach(container => {
-            const flexContainer = container.querySelector('.flex');
-            const cards = Array.from(flexContainer.querySelectorAll('.asset-card'));
-            
-            cards.sort((a, b) => {
-              const nameA = a.querySelector('.product-name').textContent.toLowerCase();
-              const nameB = b.querySelector('.product-name').textContent.toLowerCase();
-              
-              if (sortAscending) {
-                return nameA.localeCompare(nameB);
-              } else {
-                return nameB.localeCompare(nameA);
-              }
-            });
-            
-            // Reappend sorted cards
-            cards.forEach(card => flexContainer.appendChild(card));
-          });
-        });
-      }
-      
-      // Refresh button effect
-      if (refreshButton) {
-        refreshButton.addEventListener('click', function() {
-          this.classList.add('opacity-50');
-          setTimeout(() => {
-            this.classList.remove('opacity-50');
-            // Optional: Add actual refresh logic here
-            // window.location.reload();
-          }, 400);
-        });
-      }
-      
-      // Mobile sidebar functionality
-      const mobileToggle = document.getElementById('mobileToggle');
-      const mobileSidebar = document.getElementById('mobileSidebar');
-      const mobileOverlay = document.getElementById('mobileOverlay');
-      
-      if (mobileToggle && mobileSidebar) {
-        mobileToggle.addEventListener('click', function() {
-          mobileSidebar.classList.toggle('hidden');
-        });
-        
-        if (mobileOverlay) {
-          mobileOverlay.addEventListener('click', function() {
-            mobileSidebar.classList.add('hidden');
-          });
-        }
-      }
-      
-      // Improved Horizontal scroll with drag functionality
-      function initializeHorizontalScroll() {
-        const containers = document.querySelectorAll('.category-scroll-container');
-        
-        containers.forEach(container => {
-          let isDown = false;
-          let isDragging = false;
-          let startX;
-          let scrollLeft;
-          let clickStartX;
-          let clickStartY;
-          let clickStartTime;
-          
-          container.addEventListener('mousedown', (e) => {
-            // Store initial click position and time
-            clickStartX = e.pageX;
-            clickStartY = e.pageY;
-            clickStartTime = Date.now();
-            
-            isDown = true;
-            startX = e.pageX - container.offsetLeft;
-            scrollLeft = container.scrollLeft;
-          });
-          
-          container.addEventListener('mousemove', (e) => {
-            if (!isDown) return;
-            
-            const x = e.pageX - container.offsetLeft;
-            const walk = (x - startX) * 2;
-            
-            // Check if this is actually a drag (movement threshold)
-            const moveX = Math.abs(e.pageX - clickStartX);
-            const moveY = Math.abs(e.pageY - clickStartY);
-            
-            if (moveX > 5 || moveY > 5) {
-              isDragging = true;
-              container.classList.add('dragging');
-              e.preventDefault();
-              container.scrollLeft = scrollLeft - walk;
-            }
-          });
-          
-          container.addEventListener('mouseup', (e) => {
-            if (!isDown) return;
-            
-            const clickDuration = Date.now() - clickStartTime;
-            const moveX = Math.abs(e.pageX - clickStartX);
-            const moveY = Math.abs(e.pageY - clickStartY);
-            
-            // If it was a quick click with minimal movement, treat as click
-            if (clickDuration < 300 && moveX < 5 && moveY < 5 && !isDragging) {
-              // Find if we clicked on a link
-              const element = document.elementFromPoint(e.clientX, e.clientY);
-              const link = element.closest('a');
-              
-              if (link) {
-                e.preventDefault();
-                window.location.href = link.href;
-              }
-            }
-            
-            isDown = false;
-            isDragging = false;
-            container.classList.remove('dragging');
-          });
-          
-          container.addEventListener('mouseleave', () => {
-            isDown = false;
-            isDragging = false;
-            container.classList.remove('dragging');
-          });
-          
-          // Touch events for mobile
-          container.addEventListener('touchstart', (e) => {
-            isDown = true;
-            startX = e.touches[0].pageX - container.offsetLeft;
-            scrollLeft = container.scrollLeft;
-            clickStartTime = Date.now();
-            clickStartX = e.touches[0].pageX;
-            clickStartY = e.touches[0].pageY;
-          });
-          
-          container.addEventListener('touchmove', (e) => {
-            if (!isDown) return;
-            
-            const x = e.touches[0].pageX - container.offsetLeft;
-            const walk = (x - startX) * 2;
-            
-            const moveX = Math.abs(e.touches[0].pageX - clickStartX);
-            const moveY = Math.abs(e.touches[0].pageY - clickStartY);
-            
-            if (moveX > 5 || moveY > 5) {
-              isDragging = true;
-              container.classList.add('dragging');
-              e.preventDefault();
-              container.scrollLeft = scrollLeft - walk;
-            }
-          });
-          
-          container.addEventListener('touchend', (e) => {
-            if (!isDown) return;
-            
-            const clickDuration = Date.now() - clickStartTime;
-            const moveX = Math.abs(e.changedTouches[0].pageX - clickStartX);
-            const moveY = Math.abs(e.changedTouches[0].pageY - clickStartY);
-            
-            // If it was a quick tap with minimal movement, treat as click
-            if (clickDuration < 300 && moveX < 10 && moveY < 10 && !isDragging) {
-              const element = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
-              const link = element ? element.closest('a') : null;
-              
-              if (link) {
-                e.preventDefault();
-                window.location.href = link.href;
-              }
-            }
-            
-            isDown = false;
-            isDragging = false;
-            container.classList.remove('dragging');
-          });
-        });
-      }
-      
-      initializeHorizontalScroll();
+  /* ── drag-to-scroll ──────────────────────────────────── */
+  document.querySelectorAll('.scroll-row').forEach(el => {
+    let isDown = false, startX, scrollLeft;
+    el.addEventListener('mousedown', e => {
+      isDown = true;
+      el.classList.add('dragging');
+      startX = e.pageX - el.offsetLeft;
+      scrollLeft = el.scrollLeft;
     });
+    document.addEventListener('mouseup', () => { isDown = false; el.classList.remove('dragging'); });
+    el.addEventListener('mouseleave', () => { isDown = false; el.classList.remove('dragging'); });
+    el.addEventListener('mousemove', e => {
+      if (!isDown) return;
+      e.preventDefault();
+      el.scrollLeft = scrollLeft - (e.pageX - el.offsetLeft - startX) * 1.4;
+    });
+  });
 
-    // Close mobile sidebar when clicking outside
-    document.addEventListener('click', function(e) {
-      const mobileSidebar = document.getElementById('mobileSidebar');
-      const mobileToggle = document.getElementById('mobileToggle');
-      
-      if (mobileSidebar && !mobileSidebar.classList.contains('hidden') && 
-          !mobileSidebar.contains(e.target) && 
-          e.target !== mobileToggle && 
-          !mobileToggle.contains(e.target)) {
-        mobileSidebar.classList.add('hidden');
-      }
-    });
+  /* ── filter + count ──────────────────────────────────── */
+  const input   = document.getElementById('filterInput');
+  const countEl = document.getElementById('assetCount');
 
-    // Add direct click handlers for product images as backup
-    document.addEventListener('click', function(e) {
-      // If clicking on a product image that's inside a scroll container
-      const productImage = e.target.closest('.product-image');
-      if (productImage) {
-        const link = productImage.closest('a');
-        if (link && link.href) {
-          e.preventDefault();
-          window.location.href = link.href;
-        }
-      }
+  function updateCount() {
+    countEl.textContent = document.querySelectorAll('.asset-card:not([style*="display: none"])').length;
+  }
+  updateCount();
+
+  if (input) {
+    input.addEventListener('input', () => {
+      const q = input.value.toLowerCase().trim();
+      document.querySelectorAll('.asset-card').forEach(card => {
+        const match = !q
+          || (card.dataset.name||'').includes(q)
+          || (card.dataset.category||'').includes(q)
+          || (card.dataset.location||'').includes(q);
+        card.style.display = match ? '' : 'none';
+      });
+      document.querySelectorAll('.cat-section').forEach(sec => {
+        const visible = sec.querySelectorAll('.asset-card:not([style*="display: none"])').length;
+        sec.style.display = visible > 0 ? '' : 'none';
+      });
+      updateCount();
     });
-  </script>
-</body>
+  }
+
+})();
+</script>
+
+
+<script>
+(function () {
+  // ── drag-to-scroll ──────────────────────────────────────
+  document.querySelectorAll('.scroll-row').forEach(el => {
+    let isDown = false, startX, scrollLeft;
+    el.addEventListener('mousedown', e => {
+      isDown = true;
+      el.classList.add('dragging');
+      startX = e.pageX - el.offsetLeft;
+      scrollLeft = el.scrollLeft;
+    });
+    document.addEventListener('mouseup', () => { isDown = false; el.classList.remove('dragging'); });
+    el.addEventListener('mouseleave', () => { isDown = false; el.classList.remove('dragging'); });
+    el.addEventListener('mousemove', e => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - el.offsetLeft;
+      el.scrollLeft = scrollLeft - (x - startX) * 1.4;
+    });
+  });
+
+  // ── filter + count ──────────────────────────────────────
+  const input = document.getElementById('filterInput');
+  const countEl = document.getElementById('assetCount');
+
+  function updateCount() {
+    const visible = document.querySelectorAll('.asset-card:not([style*="display: none"])').length;
+    countEl.textContent = visible;
+  }
+
+  // initial count
+  updateCount();
+
+  if (input) {
+    input.addEventListener('input', () => {
+      const q = input.value.toLowerCase().trim();
+      document.querySelectorAll('.asset-card').forEach(card => {
+        const name = card.dataset.name || '';
+        const cat  = card.dataset.category || '';
+        const loc  = card.dataset.location || '';
+        const show = !q || name.includes(q) || cat.includes(q) || loc.includes(q);
+        card.style.display = show ? '' : 'none';
+      });
+
+      // hide empty sections
+      document.querySelectorAll('.category-section').forEach(section => {
+        const visible = section.querySelectorAll('.asset-card:not([style*="display: none"])').length;
+        section.style.display = visible > 0 ? '' : 'none';
+      });
+
+      updateCount();
+    });
+  }
+
+  // ── mobile overlay close ────────────────────────────────
+  const overlay = document.getElementById('mobileOverlay');
+  const sidebar = document.getElementById('mobileSidebar');
+  if (overlay && sidebar) {
+    overlay.addEventListener('click', () => sidebar.classList.add('hidden'));
+  }
+})();
+</script>
+
 {% endblock %}

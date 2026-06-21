@@ -52,9 +52,8 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
 
-    # CLOUDINARY
-    "cloudinary_storage",
-    "cloudinary",
+    # STORAGE
+    "storages",
 ]
 
 AUTH_USER_MODEL = "base.User"
@@ -72,7 +71,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 
-    # REQUIRED FOR ALLAUTH
     "allauth.account.middleware.AccountMiddleware",
 ]
 
@@ -146,6 +144,22 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # =========================
+# AZURE BLOB STORAGE (MEDIA FILES)
+# =========================
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.azure_storage.AzureStorage",
+        "OPTIONS": {
+            "connection_string": env("AZURE_STORAGE_CONNECTION_STRING"),
+            "azure_container": "media",
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
+# =========================
 # DEFAULT AUTO FIELD
 # =========================
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -171,8 +185,6 @@ AUTHENTICATION_BACKENDS = [
 
 ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 ACCOUNT_EMAIL_REQUIRED = True
-
-# change to "mandatory" if you want forced verification
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
@@ -183,7 +195,7 @@ LOGIN_REDIRECT_URL = "/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 
 # =========================
-# EMAIL (SENDGRID FIXED)
+# EMAIL (SENDGRID)
 # =========================
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
@@ -195,19 +207,7 @@ EMAIL_HOST_USER = "apikey"
 EMAIL_HOST_PASSWORD = env("SENDGRID_API_KEY")
 
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="salmamacash@gmail.com")
-SENDGRID_API_KEY = env("SENDGRID_API_KEY", default="")
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
-
-# =========================
-# CLOUDINARY
-# =========================
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": env("CLOUDINARY_CLOUD_NAME", default=""),
-    "API_KEY": env("CLOUDINARY_API_KEY", default=""),
-    "API_SECRET": env("CLOUDINARY_API_SECRET", default=""),
-}
-
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 # =========================
 # PASSWORD RESET
@@ -215,7 +215,7 @@ DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 PASSWORD_RESET_TIMEOUT = 172800
 
 # =========================
-# LOGGING (EMAIL DEBUG)
+# LOGGING
 # =========================
 LOGGING = {
     "version": 1,
