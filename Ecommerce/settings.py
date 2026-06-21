@@ -52,8 +52,7 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
 
-    # STORAGE
-    "storages",
+    #
 ]
 
 AUTH_USER_MODEL = "base.User"
@@ -70,7 +69,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-
     "allauth.account.middleware.AccountMiddleware",
 ]
 
@@ -144,20 +142,14 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # =========================
-# AZURE BLOB STORAGE (MEDIA FILES)
 # =========================
-STORAGES = {
-    "default": {
-        "BACKEND": "storages.backends.azure_storage.AzureStorage",
-        "OPTIONS": {
-            "connection_string": env("AZURE_STORAGE_CONNECTION_STRING"),
-            "azure_container": "media",
-        },
-    },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
+
+
+# =========================
+# AZURE (PREPARED BUT NOT ACTIVE)
+# =========================
+AZURE_STORAGE_CONNECTION_STRING = env("AZURE_STORAGE_CONNECTION_STRING", default="")
+AZURE_BLOB_CONTAINER = "media"
 
 # =========================
 # DEFAULT AUTO FIELD
@@ -165,7 +157,7 @@ STORAGES = {
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # =========================
-# SECURITY (AZURE)
+# SECURITY (AZURE DEPLOYMENT)
 # =========================
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
@@ -213,6 +205,28 @@ SERVER_EMAIL = DEFAULT_FROM_EMAIL
 # PASSWORD RESET
 # =========================
 PASSWORD_RESET_TIMEOUT = 172800
+
+
+# =========================
+# AZURE BLOB STORAGE (MEDIA)
+# =========================
+
+AZURE_ACCOUNT_NAME = "salmadjangostorage"
+AZURE_CONTAINER = "media"
+
+AZURE_CONNECTION_STRING = env("AZURE_STORAGE_CONNECTION_STRING", default="")
+
+if AZURE_CONNECTION_STRING:
+    DEFAULT_FILE_STORAGE = "storages.backends.azure_storage.AzureStorage"
+
+    AZURE_STORAGE_OPTIONS = {
+        "connection_string": AZURE_CONNECTION_STRING,
+        "azure_container": AZURE_CONTAINER,
+    }
+else:
+    # fallback for local development
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+
 
 # =========================
 # LOGGING
