@@ -48,12 +48,10 @@ INSTALLED_APPS = [
 
     "base.apps.BaseConfig",
 
-    # ALLAUTH
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
 
-    # STORAGE
     "storages",
 ]
 
@@ -144,16 +142,20 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # =========================
-# AZURE BLOB STORAGE (MEDIA FILES)
+# AZURE STORAGE (SAFE FOR CI/CD)
 # =========================
-AZURE_ACCOUNT_NAME = env("AZURE_ACCOUNT_NAME")
-AZURE_ACCOUNT_KEY = env("AZURE_ACCOUNT_KEY")
+
+AZURE_ACCOUNT_NAME = env("AZURE_ACCOUNT_NAME", default="")
+AZURE_ACCOUNT_KEY = env("AZURE_ACCOUNT_KEY", default="")
 AZURE_CONTAINER = env("AZURE_CONTAINER", default="media")
 
 AZURE_STORAGE_CONNECTION_STRING = env("AZURE_STORAGE_CONNECTION_STRING", default="")
 
-# ✅ This is the correct storage backend
-DEFAULT_FILE_STORAGE = "storages.backends.azure_storage.AzureStorage"
+# ✅ SAFE CONDITION (prevents collectstatic crash)
+if AZURE_ACCOUNT_NAME and AZURE_ACCOUNT_KEY:
+    DEFAULT_FILE_STORAGE = "storages.backends.azure_storage.AzureStorage"
+else:
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 
 # =========================
 # DEFAULT AUTO FIELD
