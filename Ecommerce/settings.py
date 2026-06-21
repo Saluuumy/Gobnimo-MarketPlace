@@ -1,7 +1,6 @@
 from pathlib import Path
 import environ
 import dj_database_url
-import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -41,17 +40,15 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "whitenoise.runserver_nostatic",   # MUST be before staticfiles
     "django.contrib.staticfiles",
     "django.contrib.sites",
-
-    "whitenoise.runserver_nostatic",
-
     "base.apps.BaseConfig",
-
+    # ALLAUTH
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-
+    # STORAGE
     "storages",
 ]
 
@@ -62,7 +59,7 @@ AUTH_USER_MODEL = "base.User"
 # =========================
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # right after SecurityMiddleware
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -133,29 +130,52 @@ USE_I18N = True
 USE_TZ = True
 
 # =========================
-# STATIC FILES
+# STATIC FILES (WhiteNoise serves these — never Azure)
 # =========================
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
 # =========================
-# AZURE STORAGE (SAFE FOR CI/CD)
+# MEDIA FILES (Azure Blob Storage in production)
 # =========================
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
-AZURE_ACCOUNT_NAME = env("AZURE_ACCOUNT_NAME", default="")
-AZURE_ACCOUNT_KEY = env("AZURE_ACCOUNT_KEY", default="")
-AZURE_CONTAINER = env("AZURE_CONTAINER", default="media")
-
+# ---------------------------------------------------------------
+# FIX: Use AZURE_STORAGE_CONNECTION_STRING (what your .env has),
+# NOT AZURE_ACCOUNT_NAME / AZURE_ACCOUNT_KEY (which were empty).
+# ---------------------------------------------------------------
 AZURE_STORAGE_CONNECTION_STRING = env("AZURE_STORAGE_CONNECTION_STRING", default="")
 
-# ✅ SAFE CONDITION (prevents collectstatic crash)
-if AZURE_ACCOUNT_NAME and AZURE_ACCOUNT_KEY:
-    DEFAULT_FILE_STORAGE = "storages.backends.azure_storage.AzureStorage"
+if AZURE_STORAGE_CONNECTION_STRING:
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.azure_storage.AzureStorage",
+            "OPTIONS": {
+                "connection_string": AZURE_STORAGE_CONNECTION_STRING,
+                "azure_container": env("AZURE_CONTAINER", default="media"),
+                "overwrite_files": True,
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 else:
-    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+    # Local development fallback
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+            "OPTIONS": {
+                "location": str(MEDIA_ROOT),
+                "base_url": MEDIA_URL,
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 
 # =========================
 # DEFAULT AUTO FIELD
@@ -163,7 +183,7 @@ else:
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # =========================
-# SECURITY (AZURE DEPLOYMENT)
+# SECURITY (PRODUCTION / AZURE)
 # =========================
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
@@ -181,9 +201,13 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"
-ACCOUNT_EMAIL_REQUIRED = True
+# allauth v0.56+ settings (no deprecation warnings)
+ACCOUNT_LOGIN_METHODS = {"username", "email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
+ACCOUNT_EMAIL_SUBJECT_PREFIX = "[Adver Platform] "
 
 LOGIN_REDIRECT_URL = "/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
@@ -192,21 +216,18 @@ ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 # EMAIL (SENDGRID)
 # =========================
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-
 EMAIL_HOST = "smtp.sendgrid.net"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-
 EMAIL_HOST_USER = "apikey"
-EMAIL_HOST_PASSWORD = env("SENDGRID_API_KEY")
-
+EMAIL_HOST_PASSWORD = env("SENDGRID_API_KEY", default="")
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="salmamacash@gmail.com")
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 # =========================
 # PASSWORD RESET
 # =========================
-PASSWORD_RESET_TIMEOUT = 172800
+PASSWORD_RESET_TIMEOUT = 172800  # 48 hours
 
 # =========================
 # LOGGING
@@ -218,9 +239,17 @@ LOGGING = {
         "console": {"class": "logging.StreamHandler"},
     },
     "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+        },
         "django.core.mail": {
             "handlers": ["console"],
             "level": "DEBUG",
+        },
+        "storages": {
+            "handlers": ["console"],
+            "level": "DEBUG",  # logs Azure upload activity
         },
     },
 }
