@@ -496,9 +496,8 @@ class PendingFeaturedAd(models.Model):
 
 class AdImage(models.Model):
     ad = models.ForeignKey(Ad, on_delete=models.CASCADE, related_name='images')
-    image = CloudinaryField('image', blank=True, null=True)
-    def __str__(self):
-        return f"Image for {self.ad.name}"
+    image = models.ImageField( upload_to='ad_images/'
+    )
 
 class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
