@@ -1,6 +1,7 @@
 from pathlib import Path
 import environ
 import dj_database_url
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -30,7 +31,6 @@ CSRF_TRUSTED_ORIGINS = env.list(
         "http://127.0.0.1:8000",
     ],
 )
-
 # =========================
 # APPLICATIONS
 # =========================
