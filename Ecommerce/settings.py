@@ -28,7 +28,7 @@ CSRF_TRUSTED_ORIGINS = env.list(
     default=[
         "http://localhost:8000",
         "http://127.0.0.1:8000",
-        "http://waaheen-d8bzabe3fehygpgg.westeurope-01.azurewebsites.net",
+        "https://waaheen-d8bzabe3fehygpgg.westeurope-01.azurewebsites.net",
     ],
 )
 
