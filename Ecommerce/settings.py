@@ -20,7 +20,12 @@ DEBUG = env.bool("DEBUG", default=False)
 
 ALLOWED_HOSTS = env.list(
     "ALLOWED_HOSTS",
-    default=["localhost", "127.0.0.1"],
+    default=[
+        "localhost",
+        "127.0.0.1",
+        "waaheen-d8bzabe3fehygpgg.westeurope-01.azurewebsites.net",
+        "169.254.129.2",  # Azure internal health check IP
+    ],
 )
 
 CSRF_TRUSTED_ORIGINS = env.list(
@@ -28,6 +33,7 @@ CSRF_TRUSTED_ORIGINS = env.list(
     default=[
         "http://localhost:8000",
         "http://127.0.0.1:8000",
+        "https://waaheen-d8bzabe3fehygpgg.westeurope-01.azurewebsites.net",
     ],
 )
 
@@ -40,7 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "whitenoise.runserver_nostatic",   # MUST be before staticfiles
+    "whitenoise.runserver_nostatic",  # MUST be before staticfiles
     "django.contrib.staticfiles",
     "django.contrib.sites",
     "base.apps.BaseConfig",
@@ -59,7 +65,7 @@ AUTH_USER_MODEL = "base.User"
 # =========================
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # right after SecurityMiddleware
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -130,22 +136,18 @@ USE_I18N = True
 USE_TZ = True
 
 # =========================
-# STATIC FILES (WhiteNoise serves these — never Azure)
+# STATIC FILES
 # =========================
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # =========================
-# MEDIA FILES (Azure Blob Storage in production)
+# MEDIA FILES (Azure Blob in production, local in dev)
 # =========================
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# ---------------------------------------------------------------
-# FIX: Use AZURE_STORAGE_CONNECTION_STRING (what your .env has),
-# NOT AZURE_ACCOUNT_NAME / AZURE_ACCOUNT_KEY (which were empty).
-# ---------------------------------------------------------------
 AZURE_STORAGE_CONNECTION_STRING = env("AZURE_STORAGE_CONNECTION_STRING", default="")
 
 if AZURE_STORAGE_CONNECTION_STRING:
@@ -158,12 +160,14 @@ if AZURE_STORAGE_CONNECTION_STRING:
                 "overwrite_files": True,
             },
         },
+        # FIX: Use simple WhiteNoiseStorage (not Manifest) to avoid
+        # "Missing staticfiles manifest entry" crash if collectstatic
+        # hasn't run yet or a file is referenced that wasn't collected.
         "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
         },
     }
 else:
-    # Local development fallback
     STORAGES = {
         "default": {
             "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -173,7 +177,7 @@ else:
             },
         },
         "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
         },
     }
 
@@ -201,7 +205,6 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-# allauth v0.56+ settings (no deprecation warnings)
 ACCOUNT_LOGIN_METHODS = {"username", "email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
@@ -235,21 +238,42 @@ PASSWORD_RESET_TIMEOUT = 172800  # 48 hours
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {message}",
+            "style": "{",
+        },
+    },
     "handlers": {
-        "console": {"class": "logging.StreamHandler"},
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
     },
     "loggers": {
         "django": {
             "handlers": ["console"],
             "level": "INFO",
+            "propagate": False,
+        },
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
         },
         "django.core.mail": {
             "handlers": ["console"],
             "level": "DEBUG",
+            "propagate": False,
         },
         "storages": {
             "handlers": ["console"],
-            "level": "DEBUG",  # logs Azure upload activity
+            "level": "WARNING",
+            "propagate": False,
         },
     },
 }
