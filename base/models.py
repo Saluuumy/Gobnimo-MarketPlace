@@ -4,7 +4,6 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils import timezone
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
-from cloudinary.models import CloudinaryField
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
