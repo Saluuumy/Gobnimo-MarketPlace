@@ -1,7 +1,6 @@
 from pathlib import Path
 import environ
 import dj_database_url
-import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -31,6 +30,7 @@ CSRF_TRUSTED_ORIGINS = env.list(
         "http://127.0.0.1:8000",
     ],
 )
+
 # =========================
 # APPLICATIONS
 # =========================
@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "whitenoise.runserver_nostatic",  # MUST be before staticfiles
+    "whitenoise.runserver_nostatic",   # MUST be before staticfiles
     "django.contrib.staticfiles",
     "django.contrib.sites",
     "base.apps.BaseConfig",
@@ -130,18 +130,22 @@ USE_I18N = True
 USE_TZ = True
 
 # =========================
-# STATIC FILES (WhiteNoise — never Azure)
+# STATIC FILES (WhiteNoise serves these — never Azure)
 # =========================
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # =========================
-# MEDIA FILES (Azure Blob in production, local in dev)
+# MEDIA FILES (Azure Blob Storage in production)
 # =========================
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# ---------------------------------------------------------------
+# FIX: Use AZURE_STORAGE_CONNECTION_STRING (what your .env has),
+# NOT AZURE_ACCOUNT_NAME / AZURE_ACCOUNT_KEY (which were empty).
+# ---------------------------------------------------------------
 AZURE_STORAGE_CONNECTION_STRING = env("AZURE_STORAGE_CONNECTION_STRING", default="")
 
 if AZURE_STORAGE_CONNECTION_STRING:
@@ -159,6 +163,7 @@ if AZURE_STORAGE_CONNECTION_STRING:
         },
     }
 else:
+    # Local development fallback
     STORAGES = {
         "default": {
             "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -196,6 +201,7 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
+# allauth v0.56+ settings (no deprecation warnings)
 ACCOUNT_LOGIN_METHODS = {"username", "email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
@@ -229,42 +235,21 @@ PASSWORD_RESET_TIMEOUT = 172800  # 48 hours
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "formatters": {
-        "verbose": {
-            "format": "{levelname} {asctime} {module} {message}",
-            "style": "{",
-        },
-    },
     "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "verbose",
-        },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": "WARNING",
+        "console": {"class": "logging.StreamHandler"},
     },
     "loggers": {
         "django": {
             "handlers": ["console"],
             "level": "INFO",
-            "propagate": False,
-        },
-        "django.request": {
-            "handlers": ["console"],
-            "level": "ERROR",  # logs full 500 tracebacks to Azure console
-            "propagate": False,
         },
         "django.core.mail": {
             "handlers": ["console"],
             "level": "DEBUG",
-            "propagate": False,
         },
         "storages": {
             "handlers": ["console"],
-            "level": "WARNING",
-            "propagate": False,
+            "level": "DEBUG",  # logs Azure upload activity
         },
     },
 }
