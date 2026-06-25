@@ -2,1086 +2,747 @@
 {% load static %}
 
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ ad.name }} | SomaliShoppe</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  <style>
-    :root{
-      --sidebar-bg:#0f1720;
-      --panel:#0b1220;
-      --muted:#9ca3af;
-      --chip:#1f2937;
-      --accent:#06b6d4;
-      --tile-bg:#2b3440;
-    }
-    
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--panel);
-      color: #e6eef8;
-      -webkit-font-smoothing: antialiased;
-    }
-    
-    .card {
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-      border-radius: 8px;
-      background: var(--tile-bg);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-    
-    .gallery-main {
-      height: 400px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-    
-    .gallery-thumb {
-      transition: all 0.2s ease;
-      cursor: pointer;
-      border-radius: 6px;
-      overflow: hidden;
-      border: 2px solid transparent;
-    }
-    
-    .gallery-thumb:hover, .gallery-thumb.active {
-      border-color: var(--accent);
-    }
-    
-    .attribute-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin: 16px 0;
-    }
-    
-    .attribute-item {
-      text-align: center;
-      padding: 12px 8px;
-      background: rgba(255,255,255,0.03);
-      border-radius: 6px;
-      transition: all 0.2s ease;
-    }
-    
-    .attribute-item:hover {
-      background: rgba(255,255,255,0.05);
-    }
-    
-    .attribute-icon {
-      font-size: 1.2rem;
-      color: var(--accent);
-      margin-bottom: 6px;
-    }
-    
-    .attribute-label {
-      color: var(--muted);
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-top: 4px;
-    }
-    
-    .attribute-value {
-      font-weight: 500;
-      font-size: 0.9rem;
-    }
-    
-    .gradient-btn {
-      background: linear-gradient(to right, var(--accent), #0d9488);
-      transition: all 0.3s ease;
-    }
-    
-    .gradient-btn:hover {
-      background: linear-gradient(to right, #0d9488, #0f766e);
-      transform: translateY(-1px);
-    }
-    
-    .secondary-btn {
-      background: rgba(255,255,255,0.1);
-      color: #e6eef8;
-      transition: all 0.3s ease;
-    }
-    
-    .secondary-btn:hover {
-      background: rgba(255,255,255,0.15);
-      transform: translateY(-1px);
-    }
-    
-    .accent-color {
-      color: var(--accent);
-    }
-    
-    .accent-bg {
-      background-color: rgba(6, 182, 212, 0.1);
-    }
-    
-    .accent-border {
-      border-color: rgba(6, 182, 212, 0.3);
-    }
-    
-    /* Compact layout adjustments */
-    .compact-section {
-      margin-bottom: 16px;
-    }
-    
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin: 12px 0;
-    }
-    
-    .property-feature {
-      display: flex;
-      align-items: center;
-      padding: 8px;
-      background: rgba(255,255,255,0.03);
-      border-radius: 6px;
-    }
-    
-    .property-feature i {
-      margin-right: 8px;
-      color: var(--accent);
-      font-size: 0.9rem;
-      width: 16px;
-      text-align: center;
-    }
-    
-    /* Comments section styling */
-    .comments-container {
-       margin-top: -199px;
-    }
-    
-    .comment-card {
-      background: var(--tile-bg);
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 12px;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-    
-    .comment-actions {
-      display: flex;
-      gap: 12px;
-      margin-top: 8px;
-    }
-    
-    .reply-form {
-      margin-top: 12px;
-      padding-left: 16px;
-      border-left: 2px solid var(--accent);
-    }
-    
-    /* Share buttons */
-    .share-buttons {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
-    
-    .share-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-      cursor: pointer;
-    }
-    
-    .share-btn:hover {
-      transform: translateY(-1px);
-    }
-    
-    /* Seller info styling */
-    .seller-info {
-      padding: 16px;
-      background: rgba(255,255,255,0.03);
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-    
-    .seller-stats {
-      display: flex;
-      gap: 16px;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(255,255,255,0.08);
-    }
-    
-    .stat-item {
-      text-align: center;
-      flex: 1;
-    }
-    
-    .stat-value {
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-    
-    .stat-label {
-      color: var(--muted);
-      font-size: 0.7rem;
-      margin-top: 2px;
-    }
-    
-    /* Rating stars styling */
-    .star-rating {
-      display: flex;
-      gap: 2px;
-      margin-bottom: 8px;
-    }
-    
-    .star-label {
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    
-    .star-label:hover i {
-      transform: scale(1.1);
-    }
-    
-    .rating-distribution {
-      margin: 8px 0;
-    }
-    
-    .rating-bar {
-      background: rgba(255,255,255,0.1);
-      border-radius: 4px;
-      height: 6px;
-      margin: 4px 0;
-      overflow: hidden;
-    }
-    
-    .rating-fill {
-      background: #f59e0b;
-      height: 100%;
-      border-radius: 4px;
-    }
-    
-    /* Dark theme adjustments */
-    .bg-white {
-      background: var(--tile-bg) !important;
-    }
-    
-    .text-gray-800, .text-gray-900 {
-      color: #e6eef8 !important;
-    }
-    
-    .text-gray-600, .text-gray-700 {
-      color: var(--muted) !important;
-    }
-    
-    .border-gray-200 {
-      border-color: rgba(255,255,255,0.08) !important;
-    }
-    
-    .bg-gray-100 {
-      background: var(--chip) !important;
-    }
-    
-    /* Centered layout */
-    .centered-container {
-      max-width: 1200px;
-     
-    }
-    button, input, optgroup, select, textarea {
-  font-family: inherit;
-  font-feature-settings: inherit;
-  font-variation-settings: inherit;
-  font-size: 100%;
-  font-weight: inherit;
-  line-height: inherit;
-  letter-spacing: inherit;
-  color: inherit;
-  margin: 0;
-  padding: 0;
-  background: rgba(87, 48, 48, 0.03);
-    }
-    /* Mobile responsiveness */
-    @media (max-width: 768px) {
-      .gallery-main {
-        height: 300px;
-      }
-      
-      .attribute-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      
-      /* Keep features as 2 columns on mobile */
-      .feature-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      
-      /* Mobile order fix - details before comments */
-      .mobile-order-1 { order: 1; }
-      .mobile-order-2 { order: 2; }
-      .mobile-order-3 { order: 3; }
-      .mobile-order-4 { order: 4; }
-      
-      /* Seller stats stack on mobile */
-      .seller-stats {
-        flex-direction: column;
-        gap: 8px;
-      }
-      
-      .stat-item {
-        text-align: left;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .gallery-main {
-        height: 250px;
-      }
-      
-      /* For very small screens, make features 2 columns but smaller gap */
-      .feature-grid {
-        gap: 8px;
-      }
-    }
-    @media (max-width: 768px) {
-    .mb-4 {
-      margin-bottom: 0rem !important;
-    }
-    .bg-gray-300 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(19, 128, 128);
+<style>
+:root{
+  --bg:#0d1117;
+  --surface:#111827;
+  --surface2:#0f1729;
+  --border:rgba(255,255,255,0.07);
+  --text:#e2e8f0;
+  --text-dim:#94a3b8;
+  --muted:#64748b;
+  --accent:#22c55e;
+  --accent2:#16a34a;
 }
-  }
-    
-    @media (max-width: 360px) {
-      /* On very small screens, stack features */
-      .feature-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
-</head>
-<body class="min-h-screen flex flex-col">
-  <main class="centered-container px-4 py-4 flex-grow">
-    <!-- Fixed mobile order - using flex with order classes -->
-    <div class="flex flex-col lg:grid lg:grid-cols-3 gap-4">
-      <!-- Left Column: Gallery & Description (Mobile: Order 1) -->
-      <div class="lg:col-span-2 mobile-order-1">
-        <div class="card p-3 compact-section">
-          {% if ad.images.all %}
-            <img id="mainImage" src="{{ ad.images.first.image.url }}" 
-                 alt="{{ ad.name }}" class="gallery-main w-full">
-          {% else %}
-            <div class="gallery-main w-full bg-gray-100 rounded-lg flex items-center justify-center">
-              <i class="fas fa-image text-gray-300 text-4xl"></i>
-            </div>
-          {% endif %}
-          
-          <div class="grid grid-cols-4 gap-2 mt-3">
-            {% for image in ad.images.all %}
-              <div class="gallery-thumb {% if forloop.first %}active{% endif %}" 
-                   onclick="changeMainImage('{{ image.image.url }}', this)">
-                <img src="{{ image.image.url }}" alt="Thumbnail {{ forloop.counter }}" 
-                     class="w-full h-16 object-cover">
-              </div>
-            {% empty %}
-              {% for i in "1234" %}
-                <div class="gallery-thumb bg-gray-100 border border-gray-200 rounded flex items-center justify-center">
-                  <i class="fas fa-image text-gray-300"></i>
-                </div>
-              {% endfor %}
-            {% endfor %}
-          </div>
-        </div>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
 
-        <!-- Description (Mobile: Order 2) -->
-        <div class="card p-4 compact-section mobile-order-2">
-          <h3 class="text-lg font-semibold mb-3">Description</h3>
-          <p class="text-gray-300 leading-relaxed">{{ ad.description|default:"No description provided." }}</p>
+.pd-wrap{max-width:1100px;margin:50px auto;padding:20px 16px 48px}
+
+/* breadcrumb */
+.bc{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-bottom:16px;flex-wrap:wrap}
+.bc a{color:var(--muted);text-decoration:none;transition:color .15s}
+.bc a:hover{color:var(--text)}
+.bc i{font-size:10px;color:#334155}
+
+/* grid */
+.pd-grid{display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start}
+
+/* card */
+.card{background:var(--surface);border:0.5px solid var(--border);border-radius:10px;overflow:hidden}
+
+/* gallery */
+.gal-main{width:100%;height:380px;object-fit:cover;display:block;background:var(--surface2)}
+.gal-no-img{width:100%;height:380px;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:#334155;font-size:48px}
+.gal-thumbs{display:flex;gap:7px;padding:10px 12px;background:#0b1120;border-top:0.5px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.gal-thumbs::-webkit-scrollbar{display:none}
+.gal-thumb{flex-shrink:0;width:66px;height:50px;border-radius:5px;overflow:hidden;border:1.5px solid transparent;cursor:pointer;transition:border-color .15s}
+.gal-thumb.active,.gal-thumb:hover{border-color:var(--accent)}
+.gal-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* desc */
+.desc-card{margin-top:12px}
+.desc-inner{padding:16px}
+.desc-inner h3{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;padding-bottom:8px;border-bottom:0.5px solid var(--border)}
+.desc-inner p{font-size:13px;color:var(--text-dim);line-height:1.7}
+
+/* comments */
+.comm-card{margin-top:12px}
+.comm-inner{padding:16px}
+.comm-h{font-size:15px;font-weight:500;color:var(--text);margin-bottom:14px}
+.comm-box{background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:12px;margin-bottom:14px}
+.comm-box-lbl{font-size:11px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.comm-box-lbl i{color:var(--accent);font-size:13px}
+.c-textarea{width:100%;background:var(--surface);border:0.5px solid var(--border);border-radius:7px;padding:9px 11px;color:var(--text);font-size:13px;resize:none;font-family:inherit;outline:none;transition:border-color .15s;min-height:64px}
+.c-textarea:focus{border-color:rgba(34,197,94,.4)}
+.c-textarea::placeholder{color:var(--muted)}
+.btn-post{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;background:var(--accent);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .15s}
+.btn-post:hover{background:var(--accent2)}
+.login-note{font-size:12px;color:var(--muted);text-align:center;padding:8px;border:0.5px solid var(--border);border-radius:7px}
+.login-note a{color:var(--accent);text-decoration:none}
+.login-note a:hover{text-decoration:underline}
+
+/* comment item */
+.comm-item{background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px}
+.comm-item:last-child{margin-bottom:0}
+.comm-user-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.ava{width:30px;height:30px;border-radius:50%;background:#1d4ed8;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#fff;flex-shrink:0;overflow:hidden}
+.ava img{width:100%;height:100%;object-fit:cover}
+.ava.sm{width:24px;height:24px;font-size:10px}
+.comm-name{font-size:12px;font-weight:500;color:var(--text)}
+.comm-time{font-size:11px;color:#475569}
+.comm-del{margin-left:auto;background:none;border:none;color:#475569;font-size:12px;cursor:pointer;padding:2px 4px;display:flex;align-items:center;gap:3px;transition:color .15s;font-family:inherit}
+.comm-del:hover{color:#f87171}
+.comm-text{font-size:13px;color:var(--text-dim);line-height:1.6;margin-bottom:7px}
+.btn-reply{background:none;border:none;color:#475569;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:4px;padding:0;font-family:inherit;transition:color .15s}
+.btn-reply:hover{color:var(--accent)}
+.reply-list{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.reply-item{background:rgba(255,255,255,.02);border-radius:0 6px 6px 0;padding:9px 10px;border-left:2px solid rgba(34,197,94,.25)}
+.reply-form{margin-top:8px;padding-left:10px;border-left:2px solid rgba(34,197,94,.2);display:none}
+.empty-comm{text-align:center;padding:24px 0;color:var(--muted);font-size:13px}
+.empty-comm i{font-size:24px;display:block;margin-bottom:8px}
+
+/* sidebar */
+
+/* product card */
+.prod-header{padding:16px 16px 0}
+.prod-title-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:5px}
+.prod-title{font-size:19px;font-weight:500;color:var(--text);line-height:1.3}
+.fav-btn{width:32px;height:32px;background:var(--surface2);border:0.5px solid var(--border);border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;flex-shrink:0;text-decoration:none;transition:color .15s,border-color .15s}
+.fav-btn:hover{color:#f87171;border-color:rgba(248,113,113,.4)}
+.fav-btn.saved{color:#f87171}
+.prod-meta{display:flex;align-items:center;gap:10px;font-size:11px;color:#475569;margin-bottom:14px}
+.prod-meta span{display:flex;align-items:center;gap:3px}
+.prod-price{font-size:22px;font-weight:500;color:var(--text);padding:12px 16px;border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border)}
+.prod-price small{font-size:12px;font-weight:400;color:var(--muted);margin-left:3px}
+.cta-wrap{padding:12px 16px}
+.btn-cta{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none;transition:background .15s,transform .1s}
+.btn-cta:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-cta-off{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:11px;background:var(--surface2);color:#475569;border:0.5px solid var(--border);border-radius:8px;font-size:13px;cursor:default}
+.cta-note{text-align:center;font-size:11px;color:var(--muted);margin-top:5px}
+
+/* specs */
+.specs-wrap{padding:12px 16px 16px;border-top:0.5px solid var(--border)}
+.block-lbl{font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.specs-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.spec-item{background:var(--surface2);border:0.5px solid var(--border);border-radius:7px;padding:8px 10px;display:flex;align-items:center;gap:8px}
+.spec-ico{width:26px;height:26px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.ic-cat{background:rgba(99,102,241,.15);color:#818cf8}
+.ic-yr{background:rgba(245,158,11,.12);color:#fbbf24}
+.ic-eng{background:rgba(168,85,247,.12);color:#c084fc}
+.ic-tr{background:rgba(20,184,166,.12);color:#2dd4bf}
+.ic-ty{background:rgba(249,115,22,.12);color:#fb923c}
+.ic-rm{background:rgba(59,130,246,.12);color:#60a5fa}
+.ic-bt{background:rgba(6,182,212,.12);color:#22d3ee}
+.ic-ar{background:rgba(34,197,94,.12);color:#4ade80}
+.ic-fn{background:rgba(236,72,153,.12);color:#f472b6}
+.ic-ld{background:rgba(234,179,8,.12);color:#facc15}
+.ic-md{background:rgba(239,68,68,.12);color:#f87171}
+.ic-cl{background:rgba(139,92,246,.12);color:#a78bfa}
+.spec-val{font-size:12px;font-weight:500;color:var(--text);line-height:1.2}
+.spec-lbl{font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
+
+/* features */
+.feats-wrap{padding:0 16px 16px;border-top:0.5px solid var(--border);padding-top:12px}
+.feats-grid{display:flex;flex-wrap:wrap;gap:6px}
+.feat-pill{display:flex;align-items:center;gap:5px;background:rgba(34,197,94,.08);border:0.5px solid rgba(34,197,94,.2);border-radius:20px;padding:4px 10px;font-size:12px;color:#4ade80}
+.feat-pill i{font-size:11px}
+
+/* seller card */
+.seller-top{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:0.5px solid var(--border)}
+.seller-ava{width:40px;height:40px;border-radius:50%;background:#1d4ed8;border:1.5px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:#fff;flex-shrink:0;overflow:hidden}
+.seller-ava img{width:100%;height:100%;object-fit:cover}
+.seller-name{font-size:13px;font-weight:500;color:var(--text)}
+.seller-loc{font-size:11px;color:#475569;display:flex;align-items:center;gap:3px;margin-top:2px}
+.new-seller{display:flex;align-items:center;gap:6px;padding:9px 16px;font-size:11px;color:var(--muted);border-bottom:0.5px solid var(--border)}
+.new-seller i{color:#fbbf24}
+.seller-rating{display:flex;align-items:center;gap:6px;padding:10px 16px;border-bottom:0.5px solid var(--border)}
+.stars{display:flex;gap:2px}
+.stars i{font-size:12px;color:#f59e0b}
+.stars i.off{color:#1e293b}
+.rating-txt{font-size:12px;color:var(--muted)}
+
+/* stats */
+.seller-stats{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:0.5px solid var(--border)}
+.stat-col{padding:10px 6px;text-align:center;border-right:0.5px solid var(--border)}
+.stat-col:last-child{border-right:none}
+.stat-val{font-size:14px;font-weight:500;color:var(--text)}
+.stat-val.good{color:var(--accent)}
+.stat-val.dash{color:#334155}
+.stat-lbl{font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+
+/* rate form */
+.rate-wrap{padding:12px 16px;border-bottom:0.5px solid var(--border)}
+.star-inputs{display:flex;gap:4px;margin-bottom:8px}
+.star-inputs label{cursor:pointer;line-height:1}
+.star-inputs label i{font-size:19px;color:#1e293b;transition:color .1s}
+.star-inputs label:hover i,.star-inputs label.lit i{color:#f59e0b}
+
+/* reviews */
+.reviews-wrap{padding:12px 16px;border-bottom:0.5px solid var(--border)}
+.review-item{margin-bottom:9px}
+.review-item:last-child{margin-bottom:0}
+.review-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+.review-name{font-size:12px;font-weight:500;color:var(--text)}
+.review-mini-stars{display:flex;gap:1px}
+.review-mini-stars i{font-size:10px;color:#f59e0b}
+.review-mini-stars i.off{color:#1e293b}
+.review-text{font-size:12px;color:var(--text-dim);line-height:1.5}
+.review-time{font-size:11px;color:#475569;margin-top:2px}
+
+/* share */
+.share-wrap{padding:12px 16px}
+.share-lbl{font-size:11px;color:var(--muted);margin-bottom:8px}
+.share-btns{display:flex;gap:7px}
+.sh-btn{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;border:none;cursor:pointer;transition:transform .15s,opacity .15s}
+.sh-btn:hover{transform:translateY(-2px);opacity:.9}
+.s-fb{background:#1877f2}.s-wa{background:#25d366}.s-tw{background:#1da1f2}.s-em{background:#ea4335}
+
+/* similar */
+.sim-section{margin-top:20px}
+.sim-section h2{font-size:15px;font-weight:500;color:var(--text);margin-bottom:2px}
+.sim-section p{font-size:12px;color:var(--muted);margin-bottom:12px}
+.sim-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.sim-card{background:var(--surface);border:0.5px solid var(--border);border-radius:8px;overflow:hidden;text-decoration:none;display:block;transition:transform .2s,border-color .2s}
+.sim-card:hover{transform:translateY(-3px);border-color:rgba(34,197,94,.3)}
+.sim-img{height:100px;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:#334155;font-size:24px;position:relative}
+.sim-img img{width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0}
+.sim-price{position:absolute;bottom:5px;right:5px;background:rgba(0,0,0,.75);color:#fff;font-size:10px;font-weight:500;padding:2px 6px;border-radius:4px;pointer-events:none}
+.sim-body{padding:8px 10px}
+.sim-name{font-size:12px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.sim-loc{font-size:11px;color:#475569;display:flex;align-items:center;gap:3px}
+
+/* delete modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:999}
+.modal-bg.open{display:flex}
+.modal-box{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:24px;max-width:300px;width:90%;text-align:center}
+.modal-box i{font-size:28px;color:#f87171;display:block;margin-bottom:10px}
+.modal-box h3{font-size:15px;font-weight:500;color:var(--text);margin-bottom:6px}
+.modal-box p{font-size:13px;color:var(--muted);margin-bottom:16px}
+.modal-btns{display:flex;gap:8px;justify-content:center}
+.btn-ghost{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;background:var(--surface2);color:var(--text-dim);border:0.5px solid var(--border);border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .15s}
+.btn-ghost:hover{background:rgba(255,255,255,.05)}
+.btn-danger{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;background:#ef4444;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .15s}
+.btn-danger:hover{background:#dc2626}
+
+@media(max-width:900px){
+  .pd-grid{grid-template-columns:1fr}
+  .sim-grid{grid-template-columns:repeat(2,1fr)}
+  .gal-main{height:280px}
+}
+@media(max-width:480px){
+  .gal-main{height:220px}
+  .specs-grid{grid-template-columns:repeat(2,1fr)}
+  .sim-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+
+<main class="pd-wrap">
+
+  <!-- breadcrumb -->
+  <nav class="bc" aria-label="Breadcrumb">
+    <a href="{% url 'index' %}">Home</a>
+    <i class="fas fa-chevron-right"></i>
+    {% if ad.category %}
+    <a href="{% url 'category_detail' ad.category.id %}">{{ ad.category.name }}</a>
+    <i class="fas fa-chevron-right"></i>
+    {% endif %}
+    <span>{{ ad.name|truncatechars:45 }}</span>
+  </nav>
+
+  <div class="pd-grid">
+
+    <!-- ── LEFT ── -->
+    <div>
+
+      <!-- gallery -->
+      <div class="card">
+        {% if ad.images.first %}
+          <img id="mainImage" class="gal-main" src="{{ ad.images.first.image.url }}" alt="{{ ad.name }}">
+        {% else %}
+          <div class="gal-no-img"><i class="fas fa-image"></i></div>
+        {% endif %}
+        {% if ad.images.all|length > 1 %}
+        <div class="gal-thumbs">
+          {% for image in ad.images.all %}
+          <div class="gal-thumb {% if forloop.first %}active{% endif %}"
+               onclick="changeImg('{{ image.image.url }}',this)">
+            <img src="{{ image.image.url }}" alt="Image {{ forloop.counter }}">
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- description -->
+      <div class="card desc-card">
+        <div class="desc-inner">
+          <h3>Description</h3>
+          <p>{{ ad.description|default:"No description provided." }}</p>
         </div>
       </div>
 
-      <!-- Right Column: Product Details (Mobile: Order 3 - BEFORE comments) -->
-      <div class="lg:col-span-1 mobile-order-3">
-        <div class="card p-4">
-          <!-- Header with title and favorite -->
-          <div class="flex justify-between items-start mb-3">
-            <div class="flex-1">
-              <h1 class="text-xl font-bold mb-1">{{ ad.name }}</h1>
-              <div class="flex items-center text-xs text-gray-400 mb-2">
-                <i class="fas fa-map-marker-alt mr-1"></i> 
-                <span class="mr-2">{{ ad.location }}</span>
-                <i class="fas fa-eye mr-1 ml-2"></i> 
-                <span>{{ ad.views|default:0 }}</span>
-              </div>
+      <!-- comments -->
+      <div class="card comm-card">
+        <div class="comm-inner">
+          <div class="comm-h">Comments</div>
+
+          <div class="comm-box">
+            <div class="comm-box-lbl">
+              <i class="fas fa-comment-dots"></i> Add a comment
             </div>
-            
             {% if user.is_authenticated %}
-            <form method="POST" action="{% url 'toggle_favorite' ad.id %}" class="favorite-form">
+            <form method="post" action="{% url 'add_comment' ad.id %}">
               {% csrf_token %}
-              <button type="submit" class="text-gray-400 hover:text-red-500">
-                <i class="{% if ad.id in user_favorites %}fas{% else %}far{% endif %} fa-bookmark"></i>
-              </button>
-            </form>
-            {% else %}
-            <a href="{% url 'login' %}" class="text-gray-400 hover:text-red-500">
-              <i class="far fa-bookmark"></i>
-            </a>
-            {% endif %}
-          </div>
-
-          <!-- Price -->
-          <div class="mb-4">
-            <span class="text-2xl font-bold">${{ ad.price }}</span>
-            {% if ad.ad_type == 'rent' %}
-            <span class="text-sm text-gray-400 ml-1">/month</span>
-            {% endif %}
-          </div>
-          
-          <!-- Contact Button -->
-          <div class="mb-4">
-            {% if ad.advertiser.phone_number %}
-            <a href="https://wa.me/{{ ad.advertiser.phone_number }}" 
-               class="gradient-btn text-white w-full py-3 rounded-lg font-medium flex items-center justify-center gap-2">
-              <i class="fab fa-whatsapp"></i> Contact Seller
-            </a>
-            {% else %}
-            <button class="bg-gray-300 w-full py-3 rounded-lg font-medium cursor-not-allowed" disabled>
-              Contact Seller
-            </button>
-            {% endif %}
-          </div>
-
-          <!-- Key Attributes - No Redundancy -->
-          <div class="attribute-grid">
-            <div class="attribute-item">
-              <i class="fas fa-tag attribute-icon"></i>
-              <div class="attribute-value">{{ ad.category.name }}</div>
-              <div class="attribute-label">Category</div>
-            </div>
-            
-            {% if ad.property_type %}
-              {% if ad.num_rooms %}
-              <div class="attribute-item">
-                <i class="fas fa-bed attribute-icon"></i>
-                <div class="attribute-value">{{ ad.num_rooms }}</div>
-                <div class="attribute-label">Rooms</div>
-              </div>
-              {% endif %}
-              
-              {% if ad.num_baths %}
-              <div class="attribute-item">
-                <i class="fas fa-bath attribute-icon"></i>
-                <div class="attribute-value">{{ ad.num_baths }}</div>
-                <div class="attribute-label">Baths</div>
-              </div>
-              {% endif %}
-              
-              {% if ad.area_size %}
-              <div class="attribute-item">
-                <i class="fas fa-ruler-combined attribute-icon"></i>
-                <div class="attribute-value">{{ ad.area_size }} m²</div>
-                <div class="attribute-label">Area</div>
-              </div>
-              {% endif %}
-              
-              <div class="attribute-item">
-                <i class="fas fa-couch attribute-icon"></i>
-                <div class="attribute-value">{{ ad.get_furnishing_type_display|default:"-" }}</div>
-                <div class="attribute-label">Furnishing</div>
-              </div>
-            {% elif ad.vehicle_type %}
-              {% if ad.year %}
-              <div class="attribute-item">
-                <i class="fas fa-calendar attribute-icon"></i>
-                <div class="attribute-value">{{ ad.year }}</div>
-                <div class="attribute-label">Year</div>
-              </div>
-              {% endif %}
-              
-              <div class="attribute-item">
-                <i class="fas fa-cogs attribute-icon"></i>
-                <div class="attribute-value">{{ ad.motortype|default:"-" }}</div>
-                <div class="attribute-label">Engine</div>
-              </div>
-              
-              <div class="attribute-item">
-                <i class="fas fa-cog attribute-icon"></i>
-                <div class="attribute-value">{{ ad.geartype|default:"-" }}</div>
-                <div class="attribute-label">Transmission</div>
-              </div>
-              
-              <div class="attribute-item">
-                <i class="fas fa-car attribute-icon"></i>
-                <div class="attribute-value">{{ ad.get_vehicle_type_display|default:"-" }}</div>
-                <div class="attribute-label">Type</div>
-              </div>
-            {% elif ad.land_type %}
-              {% if ad.land_area %}
-              <div class="attribute-item">
-                <i class="fas fa-ruler-combined attribute-icon"></i>
-                <div class="attribute-value">{{ ad.land_area }} m²</div>
-                <div class="attribute-label">Area</div>
-              </div>
-              {% endif %}
-              
-              <div class="attribute-item">
-                <i class="fas fa-map-marked-alt attribute-icon"></i>
-                <div class="attribute-value">{{ ad.get_land_type_display|default:"-" }}</div>
-                <div class="attribute-label">Land Type</div>
-              </div>
-            {% else %}
-              {% if ad.year %}
-              <div class="attribute-item">
-                <i class="fas fa-calendar attribute-icon"></i>
-                <div class="attribute-value">{{ ad.year }}</div>
-                <div class="attribute-label">Year</div>
-              </div>
-              {% endif %}
-              
-              {% if ad.model %}
-              <div class="attribute-item">
-                <i class="fas fa-cube attribute-icon"></i>
-                <div class="attribute-value">{{ ad.model }}</div>
-                <div class="attribute-label">Model</div>
-              </div>
-              {% endif %}
-              
-              {% if ad.color %}
-              <div class="attribute-item">
-                <i class="fas fa-palette attribute-icon"></i>
-                <div class="attribute-value">{{ ad.color }}</div>
-                <div class="attribute-label">Color</div>
-              </div>
-              {% endif %}
-            {% endif %}
-          </div>
-
-          <!-- Additional Features - Now in pairs on mobile -->
-          {% if ad.property_type %}
-          <div class="mb-4">
-            <h3 class="text-sm font-semibold mb-2">Features</h3>
-            <div class="feature-grid">
-              {% if ad.has_parking %}
-              <div class="property-feature">
-                <i class="fas fa-car"></i>
-                <span class="text-sm">Parking</span>
-              </div>
-              {% endif %}
-              
-              {% if ad.has_pool %}
-              <div class="property-feature">
-                <i class="fas fa-swimming-pool"></i>
-                <span class="text-sm">Pool</span>
-              </div>
-              {% endif %}
-              
-              {% if ad.has_water %}
-              <div class="property-feature">
-                <i class="fas fa-faucet"></i>
-                <span class="text-sm">Water</span>
-              </div>
-              {% endif %}
-              
-              {% if ad.has_electricity %}
-              <div class="property-feature">
-                <i class="fas fa-bolt"></i>
-                <span class="text-sm">Electricity</span>
-              </div>
-              {% endif %}
-              
-              <!-- Add more features if needed -->
-              {% if ad.has_garden %}
-              <div class="property-feature">
-                <i class="fas fa-tree"></i>
-                <span class="text-sm">Garden</span>
-              </div>
-              {% endif %}
-              
-              {% if ad.has_security %}
-              <div class="property-feature">
-                <i class="fas fa-shield-alt"></i>
-                <span class="text-sm">Security</span>
-              </div>
-              {% endif %}
-            </div>
-          </div>
-          {% endif %}
-
-          <!-- Enhanced Seller Information with Professional Rating System -->
-          <div class="seller-info mb-4">
-            <div class="flex items-center gap-3 mb-3">
-              <img src="{{ ad.advertiser.avatar.url|default:'/static/images/default-avatar.jpg' }}" 
-                   alt="{{ ad.advertiser.full_name }}" class="w-12 h-12 rounded-full object-cover border-2 border-accent-border">
-              <div class="flex-1">
-                <h3 class="font-semibold text-sm">{{ ad.advertiser.full_name|default:ad.advertiser.full_name }}</h3>
-                <div class="flex items-center text-xs text-gray-400 mt-1">
-                  <i class="fas fa-map-marker-alt mr-1"></i>
-                  <span>{{ ad.advertiser.location|default:"Unknown location" }}</span>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Bio -->
-            {% if ad.advertiser.bio %}
-            <p class="text-xs text-gray-300 mb-3">{{ ad.advertiser.bio }}</p>
-            {% endif %}
-            
-            <!-- Review Stars - Dynamic -->
-            <div class="flex items-center gap-2 mb-3">
-              <div class="flex text-yellow-400">
-                {% with avg_rating=ad.advertiser.get_average_rating %}
-                  {% for i in "12345" %}
-                    {% if forloop.counter <= avg_rating %}
-                      <i class="fas fa-star text-sm"></i>
-                    {% elif forloop.counter|add:"-0.5" <= avg_rating %}
-                      <i class="fas fa-star-half-alt text-sm"></i>
-                    {% else %}
-                      <i class="far fa-star text-sm"></i>
-                    {% endif %}
-                  {% endfor %}
-                {% endwith %}
-              </div>
-              <span class="text-xs text-gray-400">
-                {{ ad.advertiser.get_average_rating|floatformat:1 }} ({{ ad.advertiser.get_rating_count }} review{{ ad.advertiser.get_rating_count|pluralize }})
-              </span>
-            </div>
-            
-            <!-- Rating Form for Authenticated Users (except seller) -->
-            {% if user.is_authenticated and user != ad.advertiser %}
-              <div class="accent-bg p-3 rounded-lg mb-3">
-                <h4 class="text-xs font-semibold mb-2 flex items-center gap-1">
-                  <i class="fas fa-star text-yellow-400"></i>
-                  {% if user_rating %}Your Rating{% else %}Rate This Seller{% endif %}
-                </h4>
-                <form method="post" class="space-y-2">
-                  {% csrf_token %}
-                  <div class="flex items-center gap-1 mb-2" id="star-rating">
-                    {% for value, text in rating_form.rating.field.choices %}
-                      <label class="cursor-pointer star-label" data-rating="{{ value }}">
-                        <input type="radio" name="rating" value="{{ value }}" 
-                               {% if user_rating and user_rating.rating == value %}checked{% endif %}
-                               class="hidden">
-                        <i class="fas fa-star text-lg {% if user_rating and user_rating.rating >= value %}text-yellow-400{% else %}text-gray-400{% endif %} hover:text-yellow-300 transition-colors"></i>
-                      </label>
-                    {% endfor %}
-                  </div>
-                  <textarea
-                    name="comment"
-                    rows="2"
-                    class="w-full p-2 bg-chip text-white border border-gray-700 rounded focus:outline-none focus:ring-1 focus:ring-accent-border placeholder-gray-500 resize-none text-xs"
-                    placeholder="Share your experience with this seller... (Optional)"
-                  >{% if user_rating %}{{ user_rating.comment }}{% endif %}</textarea>
-                  <div class="flex gap-2">
-                    <button type="submit" name="submit_rating" 
-                            class="gradient-btn text-white px-3 py-1 rounded text-xs font-medium flex items-center gap-1">
-                      <i class="fas fa-{% if user_rating %}check{% else %}star{% endif %} text-xs"></i>
-                      {% if user_rating %}Submit{% else %}Submit Rating{% endif %}
-                    </button>
-                    {% if user_rating %}
-                      <a href="{% url 'delete_rating' user_rating.id %}?next={{ ad.id }}" 
-                         class="secondary-btn text-white px-3 py-1 rounded text-xs font-medium flex items-center gap-1">
-                        <i class="fas fa-times text-xs"></i>
-                        Remove
-                      </a>
-                    {% endif %}
-                  </div>
-                </form>
-              </div>
-            {% elif not user.is_authenticated %}
-              <p class="text-xs text-gray-400 text-center py-2 border border-gray-700 rounded">
-                <a href="{% url 'login' %}?next={{ request.path }}" class="accent-color hover:underline">Log in</a> to rate this seller
-              </p>
-            {% endif %}
-            
-            <!-- Recent Ratings Preview -->
-            {% if recent_ratings %}
-              <div class="border-t border-gray-700 pt-3 mt-3">
-                <h4 class="text-xs font-semibold mb-2">Recent Reviews</h4>
-                <div class="space-y-2 max-h-32 overflow-y-auto">
-                  {% for rating in recent_ratings %}
-                    <div class="text-xs">
-                      <div class="flex justify-between items-start">
-                        <span class="font-medium">@{{ rating.rater.get_short_name }}</span>
-                        <div class="flex text-yellow-400">
-                          {% for i in "12345" %}
-                            <i class="fas fa-star text-xs {% if forloop.counter <= rating.rating %}text-yellow-400{% else %}text-gray-400{% endif %}"></i>
-                          {% endfor %}
-                        </div>
-                      </div>
-                      {% if rating.comment %}
-                        <p class="text-gray-300 mt-1 text-xs">{{ rating.comment|truncatewords:10 }}</p>
-                      {% endif %}
-                      <p class="text-gray-500 text-xs mt-1">{{ rating.created_at|timesince }} ago</p>
-                    </div>
-                  {% endfor %}
-                </div>
-              </div>
-            {% endif %}
-            
-            <!-- Seller Stats -->
-            <div class="seller-stats">
-              <div class="stat-item">
-                <div class="stat-value">{{ seller_stats.response_rate|default:"0" }}%</div>
-                <div class="stat-label">Response</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value">{{ seller_stats.total_ads }}</div>
-                <div class="stat-label">Listings</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value">{{ seller_stats.get_positive_rating_percentage|default:0|floatformat:0 }}%</div>
-                <div class="stat-label">Positive</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Share Section -->
-          <div class="border-t border-gray-700 pt-3 mt-3">
-            <div class="text-xs text-gray-400 mb-2">Share this ad</div>
-            <div class="share-buttons">
-              <div class="share-btn bg-blue-600 text-white" onclick="shareOnFacebook()">
-                <i class="fab fa-facebook-f text-xs"></i>
-              </div>
-              <div class="share-btn bg-green-500 text-white" onclick="shareOnWhatsApp()">
-                <i class="fab fa-whatsapp text-xs"></i>
-              </div>
-              <div class="share-btn bg-blue-400 text-white" onclick="shareOnTwitter()">
-                <i class="fab fa-twitter text-xs"></i>
-              </div>
-              <div class="share-btn bg-red-500 text-white" onclick="shareViaEmail()">
-                <i class="fas fa-envelope text-xs"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Comments Section (Mobile: Order 4 - AFTER product details) -->
-      <div class="lg:col-span-2 mobile-order-4">
-        <div class="card p-4 comments-container">
-          <h2 class="text-xl font-bold mb-4">Comments</h2>
-      
-          <!-- Comment Form -->
-          <div class="accent-bg p-3 rounded-lg mb-4">
-            <h3 class="text-sm font-medium mb-2 flex items-center gap-2">
-              <i class="fas fa-comment-dots accent-color"></i>
-              Add a Comment
-            </h3>
-
-            {% if user.is_authenticated %}
-            <form method="post" action="{% url 'add_comment' ad.id %}" class="flex">
-              {% csrf_token %}
-              <div class="flex-1 relative">
-                <textarea
-                  name="text"
-                  rows="2"
-                  class="w-full p-3 pr-16 bg-chip text-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-accent-border placeholder-gray-500 resize-none"
-                  placeholder="Write your comment..."
-                ></textarea>
-                <button
-                  type="submit"
-                  class="absolute right-2 bottom-2 gradient-btn text-white px-3 py-1 rounded text-sm font-medium flex items-center gap-1"
-                >
-                  <i class="fas fa-paper-plane text-xs"></i>
-                  Post
+              <textarea name="text" class="c-textarea" placeholder="Write your comment…" rows="2"></textarea>
+              <div style="display:flex;justify-content:flex-end;margin-top:7px">
+                <button type="submit" class="btn-post">
+                  <i class="fas fa-paper-plane"></i> Post
                 </button>
               </div>
             </form>
             {% else %}
-            <p class="text-sm">Please <a href="{% url 'login' %}" class="accent-color font-medium hover:underline">log in</a> to post a comment.</p>
+            <p class="login-note">
+              <a href="{% url 'login' %}">Log in</a> to post a comment.
+            </p>
             {% endif %}
           </div>
 
-          <!-- Comment List -->
-          <div class="space-y-3">
+          <div>
             {% for comment in comments %}
-            <div class="comment-card" data-comment-id="{{ comment.id }}">
-              <div class="flex items-start gap-3">
-                <img src="{{ comment.user.avatar.url|default:'/static/images/avatar.svg' }}" 
-                     class="w-8 h-8 rounded-full object-cover border border-accent-border">
-                <div class="flex-1">
-                  <div class="flex justify-between items-start">
-                    <div>
-                      <p class="text-sm font-semibold">@{{ comment.user.full_name }}</p>
-                      <p class="text-xs accent-color">{{ comment.timestamp|timesince }} ago</p>
+            <div class="comm-item" data-comment-id="{{ comment.id }}">
+              <div class="comm-user-row">
+                <div class="ava">
+                  {% if comment.user.avatar %}
+                    <img src="{{ comment.user.avatar.url }}" alt="">
+                  {% else %}
+                    {{ comment.user.full_name|first|upper }}
+                  {% endif %}
+                </div>
+                <div>
+                  <div class="comm-name">@{{ comment.user.full_name }}</div>
+                  <div class="comm-time">{{ comment.timestamp|timesince }} ago</div>
+                </div>
+                {% if comment.user == request.user %}
+                <button class="comm-del" onclick="showDel('{{ comment.id }}')" title="Delete comment">
+                  <i class="fas fa-trash"></i>
+                </button>
+                {% endif %}
+              </div>
+              <p class="comm-text">{{ comment.text }}</p>
+              <button class="btn-reply reply-toggle" data-id="{{ comment.id }}">
+                <i class="fas fa-reply"></i> Reply
+              </button>
+
+              {% if comment.replies.all %}
+              <div class="reply-list">
+                {% for reply in comment.replies.all %}
+                <div class="reply-item" data-reply-id="{{ reply.id }}">
+                  <div class="comm-user-row" style="margin-bottom:4px">
+                    <div class="ava sm">
+                      {% if reply.user.avatar %}
+                        <img src="{{ reply.user.avatar.url }}" alt="">
+                      {% else %}
+                        {{ reply.user.full_name|first|upper }}
+                      {% endif %}
                     </div>
-                    {% if comment.user == request.user %}
-                    <button class="text-red-500 text-xs hover:text-red-400" 
-                            onclick="showDeleteModal('{{ comment.id }}')">
+                    <div>
+                      <div class="comm-name" style="font-size:11px">@{{ reply.user.full_name }}</div>
+                      <div class="comm-time">{{ reply.timestamp|timesince }} ago</div>
+                    </div>
+                    {% if reply.user == request.user %}
+                    <button class="comm-del" onclick="showDel('{{ reply.id }}')" title="Delete reply">
                       <i class="fas fa-trash"></i>
                     </button>
                     {% endif %}
                   </div>
-                  
-                  <p class="text-sm mt-2">{{ comment.text }}</p>
-                  
-                  <div class="comment-actions">
-                    <a href="#" class="text-xs accent-color hover:opacity-80 flex items-center gap-1 reply-link" 
-                       data-comment-id="{{ comment.id }}">
-                      <i class="fas fa-reply text-xs"></i>
-                      Reply
-                    </a>
-                  </div>
-                  
-                  <!-- Reply Form -->
-                  <div class="reply-form" id="reply-form-{{ comment.id }}" style="display: none;">
-                    <form method="post" action="{% url 'reply_to_comment' comment.id %}" class="flex mt-2">
-                      {% csrf_token %}
-                      <div class="flex-1 relative">
-                        <textarea
-                          name="text"
-                          rows="1"
-                          class="w-full p-2 pr-16 bg-chip text-white border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-accent-border placeholder-gray-500 resize-none text-sm"
-                          placeholder="Write your reply..."
-                        ></textarea>
-                        <button
-                          type="submit"
-                          class="absolute right-2 bottom-2 gradient-btn text-white px-2 py-1 rounded text-xs font-medium flex items-center gap-1"
-                        >
-                          <i class="fas fa-paper-plane text-xs"></i>
-                          Reply
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                  
-                  <!-- Replies -->
-                  {% for reply in comment.replies.all %}
-                  <div class="accent-bg rounded p-2 mt-2 ml-3 reply" data-reply-id="{{ reply.id }}">
-                    <div class="flex items-start gap-2">
-                      <img src="{{ reply.user.avatar.url|default:'/static/images/avatar.svg' }}" 
-                           class="w-6 h-6 rounded-full object-cover border border-accent-border">
-                      <div class="flex-1">
-                        <div class="flex justify-between items-start">
-                          <div>
-                            <p class="text-xs font-semibold">@{{ reply.user.full_name }}</p>
-
-                            <p class="text-xs accent-color">{{ reply.timestamp|timesince }} ago</p>
-                          </div>
-                          {% if reply.user == request.user %}
-                          <button class="text-red-500 text-xs hover:text-red-400" 
-                                  onclick="showDeleteModal('{{ reply.id }}')">
-                            <i class="fas fa-trash"></i>
-                          </button>
-                          {% endif %}
-                        </div>
-                        <p class="text-xs mt-1">{{ reply.text }}</p>
-                      </div>
-                    </div>
-                  </div>
-                  {% endfor %}
+                  <p class="comm-text" style="font-size:12px;margin-bottom:0">{{ reply.text }}</p>
                 </div>
+                {% endfor %}
+              </div>
+              {% endif %}
+
+              <div class="reply-form" id="reply-form-{{ comment.id }}">
+                <form method="post" action="{% url 'reply_to_comment' comment.id %}" style="margin-top:8px">
+                  {% csrf_token %}
+                  <textarea name="text" class="c-textarea" rows="1" placeholder="Write a reply…" style="min-height:44px;font-size:12px"></textarea>
+                  <div style="display:flex;justify-content:flex-end;margin-top:6px">
+                    <button type="submit" class="btn-post" style="font-size:11px;padding:6px 11px">
+                      <i class="fas fa-paper-plane"></i> Reply
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
             {% empty %}
-            <div class="text-center py-4">
-              <i class="fas fa-comment-slash text-gray-300 text-2xl mb-2"></i>
-              <p class="text-gray-400 text-sm">No comments yet. Be the first to comment!</p>
+            <div class="empty-comm">
+              <i class="fas fa-comment-slash"></i>
+              No comments yet — be the first!
             </div>
             {% endfor %}
           </div>
         </div>
       </div>
+
     </div>
 
-    <!-- Similar Items - Compact Section -->
-    <div class="mt-6">
-      <div class="mb-4">
-        <h2 class="text-lg font-bold">Similar Items</h2>
-        <p class="text-sm text-gray-400">You might also like</p>
-      </div>
-      
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-        {% for item in similar_items %}
-        <div class="card overflow-hidden hover:shadow-md transition-shadow">
-          <div class="relative">
-            {% if item.images.first %}
-            <a href="{% url 'product_detail' item.id %}">
-              <img src="{{ item.images.first.image.url }}" alt="{{ item.name }}" class="w-full h-32 object-cover">
-            </a>
+    <!-- ── RIGHT SIDEBAR ── -->
+    <div class="sidebar">
+
+      <!-- product info -->
+      <div class="card">
+        <div class="prod-header">
+          <div class="prod-title-row">
+            <h1 class="prod-title">{{ ad.name }}</h1>
+            {% if user.is_authenticated %}
+            <form method="POST" action="{% url 'toggle_favorite' ad.id %}" style="margin:0">
+              {% csrf_token %}
+              <button type="submit" class="fav-btn {% if ad.id in user_favorites %}saved{% endif %}" title="Save listing">
+                <i class="{% if ad.id in user_favorites %}fas{% else %}far{% endif %} fa-bookmark"></i>
+              </button>
+            </form>
             {% else %}
-            <div class="bg-gray-200 w-full h-32 flex items-center justify-center">
-              <i class="fas fa-image text-gray-400"></i>
-            </div>
+            <a href="{% url 'login' %}" class="fav-btn" title="Log in to save">
+              <i class="far fa-bookmark"></i>
+            </a>
             {% endif %}
-            
-            <span class="absolute top-2 right-2 bg-black bg-opacity-70 text-white text-xs px-1.5 py-0.5 rounded">
-              ${{ item.price }}
-            </span>
           </div>
-          
-          <div class="p-2">
-            <h3 class="font-medium text-sm mb-1 truncate">
-              <a href="{% url 'product_detail' item.id %}" class="hover:accent-color">
-                {{ item.name }}
-              </a>
-            </h3>
-            
-            <div class="flex items-center text-xs text-gray-400">
-              <i class="fas fa-map-marker-alt mr-1"></i>
-              <span class="truncate">{{ item.location }}</span>
+          <div class="prod-meta">
+            {% if ad.location %}<span><i class="fas fa-map-marker-alt"></i> {{ ad.location }}</span>{% endif %}
+            <span><i class="fas fa-eye"></i> {{ ad.views|default:0 }} views</span>
+          </div>
+        </div>
+
+        <div class="prod-price">
+          ${{ ad.price }}
+          {% if ad.ad_type == 'rent' %}<small>/month</small>{% endif %}
+        </div>
+
+        <div class="cta-wrap">
+          {% if ad.advertiser.phone_number %}
+          <a href="https://wa.me/{{ ad.advertiser.phone_number }}" class="btn-cta">
+            <i class="fab fa-whatsapp"></i> Contact Seller
+          </a>
+          {% else %}
+          <div>
+            <div class="btn-cta-off"><i class="fas fa-phone-slash"></i> Contact Seller</div>
+            <p class="cta-note">Seller hasn't added a phone number</p>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- specs -->
+        <div class="specs-wrap">
+          <div class="block-lbl">Details</div>
+          <div class="specs-grid">
+            <div class="spec-item">
+              <div class="spec-ico ic-cat"><i class="fas fa-tag"></i></div>
+              <div><div class="spec-val">{{ ad.category.name }}</div><div class="spec-lbl">Category</div></div>
+            </div>
+
+            {% if ad.property_type %}
+              {% if ad.num_rooms %}
+              <div class="spec-item">
+                <div class="spec-ico ic-rm"><i class="fas fa-bed"></i></div>
+                <div><div class="spec-val">{{ ad.num_rooms }}</div><div class="spec-lbl">Rooms</div></div>
+              </div>
+              {% endif %}
+              {% if ad.num_baths %}
+              <div class="spec-item">
+                <div class="spec-ico ic-bt"><i class="fas fa-bath"></i></div>
+                <div><div class="spec-val">{{ ad.num_baths }}</div><div class="spec-lbl">Baths</div></div>
+              </div>
+              {% endif %}
+              {% if ad.area_size %}
+              <div class="spec-item">
+                <div class="spec-ico ic-ar"><i class="fas fa-ruler-combined"></i></div>
+                <div><div class="spec-val">{{ ad.area_size }} m²</div><div class="spec-lbl">Area</div></div>
+              </div>
+              {% endif %}
+              <div class="spec-item">
+                <div class="spec-ico ic-fn"><i class="fas fa-couch"></i></div>
+                <div><div class="spec-val">{{ ad.get_furnishing_type_display|default:"—" }}</div><div class="spec-lbl">Furnishing</div></div>
+              </div>
+            {% elif ad.vehicle_type %}
+              {% if ad.year %}
+              <div class="spec-item">
+                <div class="spec-ico ic-yr"><i class="fas fa-calendar-alt"></i></div>
+                <div><div class="spec-val">{{ ad.year }}</div><div class="spec-lbl">Year</div></div>
+              </div>
+              {% endif %}
+              <div class="spec-item">
+                <div class="spec-ico ic-eng"><i class="fas fa-cogs"></i></div>
+                <div><div class="spec-val">{{ ad.motortype|default:"—" }}</div><div class="spec-lbl">Engine</div></div>
+              </div>
+              <div class="spec-item">
+                <div class="spec-ico ic-tr"><i class="fas fa-cog"></i></div>
+                <div><div class="spec-val">{{ ad.geartype|default:"—" }}</div><div class="spec-lbl">Transmission</div></div>
+              </div>
+              <div class="spec-item">
+                <div class="spec-ico ic-ty"><i class="fas fa-car"></i></div>
+                <div><div class="spec-val">{{ ad.get_vehicle_type_display|default:"—" }}</div><div class="spec-lbl">Type</div></div>
+              </div>
+            {% elif ad.land_type %}
+              {% if ad.land_area %}
+              <div class="spec-item">
+                <div class="spec-ico ic-ar"><i class="fas fa-ruler-combined"></i></div>
+                <div><div class="spec-val">{{ ad.land_area }} m²</div><div class="spec-lbl">Area</div></div>
+              </div>
+              {% endif %}
+              <div class="spec-item">
+                <div class="spec-ico ic-ld"><i class="fas fa-map-marked-alt"></i></div>
+                <div><div class="spec-val">{{ ad.get_land_type_display|default:"—" }}</div><div class="spec-lbl">Land type</div></div>
+              </div>
+            {% else %}
+              {% if ad.year %}
+              <div class="spec-item">
+                <div class="spec-ico ic-yr"><i class="fas fa-calendar-alt"></i></div>
+                <div><div class="spec-val">{{ ad.year }}</div><div class="spec-lbl">Year</div></div>
+              </div>
+              {% endif %}
+              {% if ad.model %}
+              <div class="spec-item">
+                <div class="spec-ico ic-md"><i class="fas fa-cube"></i></div>
+                <div><div class="spec-val">{{ ad.model }}</div><div class="spec-lbl">Model</div></div>
+              </div>
+              {% endif %}
+              {% if ad.color %}
+              <div class="spec-item">
+                <div class="spec-ico ic-cl"><i class="fas fa-palette"></i></div>
+                <div><div class="spec-val">{{ ad.color }}</div><div class="spec-lbl">Color</div></div>
+              </div>
+              {% endif %}
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- property features -->
+        {% if ad.property_type %}
+        <div class="feats-wrap">
+          <div class="block-lbl">Features</div>
+          <div class="feats-grid">
+            {% if ad.has_parking %}<div class="feat-pill"><i class="fas fa-car"></i> Parking</div>{% endif %}
+            {% if ad.has_pool %}<div class="feat-pill"><i class="fas fa-swimming-pool"></i> Pool</div>{% endif %}
+            {% if ad.has_water %}<div class="feat-pill"><i class="fas fa-faucet"></i> Water</div>{% endif %}
+            {% if ad.has_electricity %}<div class="feat-pill"><i class="fas fa-bolt"></i> Electricity</div>{% endif %}
+            {% if ad.has_garden %}<div class="feat-pill"><i class="fas fa-tree"></i> Garden</div>{% endif %}
+            {% if ad.has_security %}<div class="feat-pill"><i class="fas fa-shield-alt"></i> Security</div>{% endif %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- seller card -->
+      <div class="card">
+        <div class="seller-top">
+          <div class="seller-ava">
+            {% if ad.advertiser.avatar %}
+              <img src="{{ ad.advertiser.avatar.url }}" alt="{{ ad.advertiser.full_name }}">
+            {% else %}
+              {{ ad.advertiser.full_name|first|upper }}
+            {% endif %}
+          </div>
+          <div>
+            <div class="seller-name">{{ ad.advertiser.full_name|default:ad.advertiser.username }}</div>
+            <div class="seller-loc">
+              <i class="fas fa-map-marker-alt" style="font-size:10px"></i>
+              {{ ad.advertiser.location|default:"Location not set" }}
             </div>
           </div>
         </div>
-        {% empty %}
-        <div class="col-span-full text-center py-4">
-          <p class="text-gray-400 text-sm">No similar items found</p>
+
+        {% with avg=ad.advertiser.get_average_rating count=ad.advertiser.get_rating_count %}
+        {% if count > 0 %}
+        <div class="seller-rating">
+          <div class="stars">
+            {% for i in "12345" %}
+              {% if forloop.counter <= avg %}
+                <i class="fas fa-star"></i>
+              {% else %}
+                <i class="far fa-star off"></i>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <span class="rating-txt">{{ avg|floatformat:1 }} ({{ count }} review{{ count|pluralize }})</span>
         </div>
-        {% endfor %}
+        {% else %}
+        <div class="new-seller">
+          <i class="fas fa-seedling"></i> New seller — no reviews yet
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <div class="seller-stats">
+          <div class="stat-col">
+            <div class="stat-val {% if seller_stats.response_rate %}good{% else %}dash{% endif %}">
+              {% if seller_stats.response_rate %}{{ seller_stats.response_rate }}%{% else %}—{% endif %}
+            </div>
+            <div class="stat-lbl">Response</div>
+          </div>
+          <div class="stat-col">
+            <div class="stat-val {% if seller_stats.total_ads %}good{% else %}dash{% endif %}">
+              {{ seller_stats.total_ads|default:"—" }}
+            </div>
+            <div class="stat-lbl">Listings</div>
+          </div>
+          <div class="stat-col">
+            <div class="stat-val {% if seller_stats.get_positive_rating_percentage %}good{% else %}dash{% endif %}">
+              {% if seller_stats.get_positive_rating_percentage %}{{ seller_stats.get_positive_rating_percentage|floatformat:0 }}%{% else %}—{% endif %}
+            </div>
+            <div class="stat-lbl">Positive</div>
+          </div>
+        </div>
+
+        <!-- rate seller -->
+        {% if user.is_authenticated and user != ad.advertiser %}
+        <div class="rate-wrap">
+          <div class="block-lbl" style="margin-bottom:8px">
+            {% if user_rating %}Your rating{% else %}Rate this seller{% endif %}
+          </div>
+          <form method="post">
+            {% csrf_token %}
+            <div class="star-inputs" id="starRow">
+              {% for value, text in rating_form.rating.field.choices %}
+              <label data-val="{{ value }}">
+                <input type="radio" name="rating" value="{{ value }}"
+                       {% if user_rating and user_rating.rating == value %}checked{% endif %}
+                       style="display:none">
+                <i class="{% if user_rating and user_rating.rating >= value %}fas{% else %}far{% endif %} fa-star"
+                   style="font-size:19px;color:{% if user_rating and user_rating.rating >= value %}#f59e0b{% else %}#1e293b{% endif %};cursor:pointer;transition:color .1s"></i>
+              </label>
+              {% endfor %}
+            </div>
+            <textarea name="comment" class="c-textarea" rows="2"
+                      placeholder="Share your experience… (optional)"
+                      style="font-size:12px;margin-bottom:8px">{% if user_rating %}{{ user_rating.comment }}{% endif %}</textarea>
+            <div style="display:flex;gap:7px;align-items:center">
+              <button type="submit" name="submit_rating" class="btn-post" style="font-size:12px">
+                <i class="fas fa-check"></i> {% if user_rating %}Update{% else %}Submit{% endif %}
+              </button>
+              {% if user_rating %}
+              <a href="{% url 'delete_rating' user_rating.id %}?next={{ ad.id }}" class="btn-ghost" style="font-size:12px;text-decoration:none">
+                <i class="fas fa-times"></i> Remove
+              </a>
+              {% endif %}
+            </div>
+          </form>
+        </div>
+        {% elif not user.is_authenticated %}
+        <div style="padding:10px 16px;border-bottom:0.5px solid var(--border)">
+          <p class="login-note"><a href="{% url 'login' %}?next={{ request.path }}">Log in</a> to rate this seller</p>
+        </div>
+        {% endif %}
+
+        <!-- recent reviews -->
+        {% if recent_ratings %}
+        <div class="reviews-wrap">
+          <div class="block-lbl" style="margin-bottom:10px">Recent reviews</div>
+          {% for rating in recent_ratings %}
+          <div class="review-item">
+            <div class="review-top">
+              <span class="review-name">@{{ rating.rater.get_short_name }}</span>
+              <div class="review-mini-stars">
+                {% for i in "12345" %}
+                  <i class="{% if forloop.counter <= rating.rating %}fas{% else %}far off{% endif %} fa-star"></i>
+                {% endfor %}
+              </div>
+            </div>
+            {% if rating.comment %}<p class="review-text">{{ rating.comment|truncatewords:12 }}</p>{% endif %}
+            <p class="review-time">{{ rating.created_at|timesince }} ago</p>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- share -->
+        <div class="share-wrap">
+          <p class="share-lbl">Share this listing</p>
+          <div class="share-btns">
+            <button class="sh-btn s-fb" onclick="shareOnFacebook()" aria-label="Share on Facebook"><i class="fab fa-facebook-f"></i></button>
+            <button class="sh-btn s-wa" onclick="shareOnWhatsApp()" aria-label="Share on WhatsApp"><i class="fab fa-whatsapp"></i></button>
+            <button class="sh-btn s-tw" onclick="shareOnTwitter()" aria-label="Share on Twitter"><i class="fab fa-twitter"></i></button>
+            <button class="sh-btn s-em" onclick="shareViaEmail()" aria-label="Share via email"><i class="fas fa-envelope"></i></button>
+          </div>
+        </div>
       </div>
-    </div>
-  </main>
-  
-  <!-- Delete Confirmation Modal -->
-  <div id="delete-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-    <div class="bg-tile-bg rounded-lg p-4 shadow-lg max-w-xs w-full border border-gray-200">
-      <div class="text-center mb-3">
-        <i class="fas fa-exclamation-circle accent-color text-2xl mb-2"></i>
-        <h3 class="text-sm font-semibold">Delete Comment</h3>
-        <p class="text-xs text-gray-400 mt-1">Are you sure?</p>
-      </div>
-      <div class="flex justify-center gap-2">
-        <button id="cancel-delete" class="bg-chip px-3 py-1.5 rounded text-xs font-medium hover:opacity-80">
-          Cancel
-        </button>
-        <button id="confirm-delete" class="bg-red-600 text-white px-3 py-1.5 rounded text-xs font-medium hover:bg-red-700">
-          Delete
-        </button>
-      </div>
+
     </div>
   </div>
 
-  <script>
-    // Image gallery functionality
-    function changeMainImage(src, element) {
-      document.getElementById('mainImage').src = src;
-      
-      // Remove active class from all thumbnails
-      document.querySelectorAll('.gallery-thumb').forEach(thumb => {
-        thumb.classList.remove('active');
-      });
-      
-      // Add active class to clicked thumbnail
-      element.classList.add('active');
-    }
-    
-    // Reply functionality
-    document.querySelectorAll('.reply-link').forEach(link => {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const commentId = this.getAttribute('data-comment-id');
-        const form = document.getElementById(`reply-form-${commentId}`);
-        form.style.display = form.style.display === 'none' ? 'block' : 'none';
-      });
-    });
-    
-    // Delete modal functions
-    let currentDeleteId = null;
-    
-    function showDeleteModal(id) {
-      currentDeleteId = id;
-      document.getElementById('delete-modal').classList.remove('hidden');
-    }
-    
-    document.getElementById('cancel-delete').addEventListener('click', function() {
-      document.getElementById('delete-modal').classList.add('hidden');
-      currentDeleteId = null;
-    });
-    
-    document.getElementById('confirm-delete').addEventListener('click', function() {
-      if (currentDeleteId) {
-        const element = document.querySelector(`[data-comment-id="${currentDeleteId}"], [data-reply-id="${currentDeleteId}"]`);
-        if (element) {
-          element.remove();
-        }
-        document.getElementById('delete-modal').classList.add('hidden');
-        currentDeleteId = null;
-      }
-    });
-    
-    // Share functionality
-    function getShareableLink() {
-      return "{{ request.build_absolute_uri }}";
-    }
-    
-    function getShareText() {
-      return "Check out: {{ ad.name }} on SomaliShoppe";
-    }
-    
-    function shareOnFacebook() {
-      const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getShareableLink())}`;
-      window.open(url, '_blank', 'width=600,height=400');
-    }
-    
-    function shareOnWhatsApp() {
-      const text = encodeURIComponent(`${getShareText()} - ${getShareableLink()}`);
-      window.open(`https://wa.me/?text=${text}`, '_blank');
-    }
-    
-    function shareOnTwitter() {
-      const text = encodeURIComponent(getShareText());
-      const url = encodeURIComponent(getShareableLink());
-      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank', 'width=600,height=400');
-    }
-    
-    function shareViaEmail() {
-      const subject = encodeURIComponent("Check out this ad");
-      const body = encodeURIComponent(`${getShareText()}\n\n${getShareableLink()}`);
-      window.location.href = `mailto:?subject=${subject}&body=${body}`;
-    }
+  <!-- similar items -->
+  <div class="sim-section">
+    <h2>Similar listings</h2>
+    <p>You might also like</p>
+    <div class="sim-grid">
+      {% for item in similar_items %}
+      <a class="sim-card" href="{% url 'product_detail' item.id %}">
+        <div class="sim-img">
+          {% if item.images.first %}
+            <img src="{{ item.images.first.image.url }}" alt="{{ item.name }}">
+          {% else %}
+            <i class="fas fa-image"></i>
+          {% endif %}
+          <span class="sim-price">${{ item.price }}</span>
+        </div>
+        <div class="sim-body">
+          <div class="sim-name">{{ item.name }}</div>
+          <div class="sim-loc"><i class="fas fa-map-marker-alt"></i> {{ item.location|truncatechars:20 }}</div>
+        </div>
+      </a>
+      {% empty %}
+      <p style="color:var(--muted);font-size:13px;grid-column:1/-1">No similar listings found.</p>
+      {% endfor %}
+    </div>
+  </div>
 
-    // Interactive star rating functionality
-    document.addEventListener('DOMContentLoaded', function() {
-      const starLabels = document.querySelectorAll('.star-label');
-      
-      starLabels.forEach(label => {
-        label.addEventListener('click', function() {
-          const rating = this.getAttribute('data-rating');
-          
-          // Update all stars
-          starLabels.forEach(star => {
-            const starRating = star.getAttribute('data-rating');
-            const icon = star.querySelector('i');
-            
-            if (starRating <= rating) {
-              icon.classList.remove('text-gray-400', 'far');
-              icon.classList.add('text-yellow-400', 'fas');
-            } else {
-              icon.classList.remove('text-yellow-400', 'fas');
-              icon.classList.add('text-gray-400', 'far');
-            }
-          });
-        });
-        
-        // Hover effect
-        label.addEventListener('mouseenter', function() {
-          const rating = this.getAttribute('data-rating');
-          starLabels.forEach(star => {
-            const starRating = star.getAttribute('data-rating');
-            const icon = star.querySelector('i');
-            if (starRating <= rating) {
-              icon.classList.add('text-yellow-300');
-            }
-          });
-        });
-        
-        label.addEventListener('mouseleave', function() {
-          starLabels.forEach(star => {
-            const icon = star.querySelector('i');
-            icon.classList.remove('text-yellow-300');
-          });
-        });
-      });
+</main>
+
+<!-- delete modal -->
+<div class="modal-bg" id="delModal">
+  <div class="modal-box">
+    <i class="fas fa-exclamation-triangle"></i>
+    <h3>Delete this comment?</h3>
+    <p>This action can't be undone.</p>
+    <div class="modal-btns">
+      <button class="btn-ghost" id="cancelDel">Cancel</button>
+      <button class="btn-danger" id="confirmDel">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// gallery
+function changeImg(url, el) {
+  document.getElementById('mainImage').src = url;
+  document.querySelectorAll('.gal-thumb').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// reply toggle
+document.querySelectorAll('.reply-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const form = document.getElementById('reply-form-' + btn.dataset.id);
+    if (!form) return;
+    form.style.display = form.style.display === 'block' ? 'none' : 'block';
+  });
+});
+
+// star rating
+const starRow = document.getElementById('starRow');
+if (starRow) {
+  const labels = Array.from(starRow.querySelectorAll('label'));
+  labels.forEach((label, idx) => {
+    label.addEventListener('mouseenter', () => {
+      labels.forEach((l, i) => l.querySelector('i').style.color = i <= idx ? '#f59e0b' : '#1e293b');
     });
-  </script>
-</body>
-</html>
+    label.addEventListener('mouseleave', () => {
+      const checked = starRow.querySelector('input:checked');
+      const val = checked ? parseInt(checked.value) : 0;
+      labels.forEach((l, i) => l.querySelector('i').style.color = i < val ? '#f59e0b' : '#1e293b');
+    });
+    label.addEventListener('click', () => {
+      const val = parseInt(label.dataset.val);
+      labels.forEach((l, i) => l.querySelector('i').style.color = i < val ? '#f59e0b' : '#1e293b');
+    });
+  });
+}
+
+// delete modal
+let delTarget = null;
+function showDel(id) { delTarget = id; document.getElementById('delModal').classList.add('open'); }
+document.getElementById('cancelDel').addEventListener('click', () => {
+  document.getElementById('delModal').classList.remove('open');
+  delTarget = null;
+});
+document.getElementById('confirmDel').addEventListener('click', () => {
+  if (delTarget) window.location.href = '/delete-comment/' + delTarget + '/';
+});
+
+// share
+function shareOnFacebook() { window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(location.href), '_blank'); }
+function shareOnWhatsApp() { window.open('https://wa.me/?text=' + encodeURIComponent(document.title + ' ' + location.href), '_blank'); }
+function shareOnTwitter()  { window.open('https://twitter.com/intent/tweet?url=' + encodeURIComponent(location.href) + '&text=' + encodeURIComponent(document.title), '_blank'); }
+function shareViaEmail()   { window.location.href = 'mailto:?subject=' + encodeURIComponent(document.title) + '&body=' + encodeURIComponent(location.href); }
+</script>
+
 {% endblock %}

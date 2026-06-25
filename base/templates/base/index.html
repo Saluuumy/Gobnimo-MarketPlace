@@ -18,12 +18,13 @@
 
   /* ── HERO ───────────────────────────────────────────── */
   .hero {
-    background: linear-gradient(135deg, #0f1623 0%, #111827 60%, #0c1a2e 100%);
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    padding: 3rem 1.5rem 2.5rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
+  background: linear-gradient(135deg, #38455e 0%, #111827 60%, #0c1a2e 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 3rem 1.5rem 2.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin-right: 61px;
   }
   .hero::before {
     content: '';
@@ -299,8 +300,9 @@
   .scroll-row:active { cursor: grabbing; }
   .scroll-row::-webkit-scrollbar { height: 3px; }
   .scroll-row::-webkit-scrollbar-thumb { background: rgba(100,116,139,0.4); border-radius: 2px; }
+  /* NOTE: removed .scroll-row.dragging * { pointer-events: none } — that was blocking link clicks */
   .scroll-row.dragging { scroll-behavior: auto; cursor: grabbing; }
-  .scroll-row.dragging * { pointer-events: none; }
+
   .cards-flex { display: flex; gap: 0.875rem; padding: 0.25rem 0.125rem; width: max-content; }
 
   .asset-card {
@@ -317,6 +319,13 @@
     box-shadow: 0 12px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(59,130,246,0.2);
     border-color: rgba(59,130,246,0.3);
   }
+
+  /* ── card image link wrapper ── */
+  .card-img-link {
+    display: block;
+    text-decoration: none;
+  }
+
   .card-img {
     position: relative;
     height: 144px;
@@ -329,14 +338,17 @@
     transition: transform 0.35s;
     user-select: none;
     -webkit-user-drag: none;
+    pointer-events: none; /* let the <a> handle clicks, not the img */
   }
   .asset-card:hover .card-img img { transform: scale(1.04); }
+
   .badge-featured {
     position: absolute; top: 7px; left: 7px;
     background: linear-gradient(90deg, #f59e0b, #ef4444);
     color: #fff; font-size: 0.62rem; font-weight: 700;
     padding: 2px 7px; border-radius: 99px;
     text-transform: uppercase; letter-spacing: 0.04em;
+    pointer-events: none;
   }
   .badge-price {
     position: absolute; bottom: 7px; right: 7px;
@@ -344,6 +356,7 @@
     border: 1px solid rgba(255,255,255,0.12);
     color: #fff; font-size: 0.78rem; font-weight: 700;
     padding: 2px 8px; border-radius: 7px;
+    pointer-events: none;
   }
   .placeholder-img {
     width: 100%; height: 100%;
@@ -403,7 +416,7 @@
     <h1>Buy, sell &amp; discover<br><em>everything local</em></h1>
     <p class="hero-sub">From property and vehicles to electronics and fashion — find the best deals in your city.</p>
 
-    <!-- ── 3-FIELD SEARCH (from your navbar) ──────────── -->
+    <!-- ── 3-FIELD SEARCH ──────────── -->
     <div class="hero-search-box">
       <form method="GET" action="{% url 'search_ads' %}">
         <div class="hero-search-fields">
@@ -463,7 +476,6 @@
         </div>
       </form>
     </div>
-    <!-- ─────────────────────────────────────────────────── -->
 
     <div class="hero-stats">
       <div class="hero-stat">
@@ -514,7 +526,8 @@
               data-category="{{ product.category.name|default:''|lower }}"
               data-location="{{ product.location|default:''|lower }}">
 
-              <a href="{% url 'product_detail' product.id %}">
+              <!-- IMAGE LINK — separate <a> with class for display:block -->
+              <a class="card-img-link" href="{% url 'product_detail' product.id %}">
                 <div class="card-img">
                   {% if product.images.first %}
                     <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" loading="lazy" draggable="false">
@@ -552,6 +565,110 @@
   </div>
 
 </main>
+
+<script>
+(function () {
+  /* ── Hero category dropdown ── */
+  const btn   = document.getElementById('heroCatBtn');
+  const menu  = document.getElementById('heroCatMenu');
+  const label = document.getElementById('heroCatLabel');
+  const val   = document.getElementById('heroCatValue');
+
+  btn.addEventListener('click', () => {
+    const open = menu.classList.toggle('open');
+    btn.classList.toggle('open', open);
+  });
+
+  document.querySelectorAll('.hero-cat-item').forEach(item => {
+    item.addEventListener('click', () => {
+      label.textContent = item.dataset.label;
+      val.value = item.dataset.value;
+      menu.classList.remove('open');
+      btn.classList.remove('open');
+    });
+  });
+
+  document.addEventListener('click', e => {
+    if (!btn.contains(e.target) && !menu.contains(e.target)) {
+      menu.classList.remove('open');
+      btn.classList.remove('open');
+    }
+  });
+
+  /* ── Drag-to-scroll (click-safe version) ── */
+  document.querySelectorAll('.scroll-row').forEach(row => {
+    let startX, scrollLeft, moved;
+
+    row.addEventListener('mousedown', e => {
+      startX     = e.pageX - row.offsetLeft;
+      scrollLeft = row.scrollLeft;
+      moved      = false;
+      row.classList.add('dragging');
+    });
+
+    row.addEventListener('mousemove', e => {
+      if (!row.classList.contains('dragging')) return;
+      const dx = e.pageX - row.offsetLeft - startX;
+      if (Math.abs(dx) > 4) moved = true; // threshold: only a real drag
+      row.scrollLeft = scrollLeft - dx;
+    });
+
+    // On mouseup: if barely moved, treat as a click — don't block it
+    row.addEventListener('mouseup', e => {
+      row.classList.remove('dragging');
+      // If user barely moved, let the click event fire naturally
+      // If they dragged, prevent the upcoming click from navigating
+      if (moved) {
+        e.preventDefault();
+        // Absorb the next click event once
+        row.addEventListener('click', absorbClick, { capture: true, once: true });
+      }
+    });
+
+    row.addEventListener('mouseleave', () => {
+      row.classList.remove('dragging');
+    });
+
+    function absorbClick(e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  });
+
+  /* ── Filter bar ── */
+  const filterInput = document.getElementById('filterInput');
+  const assetCount  = document.getElementById('assetCount');
+  const allCards    = () => document.querySelectorAll('.asset-card');
+  const allSections = () => document.querySelectorAll('.cat-section');
+
+  function updateCount() {
+    const visible = document.querySelectorAll('.asset-card:not([style*="display: none"])').length;
+    assetCount.textContent = visible;
+  }
+
+  // Initial count
+  updateCount();
+
+  filterInput && filterInput.addEventListener('input', () => {
+    const q = filterInput.value.toLowerCase().trim();
+    allCards().forEach(card => {
+      const match = !q
+        || card.dataset.name.includes(q)
+        || card.dataset.category.includes(q)
+        || card.dataset.location.includes(q);
+      card.style.display = match ? '' : 'none';
+    });
+    // Hide empty sections
+    allSections().forEach(section => {
+      const hasVisible = [...section.querySelectorAll('.asset-card')].some(c => c.style.display !== 'none');
+      section.style.display = hasVisible ? '' : 'none';
+    });
+    updateCount();
+  });
+})();
+</script>
+
+{% endblock %}
 
 <script>
 (function () {
@@ -695,4 +812,3 @@
 })();
 </script>
 
-{% endblock %}

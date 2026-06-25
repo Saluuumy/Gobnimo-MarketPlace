@@ -17,10 +17,10 @@
       <h2 class="text-xl font-semibold mb-2" style="color: var(--accent);">{{ user.full_name }}</h2>
       <p class="text-sm mb-4" style="color: var(--muted);">{{ user.email }}</p>
       <nav class="w-full space-y-2">
-        <button class="w-full text-left px-4 py-2 rounded-lg font-medium text-white transition-colors" style="background: linear-gradient(to right, var(--accent), #0d9488);">
+        <button class="w-full text-left px-4 py-2 rounded-lg font-medium text-white transition-colors" style="background: linear-gradient( hsla(121, 100%, 63%, 0.659));">
           Profile Settings
         </button>
-        <button class="w-full text-left px-4 py-2 rounded-lg font-medium transition-colors" style="background: var(--chip); color: var(--muted);">
+        <button class="w-full text-left px-4 py-2 rounded-lg font-medium transition-colors" style="background: #43FF46A8;">
           Your Ads
         </button>
       </nav>
@@ -30,7 +30,7 @@
     <section class="col-span-2 space-y-8">
       <!-- Profile Settings -->
       <div class="rounded-xl p-6 shadow-lg" style="background: var(--tile-bg);">
-        <h1 class="text-2xl font-bold mb-4 pb-3" style="color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.1);">Profile Settings</h1>
+        <h1 class="text-2xl font-bold mb-4 pb-3" style="color:#e6eef8; border-bottom: 1px solid rgba(255,255,255,0.1);">Profile Settings</h1>
         <form method="POST" enctype="multipart/form-data" class="space-y-6 p-6 rounded-lg" style="background: var(--chip); border: 1px solid rgba(255,255,255,0.05);">
           {% csrf_token %}
           {% if messages %}
@@ -95,7 +95,7 @@
           </div>
 
           <div class="text-right">
-            <button type="submit" class="px-6 py-2 rounded-lg font-medium text-white shadow transition-colors" style="background: linear-gradient(to right, var(--accent), #0d9488);">
+            <button type="submit" class="px-6 py-2 rounded-lg font-medium text-white shadow transition-colors" style="background: linear-gradient(#43FF46A8);">
               Save Changes
             </button>
           </div>
@@ -104,9 +104,11 @@
 
       <!-- User Ads -->
       <div class="rounded-xl p-6 shadow-lg" style="background: var(--tile-bg);">
-        <h1 class="text-2xl font-bold mb-4 pb-3" style="color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.1);">Your Ads</h1>
+        <h1 class="text-2xl font-bold mb-4 pb-3" style="color:#e6eef8; border-bottom: 1px solid rgba(255,255,255,0.1);">Your Ads</h1>
         {% if ads.exists %}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+
           {% for ad in ads %}
           <div class="rounded-lg overflow-hidden transition-shadow hover:shadow-xl" style="background: var(--chip);">
             <a href="{% url 'product_detail' ad.id %}" class="block relative">

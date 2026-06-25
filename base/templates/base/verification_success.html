@@ -1,9 +1,118 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title>Email Verified</title>
+    <meta charset="UTF-8">
+    <title>Email Verified</title>
+
+    <style>
+        :root {
+            --bg: #0f141d;
+            --card: #161d2d;
+            --border: #2b3347;
+            --text: #eef2f7;
+            --muted: #8b95a7;
+            --green: #20d47b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg);
+            font-family: Inter, Arial, sans-serif;
+            color: var(--text);
+            padding: 20px;
+        }
+
+        .verification-card {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            border-radius: 50%;
+            background: rgba(32, 212, 123, 0.15);
+            border: 2px solid var(--green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: var(--green);
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 15px;
+            color: var(--text);
+        }
+
+        p {
+            color: var(--muted);
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+
+        .login-btn {
+            display: inline-block;
+            padding: 14px 32px;
+            background: var(--green);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .small-text {
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--muted);
+        }
+    </style>
 </head>
 <body>
-<h1>Your email has been verified!</h1>
-<p>Thank you for verifying your email. You can now <a href="{% url 'login' %}">log in</a>.</p>
+
+    <div class="verification-card">
+        <div class="success-icon">
+            ✓
+        </div>
+
+        <h1>Email Verified!</h1>
+
+        <p>
+            Thank you for verifying your email address.
+            Your account is now active and ready to use.
+        </p>
+
+        <a href="{% url 'login' %}" class="login-btn">
+            Login to Your Account
+        </a>
+
+        <div class="small-text">
+            Welcome to the marketplace.
+        </div>
+    </div>
+
 </body>
 </html>
