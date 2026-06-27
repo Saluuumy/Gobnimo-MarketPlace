@@ -1,239 +1,179 @@
 {% extends 'main.html' %}
 {% load static %}
-
 {% block content %}
-<body class="antialiased">
-    <main class="flex-1 overflow-auto p-3 md:p-6 scrollbar-thin">
-        <!-- Search Header -->
-        <section class="mb-4 md:mb-6">
-            <div class="flex items-center justify-between">
-                <h2 class="text-lg md:text-2xl font-semibold text-white">
-                    {% if keyword or location or category_name %}
-                        Search Results
-                    {% else %}
-                        All Listings
-                    {% endif %}
-                </h2>
-            </div>
+<div class="sr">
+<div class="sr-inner">
 
-            <div class="mt-3 md:mt-4 bg-slate-800 rounded-lg shadow p-4 mb-4 border border-slate-700">
-                <p class="text-[color:var(--muted)] mb-3 text-sm md:text-base">
-                    {% if keyword or location or category_name %}
-                        Showing results for:
-                        {% if keyword %}<span class="font-semibold text-white">"{{ keyword }}"</span>{% endif %}
-                        {% if location %}in <span class="font-semibold text-white">{{ location }}</span>{% endif %}
-                        {% if category_name %}in category: <span class="font-semibold text-white">{{ category_name }}</span>{% endif %}
-                    {% else %}
-                        <span class="text-white">Showing all listings</span>
-                    {% endif %}
-                </p>
-                
-                <!-- Mini search form -->
-                <form method="GET" action="{% url 'search_ads' %}" class="flex gap-2">
-                    <input name="q" type="text" placeholder="Keywords" 
-                           class="flex-1 px-4 py-2 rounded-md bg-slate-700 border border-slate-600 text-white placeholder:text-[color:var(--muted)]" 
-                           value="{{ request.GET.q }}">
-                    <button type="submit" class="px-4 py-2 rounded-md text-white text-sm font-medium" style="background-color: rgb(14 165 233);">
-                        <i class="fas fa-search mr-1"></i> Search
-                    </button>
-                </form>
-            </div>
-        </section>
+  <!-- top bar -->
+  <div class="sr-topbar">
+    <div>
+      <div class="sr-title">
+        {% if keyword or location or category_name %}Search Results{% else %}All Listings{% endif %}
+      </div>
+      {% if has_results %}
+      <div class="sr-count" style="margin-top:2px">
+        {% with total=ads|length %}
+          {{ total }} listing{{ total|pluralize }} found
+        {% endwith %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
 
-        <!-- No Results Section -->
-        {% if not has_results %}
-        <section class="text-center py-12 bg-slate-800 rounded-xl shadow-lg border border-slate-700">
-            <div class="mb-6 text-sky-500">
-                <i class="fas fa-search fa-3x"></i>
-            </div>
-            <h2 class="text-xl font-bold text-white mb-4">No Matching Results Found</h2>
-            <p class="text-[color:var(--muted)] mb-8 max-w-xl mx-auto">
-                We couldn't find any listings matching your search criteria. Try adjusting your filters.
-            </p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="{% url 'index' %}" class="px-6 py-3 rounded-md text-white font-medium text-center transition" style="background-color: rgb(14 165 233);">
-                    <i class="fas fa-home mr-2"></i> Go to Homepage
-                </a>
-                <a href="{% url 'search_ads' %}" class="px-6 py-3 bg-slate-700 text-white rounded-md hover:bg-slate-600 transition text-center">
-                    <i class="fas fa-redo mr-2"></i> Try New Search
-                </a>
-            </div>
-        </section>
+  <!-- mini search -->
+  <form method="GET" action="{% url 'search_ads' %}" class="sr-search-row">
+    <input name="q" type="text" class="sr-input"
+           placeholder="Search listings…"
+           value="{{ request.GET.q|default:'' }}">
+    {% if request.GET.category %}
+      <input type="hidden" name="category" value="{{ request.GET.category }}">
+    {% endif %}
+    <button type="submit" class="sr-btn">
+      <i class="fas fa-search"></i> Search
+    </button>
+  </form>
+
+  <!-- active filter chips -->
+  {% if keyword or location or category_name %}
+  <div class="sr-chips">
+    {% if keyword %}
+    <span class="sr-chip"><i class="fas fa-search"></i> "{{ keyword }}"</span>
+    {% endif %}
+    {% if location %}
+    <span class="sr-chip"><i class="fas fa-map-marker-alt"></i> {{ location }}</span>
+    {% endif %}
+    {% if category_name %}
+    <span class="sr-chip"><i class="fas fa-tag"></i> {{ category_name }}</span>
+    {% endif %}
+    <a href="{% url 'search_ads' %}" style="font-size:11px;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:3px;margin-left:4px">
+      <i class="fas fa-times" style="font-size:10px"></i> Clear
+    </a>
+  </div>
+  {% endif %}
+
+  <!-- notice -->
+  {% if has_similar %}
+  <div class="sr-notice {% if has_exact %}blue{% else %}amber{% endif %}">
+    <i class="fas fa-info-circle"></i>
+    <span>
+      {% if has_exact %}
+        Showing <strong>exact matches</strong> first, with similar listings below.
+      {% else %}
+        No exact matches — showing <strong>similar listings</strong> you might like.
+      {% endif %}
+    </span>
+  </div>
+  {% endif %}
+
+  <!-- no results -->
+  {% if not has_results %}
+  <div class="sr-empty">
+    <i class="fas fa-search"></i>
+    <h3>No listings found</h3>
+    <p>We couldn't find anything matching your search. Try different keywords or browse all listings.</p>
+    <div class="sr-empty-btns">
+      <a href="{% url 'index' %}" class="btn-solid"><i class="fas fa-home"></i> Homepage</a>
+      <a href="{% url 'search_ads' %}" class="btn-ghost"><i class="fas fa-redo"></i> New search</a>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- exact matches -->
+  {% if has_exact %}
+  <div class="sr-section-lbl">Exact matches</div>
+  <div class="sr-grid">
+    {% for ad in ads %}
+    <a class="sr-card" href="{% url 'product_detail' ad.id %}">
+      <div class="sr-card-img">
+        {% if ad.images.first %}
+          <img src="{{ ad.images.first.image.url }}" alt="{{ ad.name }}" loading="lazy" draggable="false">
+        {% else %}
+          <div class="sr-card-no-img"><i class="fas fa-image"></i></div>
         {% endif %}
-
-        <!-- Similar Ads Notice -->
-        {% if has_similar %}
-        <div class="{% if has_exact %}bg-blue-900 bg-opacity-20 border-l-4 border-blue-400{% else %}bg-yellow-900 bg-opacity-20 border-l-4 border-yellow-400{% endif %} p-4 mb-6 rounded">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <i class="fas fa-info-circle {% if has_exact %}text-blue-400{% else %}text-yellow-400{% endif %} text-xl"></i>
-                </div>
-                <div class="ml-3">
-                    <p class="{% if has_exact %}text-blue-300{% else %}text-yellow-300{% endif %}">
-                        {% if has_exact %}
-                        <strong>Showing exact matches first</strong>, with similar listings below
-                        {% else %}
-                        <strong>No exact matches found</strong>, but here are similar listings you might like
-                        {% endif %}
-                    </p>
-                </div>
-            </div>
+        {% if ad.is_featured %}<span class="sr-badge-featured">Featured</span>{% endif %}
+        {% if location and location|lower in ad.location|lower %}
+          <span class="sr-badge-exact"><i class="fas fa-map-marker-alt"></i> Exact</span>
+        {% endif %}
+        <span class="sr-badge-price">${{ ad.price }}</span>
+      </div>
+      <div class="sr-card-body">
+        <div class="sr-card-name">{{ ad.name }}</div>
+        <div class="sr-card-meta">
+          {% if ad.location %}
+          <span><i class="fas fa-map-marker-alt"></i> {{ ad.location }}</span>
+          {% endif %}
+          <span><i class="far fa-clock"></i> {{ ad.created_at|timesince }} ago</span>
         </div>
-        {% endif %}
-
-        <!-- Exact Matches -->
-        {% if has_exact %}
-        <section class="mb-8 md:mb-12">
-            <h2 class="text-lg md:text-xl font-bold text-white mb-4 md:mb-6">Exact Matches</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                {% for ad in ads %}
-                <article class="asset-card bg-slate-800 rounded-lg shadow-md overflow-hidden border border-slate-700" data-name="{{ ad.name|lower }}" data-location="{{ ad.location|default:''|lower }}">
-                    <a href="{% url 'product_detail' ad.id %}">
-                        <div class="product-image-container relative h-40 md:h-48">
-                            {% if ad.images.first %}
-                            <img src="{{ ad.images.first.image.url }}" alt="{{ ad.name }}" class="product-image w-full h-full object-cover" loading="lazy" draggable="false">
-                            {% else %}
-                            <div class="product-placeholder w-full h-full bg-slate-700 flex items-center justify-center">
-                                <i class="fas fa-image text-4xl text-slate-500"></i>
-                            </div>
-                            {% endif %}
-
-                            {% if ad.is_featured %}
-                            <span class="absolute top-2 left-2 bg-pink-500 text-white text-xs font-bold px-2 py-1 rounded">Featured</span>
-                            {% endif %}
-
-                            <span class="absolute top-2 right-2 bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded">${{ ad.price }}</span>
-                        </div>
-                    </a>
-                    
-                    <div class="p-4">
-                        <div class="flex items-start justify-between gap-3">
-                            <div class="w-full">
-                                <h3 class="font-semibold text-white mb-1 product-name">{{ ad.name }}</h3>
-                                <div class="text-xs text-slate-400 mb-2">
-                                    <i class="fas fa-map-marker-alt mr-1"></i>{{ ad.location|default:"No location" }}
-                                    {% if location and location|lower in ad.location|lower %}
-                                    <span class="ml-2 bg-green-900 text-green-300 text-xs px-2 py-0.5 rounded">
-                                        Exact Location
-                                    </span>
-                                    {% endif %}
-                                </div>
-                                <div class="text-xs text-slate-400 mb-3">
-                                    <i class="far fa-clock mr-1"></i>{{ ad.created_at|timesince }} ago
-                                </div>
-                                <div class="mt-2 flex items-center justify-between">
-                                    <span class="text-xs bg-slate-700 px-2 py-1 rounded text-slate-300">{{ ad.category.name }}</span>
-                                    <a href="{% url 'product_detail' ad.id %}" class="px-3 py-2 rounded-md bg-sky-500 text-white text-xs font-medium hover:bg-sky-600 transition">View Details</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-                {% endfor %}
-            </div>
-        </section>
-        {% endif %}
-
-        <!-- Similar Listings -->
-        {% if has_similar %}
-        <section class="mb-8 md:mb-12">
-            <h2 class="text-lg md:text-xl font-bold text-white mb-4 md:mb-6">
-                {% if has_exact %}More Similar Listings{% else %}Similar Listings{% endif %}
-            </h2>
-            
-            {% if not has_exact %}
-            <div class="mb-6 bg-blue-900 bg-opacity-20 p-3 rounded-md border border-blue-800">
-                <p class="text-blue-300 text-sm">
-                    <i class="fas fa-info-circle mr-1"></i>
-                    Showing similar vehicles in other locations
-                </p>
-            </div>
-            {% endif %}
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                {% for ad in similar_ads %}
-                <article class="asset-card bg-slate-800 rounded-lg shadow-md overflow-hidden border border-slate-700" data-name="{{ ad.name|lower }}" data-location="{{ ad.location|default:''|lower }}">
-                    <a href="{% url 'product_detail' ad.id %}">
-                        <div class="product-image-container relative h-40 md:h-48">
-                            {% if ad.images.first %}
-                            <img src="{{ ad.images.first.image.url }}" alt="{{ ad.name }}" class="product-image w-full h-full object-cover" loading="lazy" draggable="false">
-                            {% else %}
-                            <div class="product-placeholder w-full h-full bg-slate-700 flex items-center justify-center">
-                                <i class="fas fa-image text-4xl text-slate-500"></i>
-                            </div>
-                            {% endif %}
-
-                            {% if ad.is_featured %}
-                            <span class="absolute top-2 left-2 bg-pink-500 text-white text-xs font-bold px-2 py-1 rounded">Featured</span>
-                            {% endif %}
-
-                            <span class="absolute top-2 right-2 bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded">${{ ad.price }}</span>
-                        </div>
-                    </a>
-                    
-                    <div class="p-4">
-                        <div class="flex items-start justify-between gap-3">
-                            <div class="w-full">
-                                <h3 class="font-semibold text-white mb-1 product-name">{{ ad.name }}</h3>
-                                <div class="text-xs text-slate-400 mb-2">
-                                    <i class="fas fa-map-marker-alt mr-1"></i>{{ ad.location|default:"No location" }}
-                                </div>
-                                <div class="text-xs text-slate-400 mb-3">
-                                    <i class="far fa-clock mr-1"></i>{{ ad.created_at|timesince }} ago
-                                </div>
-                                <div class="mt-2 flex items-center justify-between">
-                                    <span class="text-xs bg-slate-700 px-2 py-1 rounded text-slate-300">{{ ad.category.name }}</span>
-                                    <a href="{% url 'product_detail' ad.id %}" class="px-3 py-2 rounded-md bg-sky-500 text-white text-xs font-medium hover:bg-sky-600 transition">View Details</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-                {% endfor %}
-            </div>
-        </section>
-        {% endif %}
-
-        <!-- Pagination -->
-        {% if ads.paginator.num_pages > 1 %}
-        <div class="flex justify-center mt-8">
-            <nav class="inline-flex rounded-md shadow">
-                {% if ads.has_previous %}
-                <a href="?page={{ ads.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" 
-                   class="inline-flex items-center px-4 py-2 border border-slate-600 bg-slate-800 text-sm font-medium text-white hover:bg-slate-700 rounded-l-md">
-                    Previous
-                </a>
-                {% endif %}
-                
-                <span class="inline-flex items-center px-4 py-2 border border-slate-600 bg-slate-800 text-sm font-medium text-white">
-                    Page {{ ads.number }} of {{ ads.paginator.num_pages }}
-                </span>
-                
-                {% if ads.has_next %}
-                <a href="?page={{ ads.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" 
-                   class="inline-flex items-center px-4 py-2 border border-slate-600 bg-slate-800 text-sm font-medium text-white hover:bg-slate-700 rounded-r-md">
-                    Next
-                </a>
-                {% endif %}
-            </nav>
+        <div class="sr-card-foot">
+          <span class="sr-card-tag">{{ ad.category.name }}</span>
+          <span class="sr-card-btn">View</span>
         </div>
-        {% endif %}
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
 
-        <!-- Search Tips -->
-        {% if has_results %}
-        <div class="mt-8 md:mt-12 bg-slate-800 rounded-xl p-4 md:p-6 border border-slate-700">
-            <h3 class="font-bold text-lg text-white mb-3 flex items-center">
-                <i class="fas fa-lightbulb text-yellow-500 mr-2"></i> Search Tips
-            </h3>
-            <ul class="list-disc pl-5 space-y-2 text-[color:var(--muted)]">
-                <li>Try <strong class="text-white">different keywords</strong> or more general terms (e.g., "sedan" instead of "Toyota Camry")</li>
-                <li>Check your spelling or try <strong class="text-white">variations of model names</strong></li>
-                <li>Remove location filters to <strong class="text-white">expand your search area</strong></li>
-                <li>Use <strong class="text-white">state abbreviations</strong> (e.g., "CA") for broader location matching</li>
-                <li>Browse by category using the main navigation menu</li>
-            </ul>
-        </div>
+  <!-- similar listings -->
+  {% if has_similar %}
+  <div class="sr-section-lbl">
+    {% if has_exact %}More similar listings{% else %}Similar listings{% endif %}
+  </div>
+  <div class="sr-grid">
+    {% for ad in similar_ads %}
+    <a class="sr-card" href="{% url 'product_detail' ad.id %}">
+      <div class="sr-card-img">
+        {% if ad.images.first %}
+          <img src="{{ ad.images.first.image.url }}" alt="{{ ad.name }}" loading="lazy" draggable="false">
+        {% else %}
+          <div class="sr-card-no-img"><i class="fas fa-image"></i></div>
         {% endif %}
-    </main>
-</body>
+        {% if ad.is_featured %}<span class="sr-badge-featured">Featured</span>{% endif %}
+        <span class="sr-badge-price">${{ ad.price }}</span>
+      </div>
+      <div class="sr-card-body">
+        <div class="sr-card-name">{{ ad.name }}</div>
+        <div class="sr-card-meta">
+          {% if ad.location %}
+          <span><i class="fas fa-map-marker-alt"></i> {{ ad.location }}</span>
+          {% endif %}
+          <span><i class="far fa-clock"></i> {{ ad.created_at|timesince }} ago</span>
+        </div>
+        <div class="sr-card-foot">
+          <span class="sr-card-tag">{{ ad.category.name }}</span>
+          <span class="sr-card-btn">View</span>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- pagination -->
+  {% if ads.paginator.num_pages > 1 %}
+  <div class="sr-pag">
+    {% if ads.has_previous %}
+    <a href="?page={{ ads.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">
+      <i class="fas fa-chevron-left" style="font-size:11px"></i>
+    </a>
+    {% endif %}
+
+    {% for i in ads.paginator.page_range %}
+      {% if i == ads.number %}
+        <span class="cur">{{ i }}</span>
+      {% elif i >= ads.number|add:"-2" and i <= ads.number|add:"2" %}
+        <a href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">{{ i }}</a>
+      {% endif %}
+    {% endfor %}
+
+    {% if ads.has_next %}
+    <a href="?page={{ ads.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">
+      <i class="fas fa-chevron-right" style="font-size:11px"></i>
+    </a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+</div>
+</div>
 {% endblock %}

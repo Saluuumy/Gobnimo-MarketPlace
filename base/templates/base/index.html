@@ -2,415 +2,7 @@
 {% load static %}
 
 {% block content %}
-<style>
-  html, body { overflow-x: hidden; }
-  .site-main  { min-width: 0; }
-
-  :root {
-    --card-bg:     #131b2e;
-    --card-border: rgba(255,255,255,0.07);
-    --accent:      #3b82f6;
-    --text:        #e2e8f0;
-    --muted:       #64748b;
-    --tag-bg:      rgba(59,130,246,0.12);
-    --tag-text:    #93c5fd;
-  }
-
-  /* ── HERO ───────────────────────────────────────────── */
-  .hero {
-  background: linear-gradient(135deg, #38455e 0%, #111827 60%, #0c1a2e 100%);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  padding: 3rem 1.5rem 2.5rem;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  margin-right: 61px;
-  }
-  .hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(59,130,246,0.1) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .hero-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: rgba(59,130,246,0.1);
-    border: 1px solid rgba(59,130,246,0.25);
-    border-radius: 99px;
-    padding: 0.25rem 0.875rem;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #93c5fd;
-    margin-bottom: 1.25rem;
-  }
-  .hero-eyebrow span { width: 6px; height: 6px; background: #3b82f6; border-radius: 50%; display: inline-block; }
-  .hero h1 {
-    font-size: clamp(1.6rem, 5vw, 2.75rem);
-    font-weight: 800;
-    line-height: 1.15;
-    letter-spacing: -0.03em;
-    color: #f1f5f9;
-    margin-bottom: 0.75rem;
-  }
-  .hero h1 em {
-    font-style: normal;
-    background: linear-gradient(90deg, #3b82f6, #818cf8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .hero-sub {
-    color: var(--muted);
-    font-size: 0.95rem;
-    max-width: 400px;
-    margin: 0 auto 2rem;
-    line-height: 1.6;
-  }
-
-  /* ── HERO SEARCH BOX ────────────────────────────────── */
-  .hero-search-box {
-    max-width: 680px;
-    margin: 0 auto;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 16px;
-    padding: 1rem;
-    backdrop-filter: blur(10px);
-  }
-  .hero-search-fields {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-
-  /* category dropdown */
-  .hero-cat-wrap {
-    position: relative;
-    flex: 0 0 180px;
-  }
-  .hero-cat-btn {
-    width: 100%;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px;
-    padding: 0.65rem 0.875rem;
-    color: #e2e8f0;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: border-color 0.2s;
-  }
-  .hero-cat-btn:hover { border-color: rgba(59,130,246,0.5); }
-  .hero-cat-btn svg { flex-shrink: 0; width: 14px; height: 14px; stroke: #64748b; fill: none; transition: transform 0.2s; }
-  .hero-cat-btn.open svg { transform: rotate(180deg); }
-
-  .hero-cat-menu {
-    display: none;
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    width: 220px;
-    background: #1e293b;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    box-shadow: 0 16px 40px rgba(0,0,0,0.5);
-    z-index: 100;
-    max-height: 260px;
-    overflow-y: auto;
-    padding: 0.5rem;
-    scrollbar-width: thin;
-  }
-  .hero-cat-menu.open { display: block; }
-  .hero-cat-item {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.55rem 0.75rem;
-    border-radius: 8px;
-    color: #cbd5e1;
-    font-size: 0.83rem;
-    cursor: pointer;
-    transition: background 0.15s;
-    width: 100%;
-    text-align: left;
-    background: none;
-    border: none;
-  }
-  .hero-cat-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
-  .hero-cat-item svg { flex-shrink: 0; }
-
-  /* keyword + location inputs */
-  .hero-input {
-    flex: 1;
-    min-width: 120px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px;
-    padding: 0.65rem 0.875rem;
-    color: #e2e8f0;
-    font-size: 0.85rem;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .hero-input:focus { border-color: rgba(59,130,246,0.6); }
-  .hero-input::placeholder { color: #475569; }
-
-  /* search button */
-  .hero-search-btn {
-    background: linear-gradient(135deg, #3b82f6, #6366f1);
-    border: none;
-    border-radius: 10px;
-    padding: 0.65rem 1.25rem;
-    color: #fff;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    white-space: nowrap;
-    transition: opacity 0.2s, transform 0.1s;
-    flex-shrink: 0;
-  }
-  .hero-search-btn:hover { opacity: 0.9; }
-  .hero-search-btn:active { transform: scale(0.98); }
-  .hero-search-btn svg { width: 15px; height: 15px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; }
-
-  /* hero stats */
-  .hero-stats {
-    display: flex;
-    justify-content: center;
-    gap: 2.5rem;
-    margin-top: 1.75rem;
-    flex-wrap: wrap;
-  }
-  .hero-stat-num { font-size: 1.3rem; font-weight: 800; color: #f1f5f9; letter-spacing: -0.02em; }
-  .hero-stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
-
-  /* ── CATEGORY PILLS ──────────────────────────────────── */
-  .cat-pills {
-    display: flex;
-    gap: 0.4rem;
-    overflow-x: auto;
-    padding: 0.875rem 1.25rem;
-    scrollbar-width: none;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-  }
-  .cat-pills::-webkit-scrollbar { display: none; }
-  .pill {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    white-space: nowrap;
-    padding: 0.35rem 0.8rem;
-    border-radius: 99px;
-    border: 1px solid rgba(255,255,255,0.07);
-    background: rgba(255,255,255,0.03);
-    color: var(--muted);
-    font-size: 0.75rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s;
-    text-decoration: none;
-  }
-  .pill:hover, .pill.active {
-    background: #3b82f6;
-    border-color: #3b82f6;
-    color: #fff;
-  }
-
-  /* ── FILTER BAR ──────────────────────────────────────── */
-  .filter-bar {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1.25rem;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    flex-wrap: wrap;
-  }
-  .filter-bar input {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 8px;
-    padding: 0.4rem 0.875rem;
-    color: var(--text);
-    font-size: 0.82rem;
-    outline: none;
-    width: 200px;
-    transition: border-color 0.2s;
-  }
-  .filter-bar input:focus { border-color: #3b82f6; }
-  .filter-bar input::placeholder { color: var(--muted); }
-  .filter-count { margin-left: auto; font-size: 0.75rem; color: var(--muted); }
-  .filter-count strong { color: var(--text); }
-
-  /* ── SECTION HEAD ────────────────────────────────────── */
-  .section-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-  }
-  .section-title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #f1f5f9;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .section-title::before {
-    content: '';
-    display: inline-block;
-    width: 3px;
-    height: 15px;
-    background: #3b82f6;
-    border-radius: 2px;
-  }
-  .see-all {
-    font-size: 0.73rem;
-    color: #3b82f6;
-    text-decoration: none;
-    font-weight: 500;
-  }
-  .see-all:hover { text-decoration: underline; }
-
-  /* ── CARDS ───────────────────────────────────────────── */
-  .scroll-row {
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(100,116,139,0.4) transparent;
-    cursor: grab;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    touch-action: pan-y;
-    user-select: none;
-  }
-  .scroll-row:active { cursor: grabbing; }
-  .scroll-row::-webkit-scrollbar { height: 3px; }
-  .scroll-row::-webkit-scrollbar-thumb { background: rgba(100,116,139,0.4); border-radius: 2px; }
-  /* NOTE: removed .scroll-row.dragging * { pointer-events: none } — that was blocking link clicks */
-  .scroll-row.dragging { scroll-behavior: auto; cursor: grabbing; }
-
-  .cards-flex { display: flex; gap: 0.875rem; padding: 0.25rem 0.125rem; width: max-content; }
-
-  .asset-card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 14px;
-    overflow: hidden;
-    flex-shrink: 0;
-    width: 215px;
-    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-  }
-  .asset-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(59,130,246,0.2);
-    border-color: rgba(59,130,246,0.3);
-  }
-
-  /* ── card image link wrapper ── */
-  .card-img-link {
-    display: block;
-    text-decoration: none;
-  }
-
-  .card-img {
-    position: relative;
-    height: 144px;
-    background: #1e293b;
-    overflow: hidden;
-  }
-  .card-img img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    transition: transform 0.35s;
-    user-select: none;
-    -webkit-user-drag: none;
-    pointer-events: none; /* let the <a> handle clicks, not the img */
-  }
-  .asset-card:hover .card-img img { transform: scale(1.04); }
-
-  .badge-featured {
-    position: absolute; top: 7px; left: 7px;
-    background: linear-gradient(90deg, #f59e0b, #ef4444);
-    color: #fff; font-size: 0.62rem; font-weight: 700;
-    padding: 2px 7px; border-radius: 99px;
-    text-transform: uppercase; letter-spacing: 0.04em;
-    pointer-events: none;
-  }
-  .badge-price {
-    position: absolute; bottom: 7px; right: 7px;
-    background: rgba(0,0,0,0.72); backdrop-filter: blur(6px);
-    border: 1px solid rgba(255,255,255,0.12);
-    color: #fff; font-size: 0.78rem; font-weight: 700;
-    padding: 2px 8px; border-radius: 7px;
-    pointer-events: none;
-  }
-  .placeholder-img {
-    width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    background: #1e293b;
-  }
-  .placeholder-img i { font-size: 2rem; color: #334155; }
-  .card-body { padding: 0.8rem; }
-  .card-name {
-    font-size: 0.85rem; font-weight: 600; color: #e2e8f0;
-    margin-bottom: 0.3rem;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .card-meta { display: flex; flex-direction: column; gap: 0.18rem; margin-bottom: 0.7rem; }
-  .card-meta span {
-    font-size: 0.68rem; color: var(--muted);
-    display: flex; align-items: center; gap: 0.3rem;
-  }
-  .card-meta i { font-size: 0.62rem; width: 10px; }
-  .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.4rem; }
-  .card-tag {
-    font-size: 0.62rem; font-weight: 600;
-    padding: 2px 8px; border-radius: 99px;
-    background: var(--tag-bg); color: var(--tag-text);
-  }
-  .card-btn {
-    font-size: 0.68rem; font-weight: 600;
-    padding: 0.3rem 0.7rem; border-radius: 7px;
-    background: #3b82f6; color: #fff;
-    text-decoration: none; transition: background 0.15s;
-  }
-  .card-btn:hover { background: #2563eb; }
-
-  .cat-section { margin-bottom: 2.25rem; }
-  .empty-row {
-    padding: 2rem; text-align: center;
-    color: var(--muted); font-size: 0.85rem;
-    border: 1px dashed rgba(255,255,255,0.06); border-radius: 12px;
-  }
-
-  @media (max-width: 768px) {
-    .hero { padding: 2rem 1rem 1.75rem; }
-    .hero-search-fields { flex-direction: column; }
-    .hero-cat-wrap { flex: 1 1 100%; }
-    .hero-input { width: 100%; }
-    .hero-search-btn { width: 100%; justify-content: center; }
-    .asset-card { width: 180px; }
-    .card-img { height: 128px; }
-  }
-</style>
-
-<main class="site-main relative ml-0 md:ml-[62px] min-w-0 flex-1 overflow-auto">
-
-  <!-- ── HERO ──────────────────────────────────────────── -->
+<main class="site-main relative ml-0 md:ml-[0] min-w-0 flex-1 overflow-auto">
   <div class="hero">
     <div class="hero-eyebrow"><span></span> Gobonimo Marketplace</div>
     <h1>Buy, sell &amp; discover<br><em>everything local</em></h1>
@@ -466,7 +58,7 @@
           <!-- Location -->
           <input class="hero-input" type="text" name="location"
             placeholder="Location — city or area"
-            value="{{ request.GET.location|default:'' }}" style="flex: 0 0 150px;">
+            value="{{ request.GET.location|default:'' }}" class="hero-input hero-input-loc">
 
           <!-- Submit -->
           <button type="submit" class="hero-search-btn">
@@ -595,45 +187,57 @@
     }
   });
 
-  /* ── Drag-to-scroll (click-safe version) ── */
-  document.querySelectorAll('.scroll-row').forEach(row => {
-    let startX, scrollLeft, moved;
+ document.querySelectorAll(".scroll-row").forEach((slider) => {
 
-    row.addEventListener('mousedown', e => {
-      startX     = e.pageX - row.offsetLeft;
-      scrollLeft = row.scrollLeft;
-      moved      = false;
-      row.classList.add('dragging');
+    let isDown = false;
+    let isDragging = false;
+    let startX;
+    let scrollLeft;
+
+    slider.style.cursor = "grab";
+
+    slider.addEventListener("mousedown", (e) => {
+        isDown = true;
+        isDragging = false;
+
+        startX = e.pageX;
+        scrollLeft = slider.scrollLeft;
+
+        slider.style.cursor = "grabbing";
     });
 
-    row.addEventListener('mousemove', e => {
-      if (!row.classList.contains('dragging')) return;
-      const dx = e.pageX - row.offsetLeft - startX;
-      if (Math.abs(dx) > 4) moved = true; // threshold: only a real drag
-      row.scrollLeft = scrollLeft - dx;
+    slider.addEventListener("mousemove", (e) => {
+
+        if (!isDown) return;
+
+        const walk = e.pageX - startX;
+
+        if (Math.abs(walk) > 5) {
+            isDragging = true;
+        }
+
+        slider.scrollLeft = scrollLeft - walk;
     });
 
-    // On mouseup: if barely moved, treat as a click — don't block it
-    row.addEventListener('mouseup', e => {
-      row.classList.remove('dragging');
-      // If user barely moved, let the click event fire naturally
-      // If they dragged, prevent the upcoming click from navigating
-      if (moved) {
-        e.preventDefault();
-        // Absorb the next click event once
-        row.addEventListener('click', absorbClick, { capture: true, once: true });
-      }
+    window.addEventListener("mouseup", () => {
+        isDown = false;
+        slider.style.cursor = "grab";
     });
 
-    row.addEventListener('mouseleave', () => {
-      row.classList.remove('dragging');
+    slider.querySelectorAll("a").forEach(link => {
+
+        link.addEventListener("click", (e) => {
+
+            if (isDragging) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+        });
+
     });
 
-    function absorbClick(e) {
-      e.stopPropagation();
-      e.preventDefault();
-    }
-  });
+});
 
   /* ── Filter bar ── */
   const filterInput = document.getElementById('filterInput');

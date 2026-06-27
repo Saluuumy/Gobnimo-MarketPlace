@@ -17,11 +17,11 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
 
-.pd-wrap{max-width:1100px;margin:50px auto;padding:20px 16px 48px}
+.pd-wrap{max-width:1100px;margin:19px auto;padding:20px 16px 48px}
 
 /* breadcrumb */
 .bc{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-bottom:16px;flex-wrap:wrap}
-.bc a{color:var(--muted);text-decoration:none;transition:color .15s}
+.bc a{color:#f2f7ff;text-decoration:none;transition:color .15s}
 .bc a:hover{color:var(--text)}
 .bc i{font-size:10px;color:#334155}
 
@@ -47,7 +47,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .desc-inner p{font-size:13px;color:var(--text-dim);line-height:1.7}
 
 /* comments */
-.comm-card{margin-top:12px}
+.comm-card{margin-top: -154px;
+  width: 748px;}
 .comm-inner{padding:16px}
 .comm-h{font-size:15px;font-weight:500;color:var(--text);margin-bottom:14px}
 .comm-box{background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;padding:12px;margin-bottom:14px}
@@ -98,7 +99,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .cta-wrap{padding:12px 16px}
 .btn-cta{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none;transition:background .15s,transform .1s}
 .btn-cta:hover{background:var(--accent2);transform:translateY(-1px)}
-.btn-cta-off{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:11px;background:var(--surface2);color:#475569;border:0.5px solid var(--border);border-radius:8px;font-size:13px;cursor:default}
+.btn-cta-off{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:11px;background:rgb(167, 139, 250);color:#fff;border:0.5px solid var(--border);border-radius:8px;font-size:13px;cursor:default}
 .cta-note{text-align:center;font-size:11px;color:var(--muted);margin-top:5px}
 
 /* specs */
@@ -214,6 +215,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   .gal-main{height:220px}
   .specs-grid{grid-template-columns:repeat(2,1fr)}
   .sim-grid{grid-template-columns:repeat(2,1fr)}
+  .comm-card {
+  margin-top: 52px !important;
+  width: 324px !important;
+}
 }
 </style>
 
@@ -262,108 +267,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         </div>
       </div>
 
-      <!-- comments -->
-      <div class="card comm-card">
-        <div class="comm-inner">
-          <div class="comm-h">Comments</div>
-
-          <div class="comm-box">
-            <div class="comm-box-lbl">
-              <i class="fas fa-comment-dots"></i> Add a comment
-            </div>
-            {% if user.is_authenticated %}
-            <form method="post" action="{% url 'add_comment' ad.id %}">
-              {% csrf_token %}
-              <textarea name="text" class="c-textarea" placeholder="Write your comment…" rows="2"></textarea>
-              <div style="display:flex;justify-content:flex-end;margin-top:7px">
-                <button type="submit" class="btn-post">
-                  <i class="fas fa-paper-plane"></i> Post
-                </button>
-              </div>
-            </form>
-            {% else %}
-            <p class="login-note">
-              <a href="{% url 'login' %}">Log in</a> to post a comment.
-            </p>
-            {% endif %}
-          </div>
-
-          <div>
-            {% for comment in comments %}
-            <div class="comm-item" data-comment-id="{{ comment.id }}">
-              <div class="comm-user-row">
-                <div class="ava">
-                  {% if comment.user.avatar %}
-                    <img src="{{ comment.user.avatar.url }}" alt="">
-                  {% else %}
-                    {{ comment.user.full_name|first|upper }}
-                  {% endif %}
-                </div>
-                <div>
-                  <div class="comm-name">@{{ comment.user.full_name }}</div>
-                  <div class="comm-time">{{ comment.timestamp|timesince }} ago</div>
-                </div>
-                {% if comment.user == request.user %}
-                <button class="comm-del" onclick="showDel('{{ comment.id }}')" title="Delete comment">
-                  <i class="fas fa-trash"></i>
-                </button>
-                {% endif %}
-              </div>
-              <p class="comm-text">{{ comment.text }}</p>
-              <button class="btn-reply reply-toggle" data-id="{{ comment.id }}">
-                <i class="fas fa-reply"></i> Reply
-              </button>
-
-              {% if comment.replies.all %}
-              <div class="reply-list">
-                {% for reply in comment.replies.all %}
-                <div class="reply-item" data-reply-id="{{ reply.id }}">
-                  <div class="comm-user-row" style="margin-bottom:4px">
-                    <div class="ava sm">
-                      {% if reply.user.avatar %}
-                        <img src="{{ reply.user.avatar.url }}" alt="">
-                      {% else %}
-                        {{ reply.user.full_name|first|upper }}
-                      {% endif %}
-                    </div>
-                    <div>
-                      <div class="comm-name" style="font-size:11px">@{{ reply.user.full_name }}</div>
-                      <div class="comm-time">{{ reply.timestamp|timesince }} ago</div>
-                    </div>
-                    {% if reply.user == request.user %}
-                    <button class="comm-del" onclick="showDel('{{ reply.id }}')" title="Delete reply">
-                      <i class="fas fa-trash"></i>
-                    </button>
-                    {% endif %}
-                  </div>
-                  <p class="comm-text" style="font-size:12px;margin-bottom:0">{{ reply.text }}</p>
-                </div>
-                {% endfor %}
-              </div>
-              {% endif %}
-
-              <div class="reply-form" id="reply-form-{{ comment.id }}">
-                <form method="post" action="{% url 'reply_to_comment' comment.id %}" style="margin-top:8px">
-                  {% csrf_token %}
-                  <textarea name="text" class="c-textarea" rows="1" placeholder="Write a reply…" style="min-height:44px;font-size:12px"></textarea>
-                  <div style="display:flex;justify-content:flex-end;margin-top:6px">
-                    <button type="submit" class="btn-post" style="font-size:11px;padding:6px 11px">
-                      <i class="fas fa-paper-plane"></i> Reply
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-            {% empty %}
-            <div class="empty-comm">
-              <i class="fas fa-comment-slash"></i>
-              No comments yet — be the first!
-            </div>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
-
+    
     </div>
 
     <!-- ── RIGHT SIDEBAR ── -->
@@ -648,6 +552,107 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
     </div>
   </div>
+  <!-- comments -->
+      <div class="card comm-card">
+        <div class="comm-inner">
+          <div class="comm-h">Comments</div>
+
+          <div class="comm-box">
+            <div class="comm-box-lbl">
+              <i class="fas fa-comment-dots"></i> Add a comment
+            </div>
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'add_comment' ad.id %}">
+              {% csrf_token %}
+              <textarea name="text" class="c-textarea" placeholder="Write your comment…" rows="2"></textarea>
+              <div style="display:flex;justify-content:flex-end;margin-top:7px">
+                <button type="submit" class="btn-post">
+                  <i class="fas fa-paper-plane"></i> Post
+                </button>
+              </div>
+            </form>
+            {% else %}
+            <p class="login-note">
+              <a href="{% url 'login' %}">Log in</a> to post a comment.
+            </p>
+            {% endif %}
+          </div>
+
+          <div>
+            {% for comment in comments %}
+            <div class="comm-item" data-comment-id="{{ comment.id }}">
+              <div class="comm-user-row">
+                <div class="ava">
+                  {% if comment.user.avatar %}
+                    <img src="{{ comment.user.avatar.url }}" alt="">
+                  {% else %}
+                    {{ comment.user.full_name|first|upper }}
+                  {% endif %}
+                </div>
+                <div>
+                  <div class="comm-name">@{{ comment.user.full_name }}</div>
+                  <div class="comm-time">{{ comment.timestamp|timesince }} ago</div>
+                </div>
+                {% if comment.user == request.user %}
+                <button class="comm-del" onclick="showDel('{{ comment.id }}')" title="Delete comment">
+                  <i class="fas fa-trash"></i>
+                </button>
+                {% endif %}
+              </div>
+              <p class="comm-text">{{ comment.text }}</p>
+              <button class="btn-reply reply-toggle" data-id="{{ comment.id }}">
+                <i class="fas fa-reply"></i> Reply
+              </button>
+
+              {% if comment.replies.all %}
+              <div class="reply-list">
+                {% for reply in comment.replies.all %}
+                <div class="reply-item" data-reply-id="{{ reply.id }}">
+                  <div class="comm-user-row" style="margin-bottom:4px">
+                    <div class="ava sm">
+                      {% if reply.user.avatar %}
+                        <img src="{{ reply.user.avatar.url }}" alt="">
+                      {% else %}
+                        {{ reply.user.full_name|first|upper }}
+                      {% endif %}
+                    </div>
+                    <div>
+                      <div class="comm-name" style="font-size:11px">@{{ reply.user.full_name }}</div>
+                      <div class="comm-time">{{ reply.timestamp|timesince }} ago</div>
+                    </div>
+                    {% if reply.user == request.user %}
+                    <button class="comm-del" onclick="showDel('{{ reply.id }}')" title="Delete reply">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                    {% endif %}
+                  </div>
+                  <p class="comm-text" style="font-size:12px;margin-bottom:0">{{ reply.text }}</p>
+                </div>
+                {% endfor %}
+              </div>
+              {% endif %}
+
+              <div class="reply-form" id="reply-form-{{ comment.id }}">
+                <form method="post" action="{% url 'reply_to_comment' comment.id %}" style="margin-top:8px">
+                  {% csrf_token %}
+                  <textarea name="text" class="c-textarea" rows="1" placeholder="Write a reply…" style="min-height:44px;font-size:12px"></textarea>
+                  <div style="display:flex;justify-content:flex-end;margin-top:6px">
+                    <button type="submit" class="btn-post" style="font-size:11px;padding:6px 11px">
+                      <i class="fas fa-paper-plane"></i> Reply
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            {% empty %}
+            <div class="empty-comm">
+              <i class="fas fa-comment-slash"></i>
+              No comments yet — be the first!
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
 
   <!-- similar items -->
   <div class="sim-section">

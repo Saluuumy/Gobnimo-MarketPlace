@@ -2,1330 +2,744 @@
 {% load static %}
 
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post Free Ad - Gobonimo</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root{
-            --sidebar-bg:#0f1720;
-            --panel:#0b1220;
-            --muted:#9ca3af;
-            --chip:#1f2937;
-            --accent:#06b6d4;
-            --tile-bg:#2b3440;
-        }
-
-        /* Font import */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-        /* General styles */
-        * {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: var(--panel);
-            min-height: 100vh;
-            color: #e6eef8;
-        }
-
-        /* Container styles */
-        .container {
-            max-width: 896px;
-            margin: 65px auto !important;
-        }
-
-        /* Navigation styles */
-        .nav-link {
-            display: inline-flex;
-            align-items: center;
-            color: var(--accent);
-            font-weight: 500;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .nav-link:hover {
-            color: #0891b2;
-        }
-
-        .nav-link i {
-            margin-right: 8px;
-        }
-
-        /* Gradient background */
-        .gradient-bg {
-            background: linear-gradient(135deg, var(--accent), #0d9488);
-            padding: 32px;
-            color: white;
-        }
-
-        /* Border gradient container */
-        .border-gradient {
-            position: relative;
-            background: var(--tile-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .border-gradient::before {
-            content: "";
-            position: absolute;
-            top: -1px;
-            left: -1px;
-            right: -1px;
-            bottom: -1px;
-            background: linear-gradient(135deg, var(--accent), #0d9488);
-            border-radius: 12px;
-            z-index: -1;
-        }
-
-        /* Form header */
-        .form-header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        @media (min-width: 768px) {
-            .form-header {
-                flex-direction: row;
-            }
-        }
-
-        .form-header-icon {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 16px;
-        }
-
-        @media (min-width: 768px) {
-            .form-header-icon {
-                margin-right: 24px;
-                margin-bottom: 0;
-            }
-        }
-
-        .form-header-text {
-            text-align: center;
-        }
-
-        @media (min-width: 768px) {
-            .form-header-text {
-                text-align: left;
-            }
-        }
-
-        .form-header-text h1 {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .form-header-text p {
-            opacity: 0.9;
-            margin-top: 8px;
-        }
-
-        .form-header-badge {
-            display: none;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 9999px;
-            padding: 8px 16px;
-            margin-left: auto;
-        }
-
-        @media (min-width: 768px) {
-            .form-header-badge {
-                display: block;
-            }
-        }
-
-        .form-header-badge i {
-            margin-right: 8px;
-        }
-
-        /* Form section */
-        .form-section {
-            background: var(--tile-bg);
-            padding: 24px;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: all 0.3s ease;
-            margin-bottom: 24px;
-        }
-
-        .form-section:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .form-section-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .form-section-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(6, 182, 212, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 12px;
-        }
-
-        .form-section-icon i {
-            color: var(--accent);
-        }
-
-        .form-section h2 {
-            font-size: 20px;
-            font-weight: 600;
-            color: #e6eef8;
-        }
-
-        /* Input fields */
-        .input-field {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            background: var(--chip);
-            color: #e6eef8;
-        }
-
-        .input-field:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
-            outline: none;
-        }
-
-        /* Labels */
-        .form-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--muted);
-            margin-bottom: 8px;
-        }
-
-        /* Grid layouts */
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 24px;
-        }
-
-        @media (min-width: 768px) {
-            .grid-2 {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        .grid-3 {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 24px;
-        }
-
-        @media (min-width: 768px) {
-            .grid-3 {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        .grid-4 {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-        }
-
-        @media (min-width: 768px) {
-            .grid-4 {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        /* Price input */
-        .price-container {
-            position: relative;
-        }
-
-        .price-container span {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--muted);
-        }
-
-        .price-container input {
-            padding-left: 40px;
-        }
-
-        /* Toggle buttons */
-        .toggle-btn {
-            display: inline-block;
-            cursor: pointer;
-        }
-
-        .toggle-btn input {
-            display: none;
-        }
-
-        .toggle-btn div {
-            padding: 12px 24px;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            background: var(--chip);
-            color: var(--muted);
-        }
-
-        .toggle-btn input:checked + div {
-            background: linear-gradient(135deg, var(--accent), #0d9488);
-            color: white;
-            border-color: transparent;
-        }
-
-        /* File input */
-        .file-input {
-            color: var(--muted);
-        }
-
-        .file-input::-webkit-file-upload-button {
-            background: linear-gradient(135deg, var(--accent), #0d9488);
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: opacity 0.2s ease;
-        }
-
-        .file-input::-webkit-file-upload-button:hover {
-            opacity: 0.9;
-        }
-
-        /* Gradient button */
-        .gradient-btn {
-            background: linear-gradient(135deg, var(--accent), #0d9488);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 500;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-            border: none;
-            cursor: pointer;
-        }
-
-        .gradient-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(6, 182, 212, 0.3);
-        }
-
-        .gradient-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .gradient-btn.red {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-        }
-
-        /* Preview card */
-        .preview-card {
-            position: relative;
-            transition: all 0.3s ease;
-            border: 2px dashed rgba(255,255,255,0.1);
-            border-radius: 12px;
-            height: 192px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: var(--chip);
-            overflow: hidden;
-        }
-
-        .preview-card:hover {
-            transform: scale(1.03);
-        }
-
-        .preview-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* Review process */
-        .review-process {
-            padding: 16px;
-            background: rgba(6, 182, 212, 0.05);
-            border: 1px solid rgba(6, 182, 212, 0.2);
-            border-radius: 8px;
-        }
-
-        .review-status {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 16px;
-        }
-
-        .review-status span {
-            padding: 4px 12px;
-            border-radius: 9999px;
-            font-size: 14px;
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .review-status.yellow span {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-        }
-
-        .review-status.green span {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-        }
-
-        .review-status.red span {
-            background: rgba(220, 38, 38, 0.2);
-            color: #dc2626;
-        }
-
-        .review-status i {
-            margin-right: 8px;
-        }
-
-        .review-status div {
-            margin-left: 16px;
-        }
-
-        .review-status h4 {
-            font-weight: 500;
-            color: #e6eef8;
-        }
-
-        .review-status p {
-            color: var(--muted);
-            font-size: 14px;
-            margin-top: 4px;
-        }
-
-        /* Features section */
-        .features-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 24px;
-            margin-top: 40px;
-        }
-
-        @media (min-width: 768px) {
-            .features-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        .feature-card {
-            background: var(--tile-bg);
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .feature-card-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), #0d9488);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 16px;
-        }
-
-        .feature-card h3 {
-            font-size: 18px;
-            font-weight: 600;
-            color: #e6eef8;
-            margin-bottom: 8px;
-        }
-
-        .feature-card p {
-            color: var(--muted);
-            font-size: 14px;
-        }
-
-        /* Success modal */
-        .success-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            overflow: auto;
-            padding: 20px;
-        }
-
-        .success-modal-content {
-            background: var(--tile-bg);
-            border-radius: 12px;
-            padding: 32px;
-            max-width: 448px;
-            width: 100%;
-            margin: auto;
-            position: relative;
-            animation: fadeIn 0.5s ease forwards;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            animation: confetti-fall 5s ease-in-out infinite;
-        }
-
-        .confetti.primary-500 { background: var(--accent); }
-        .confetti.amber-400 { background: #f59e0b; }
-        .confetti.green-400 { background: #10b981; }
-        .confetti.pink-400 { background: #ec4899; }
-        .confetti.purple-400 { background: #a855f7; }
-
-        @keyframes confetti-fall {
-            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-        }
-
-        .success-modal-content .success-icon {
-            width: 96px;
-            height: 96px;
-            border-radius: 50%;
-            background: linear-gradient(to right, var(--accent), #0d9488);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 24px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .success-modal-content h3 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #e6eef8;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-
-        .success-modal-content p {
-            color: var(--muted);
-            margin-bottom: 24px;
-            text-align: center;
-        }
-
-        .success-modal-content a {
-            display: inline-block;
-            background: linear-gradient(to right, var(--accent), #0d9488);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: opacity 0.3s ease;
-        }
-
-        .success-modal-content a:hover {
-            opacity: 0.9;
-        }
-
-        /* Submit button */
-        .submit-section {
-            padding-top: 24px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            text-align: center;
-        }
-
-        .submit-section p {
-            color: var(--muted);
-            font-size: 14px;
-            margin-top: 16px;
-        }
-
-        .submit-section p i {
-            margin-right: 4px;
-        }
-
-        /* Error message styles */
-        .error-message {
-            color: #ef4444;
-            font-size: 12px;
-            margin-top: 4px;
-        }
-
-        .error-container {
-            background: rgba(220, 38, 38, 0.1);
-            border: 1px solid rgba(220, 38, 38, 0.3);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 24px;
-        }
-
-        /* Checkbox styles */
-        .checkbox-input {
-            height: 20px;
-            width: 20px;
-            color: var(--accent);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 4px;
-        }
-
-        /* Select dropdown styles */
-        select.input-field {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 0.5rem center;
-            background-repeat: no-repeat;
-            background-size: 1.5em 1.5em;
-            padding-right: 2.5rem;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .gradient-bg {
-                padding: 24px;
-            }
-            
-            .form-section {
-                padding: 16px;
-            }
-            
-            .grid-2, .grid-3, .grid-4 {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-            
-            .gradient-btn {
-                width: 100%;
-                font-size: 14px;
-            }
-            
-            .preview-card {
-                height: 150px;
-            }
-        }
-
-        /* Category section styles */
-        .category-section {
-            display: none;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-
-
-    <!-- Form Container -->
-    <div class="border-gradient">
-        <!-- Form Header -->
-        <div class="gradient-bg">
-            <div class="form-header">
-                <div class="form-header-icon">
-                    <i class="fas fa-crown" style="font-size: 24px;"></i>
-                </div>
-                <div class="form-header-text">
-                    <h1>Post Free Ad</h1>
-                    <p>Showcase your product to thousands of buyers</p>
-                </div>
-                <div class="form-header-badge">
-                    <i class="fas fa-bolt"></i>
-                    <span>Free Post</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Form Content -->
-        <form id="productForm" method="post" enctype="multipart/form-data" style="padding: 24px; background: var(--panel);">
-            {% csrf_token %}
-            
-            <!-- Hidden fields -->
-            <input type="hidden" name="advertiser" value="{{ request.user.id }}">
-            <input type="hidden" name="status" value="pending">
-            <input type="hidden" name="is_featured" value="true">
-
-            <!-- Messages and Errors -->
-            {% if messages %}
-            <div class="mb-4">
-                {% for message in messages %}
-                    <div class="rounded-md p-3 mb-2 {% if message.tags == 'error' %}bg-red-600{% else %}bg-emerald-600{% endif %}">
-                        <p class="text-sm">{{ message }}</p>
-                    </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-
-            {% if form.errors %}
-            <div class="error-container">
-                <h3 class="font-bold mb-2">Please fix the following errors:</h3>
-                <ul class="list-disc list-inside text-sm">
-                    {% for field in form %}
-                        {% for error in field.errors %}
-                            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
-                        {% endfor %}
-                    {% endfor %}
-                    {% for error in form.non_field_errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
-
-            <!-- Product Details -->
-            <div class="form-section">
-                <div class="form-section-header">
-                    <div class="form-section-icon">
-                        <i class="fas fa-tag"></i>
-                    </div>
-                    <h2>Product Details</h2>
-                </div>
-
-                <div style="margin-bottom: 24px;">
-                    <!-- Category Selection -->
-                    <div style="margin-bottom: 24px;">
-                        <label class="form-label">Select Category *</label>
-                        <select id="categorySelect" name="category" required class="input-field">
-                            <option value="">Select a Category</option>
-                            {% for c in categories %}
-                                <option value="{{ c.id }}" {% if form.category.value == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
-                            {% endfor %}
-                        </select>
-                        {% if form.category.errors %}
-                            <div class="error-message">{{ form.category.errors }}</div>
-                        {% endif %}
-                    </div>
-
-                    <!-- Ad Type -->
-                    <div style="margin-bottom: 24px;">
-                        <label class="form-label">Ad Type *</label>
-                        <select name="ad_type" required class="input-field">
-                            <option value="">Select Ad Type</option>
-                            <option value="sell" {% if form.ad_type.value == "sell" %}selected{% endif %}>For Sale</option>
-                            <option value="rent" {% if form.ad_type.value == "rent" %}selected{% endif %}>For Rent</option>
-                            <option value="exchange" {% if form.ad_type.value == "exchange" %}selected{% endif %}>For Exchange</option>
-                            <option value="service" {% if form.ad_type.value == "service" %}selected{% endif %}>Service</option>
-                            <option value="job" {% if form.ad_type.value == "job" %}selected{% endif %}>Job</option>
-                            <option value="other" {% if form.ad_type.value == "other" %}selected{% endif %}>Other</option>
-                        </select>
-                        {% if form.ad_type.errors %}
-                            <div class="error-message">{{ form.ad_type.errors }}</div>
-                        {% endif %}
-                    </div>
-
-                    <div class="grid-2">
-                        <div>
-                            <label class="form-label">Product Name *</label>
-                            <input type="text" name="name" value="{{ form.name.value|default:'' }}" 
-                                   class="input-field" required placeholder="What are you selling?">
-                            {% if form.name.errors %}
-                                <div class="error-message">{{ form.name.errors }}</div>
-                            {% endif %}
-                        </div>
-                        <div>
-                            <label class="form-label">Price ($) *</label>
-                            <div class="price-container">
-                                <span>$</span>
-                                <input type="number" name="price" step="0.01" min="0"
-                                       value="{{ form.price.value|default:'' }}"
-                                       class="input-field" required placeholder="0.00">
-                            </div>
-                            {% if form.price.errors %}
-                                <div class="error-message">{{ form.price.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 24px;">
-                        <label class="form-label">Description *</label>
-                        <textarea name="description" rows="4" required class="input-field" 
-                                  placeholder="Describe your item in detail...">{{ form.description.value|default:'' }}</textarea>
-                        {% if form.description.errors %}
-                            <div class="error-message">{{ form.description.errors }}</div>
-                        {% endif %}
-                    </div>
-
-                    <div style="margin-top: 24px;">
-                        <label class="form-label">Location *</label>
-                        <input type="text" name="location" value="{{ form.location.value|default:'' }}" 
-                               class="input-field" required placeholder="City, State">
-                        {% if form.location.errors %}
-                            <div class="error-message">{{ form.location.errors }}</div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <!-- DYNAMIC CATEGORY-SPECIFIC SECTIONS -->
-            <!-- Vehicles Section -->
-            <div class="category-section form-section" data-category-name="Vehicles">
-                <div class="form-section-header">
-                    <div class="form-section-icon">
-                        <i class="fas fa-car"></i>
-                    </div>
-                    <h2>Vehicle Details</h2>
-                </div>
-                <div class="grid-3">
-                    <div>
-                        <label class="form-label">Vehicle Type</label>
-                        <select name="vehicle_type" class="input-field">
-                            <option value="">Select Type</option>
-                            <option value="car" {% if form.vehicle_type.value == "car" %}selected{% endif %}>Car</option>
-                            <option value="motorcycle" {% if form.vehicle_type.value == "motorcycle" %}selected{% endif %}>Motorcycle</option>
-                            <option value="bus" {% if form.vehicle_type.value == "bus" %}selected{% endif %}>Bus</option>
-                            <option value="truck" {% if form.vehicle_type.value == "truck" %}selected{% endif %}>Truck</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="form-label">Motor Type</label>
-                        <input type="text" name="motortype" value="{{ form.motortype.value|default:'' }}"
-                               class="input-field" placeholder="e.g., Diesel, Petrol, Electric">
-                    </div>
-                    <div>
-                        <label class="form-label">Year</label>
-                        <input type="number" name="year" value="{{ form.year.value|default:'' }}" min="1900" max="{% now 'Y' %}"
-                               class="input-field" placeholder="Manufacturing year">
-                    </div>
-                    <div>
-                        <label class="form-label">Color</label>
-                        <input type="text" name="color" value="{{ form.color.value|default:'' }}"
-                               class="input-field" placeholder="Vehicle color">
-                    </div>
-                    <div>
-                        <label class="form-label">Transmission</label>
-                        <select name="geartype" class="input-field">
-                            <option value="">Select Transmission</option>
-                            <option value="Automatic" {% if form.geartype.value == "Automatic" %}selected{% endif %}>Automatic</option>
-                            <option value="Manual" {% if form.geartype.value == "Manual" %}selected{% endif %}>Manual</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="form-label">Automatic Transmission</label>
-                        <div style="display: flex; align-items: center;">
-                            <input type="checkbox" name="is_automatic" id="is_automatic" value="true" 
-                                   {% if form.is_automatic.value %}checked{% endif %} class="checkbox-input">
-                            <label for="is_automatic" style="margin-left: 8px; color: var(--muted);">Yes</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Property Section -->
-            <div class="category-section form-section" data-category-name="Property">
-                <div class="form-section-header">
-                    <div class="form-section-icon">
-                        <i class="fas fa-home"></i>
-                    </div>
-                    <h2>Property Details</h2>
-                </div>
-                <div class="grid-3">
-                    <div>
-                        <label class="form-label">Number of Rooms</label>
-                        <input type="number" name="num_rooms" value="{{ form.num_rooms.value|default:'' }}" min="0"
-                               class="input-field">
-                    </div>
-                    <div>
-                        <label class="form-label">Number of Bathrooms</label>
-                        <input type="number" name="num_baths" value="{{ form.num_baths.value|default:'' }}" min="0"
-                               class="input-field">
-                    </div>
-                    <div>
-                        <label class="form-label">Area Size (sq ft/m)</label>
-                        <input type="number" name="area_size" value="{{ form.area_size.value|default:'' }}" min="0"
-                               class="input-field">
-                    </div>
-                    <div>
-                        <label class="form-label">Furnishing Type</label>
-                        <select name="furnishing_type" class="input-field">
-                            <option value="">Select Type</option>
-                            <option value="fully_furnished" {% if form.furnishing_type.value == "fully_furnished" %}selected{% endif %}>Fully Furnished</option>
-                            <option value="semi_furnished" {% if form.furnishing_type.value == "semi_furnished" %}selected{% endif %}>Semi Furnished</option>
-                            <option value="unfurnished" {% if form.furnishing_type.value == "unfurnished" %}selected{% endif %}>Unfurnished</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="form-label">Property Type</label>
-                        <select name="property_type" class="input-field">
-                            <option value="">Select Type</option>
-                            <option value="apartment" {% if form.property_type.value == "apartment" %}selected{% endif %}>Apartment</option>
-                            <option value="house" {% if form.property_type.value == "house" %}selected{% endif %}>House</option>
-                            <option value="villa" {% if form.property_type.value == "villa" %}selected{% endif %}>Villa</option>
-                            <option value="commercial" {% if form.property_type.value == "commercial" %}selected{% endif %}>Commercial</option>
-                        </select>
-                    </div>
-                <div class="grid-2">
-                        <div>
-                            <label class="form-label">Has Parking</label>
-                            <div style="display: flex; align-items: center;">
-                                <input type="checkbox" name="has_parking" id="has_parking"
-                                       {% if form.has_parking.value %}checked{% endif %} class="checkbox-input">
-                                <label for="has_parking" style="margin-left: 8px; color: var(--muted);">Yes</label>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="form-label">Has Pool</label>
-                            <div style="display: flex; align-items: center;">
-                                <input type="checkbox" name="has_pool" id="has_pool"
-                                       {% if form.has_pool.value %}checked{% endif %} class="checkbox-input">
-                                <label for="has_pool" style="margin-left: 8px; color: var(--muted);">Yes</label>
-                            </div>
-                        </div>
-                           <div>
-                            <label class="form-label">Has Water</label>
-                            <div style="display: flex; align-items: center;">
-                                <input type="checkbox" name="has_water" id="has_pool"
-                                       {% if form.has_pool.value %}checked{% endif %} class="checkbox-input">
-                                <label for="has_pool" style="margin-left: 8px; color: var(--muted);">Yes</label>
-                            </div>
-                        </div>
-                           <div>
-                            <label class="form-label">Has Electricity</label>
-                            <div style="display: flex; align-items: center;">
-                                <input type="checkbox" name="has_electricity" id="has_pool"
-                                       {% if form.has_pool.value %}checked{% endif %} class="checkbox-input">
-                                <label for="has_pool" style="margin-left: 8px; color: var(--muted);">Yes</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Lands Section -->
-            <div class="category-section form-section" data-category-name="Lands">
-                <div class="form-section-header">
-                    <div class="form-section-icon">
-                        <i class="fas fa-map-marked-alt"></i>
-                    </div>
-                    <h2>Land Details</h2>
-                </div>
-                <div class="grid-2">
-                    <div>
-                        <label class="form-label">Land Type</label>
-                        <select name="land_type" class="input-field">
-                            <option value="">Select Type</option>
-                            <option value="residential" {% if form.land_type.value == "residential" %}selected{% endif %}>Residential</option>
-                            <option value="agricultural" {% if form.land_type.value == "agricultural" %}selected{% endif %}>Agricultural</option>
-                            <option value="commercial" {% if form.land_type.value == "commercial" %}selected{% endif %}>Commercial</option>
-                            <option value="industrial" {% if form.land_type.value == "industrial" %}selected{% endif %}>Industrial</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="form-label">Land Area (acres/hectares)</label>
-                        <input type="text" name="land_area" value="{{ form.land_area.value|default:'' }}"
-                               class="input-field" placeholder="e.g., 5 acres, 2 hectares">
-                    </div>
-                    <div>
-                        <label class="form-label">Zoning Type</label>
-                        <select name="zoning_type" class="input-field">
-                            <option value="">Select Zoning</option>
-                            <option value="residential" {% if form.zoning_type.value == "residential" %}selected{% endif %}>Residential</option>
-                            <option value="commercial" {% if form.zoning_type.value == "commercial" %}selected{% endif %}>Commercial</option>
-                            <option value="agricultural" {% if form.zoning_type.value == "agricultural" %}selected{% endif %}>Agricultural</option>
-                            <option value="mixed" {% if form.zoning_type.value == "mixed" %}selected{% endif %}>Mixed Use</option>
-                        </select>
-                    </div>
-                   
-                </div>
-            </div>
-
-            <!-- Electronics Section -->
-            <div class="category-section form-section" data-category-name="Electronics">
-                <div class="form-section-header">
-                    <div class="form-section-icon">
-                        <i class="fas fa-laptop"></i>
-                    </div>
-                    <h2>Electronics Details</h2>
-                </div>
-                <div class="grid-3">
-                    <div>
-                        <label class="form-label">Electronics Type</label>
-                        <select name="electronics_type" class="input-field">
-                            <option value="">Select Type</option>
-                            <option value="phone" {% if form.electronics_type.value == "phone" %}selected{% endif %}>Mobile Phone</option>
-                            <option value="laptop" {% if form.electronics_type.value == "laptop" %}selected{% endif %}>Laptop</option>
-                            <option value="tablet" {% if form.electronics_type.value == "tablet" %}selected{% endif %}>Tablet</option>
-                            <option value="camera" {% if form.electronics_type.value == "camera" %}selected{% endif %}>Camera</option>
-                            <option value="tv" {% if form.electronics_type.value == "tv" %}selected{% endif %}>TV</option>
-                            <option value="audio" {% if form.electronics_type.value == "audio" %}selected{% endif %}>Audio Equipment</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="form-label">Operating System</label>
-                        <select name="operating_system" class="input-field">
-                            <option value="">Select OS</option>
-                            <option value="android" {% if form.operating_system.value == "android" %}selected{% endif %}>Android</option>
-                            <option value="ios" {% if form.operating_system.value == "ios" %}selected{% endif %}>iOS</option>
-                            <option value="windows" {% if form.operating_system.value == "windows" %}selected{% endif %}>Windows</option>
-                            <option value="other" {% if form.operating_system.value == "other" %}selected{% endif %}>Other</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="form-label">Storage Capacity</label>
-                        <input type="text" name="storage_capacity" value="{{ form.storage_capacity.value|default:'' }}"
-                               class="input-field" placeholder="e.g., 128GB, 1TB">
-                    </div>
-                    <div>
-                        <label class="form-label">Screen Size (inches)</label>
-                        <input type="number" step="0.1" name="screen_size" value="{{ form.screen_size.value|default:'' }}"
-                               class="input-field" placeholder="e.g., 6.1, 15.6">
-                    </div>
-                    <div>
-                        <label class="form-label">RAM</label>
-                        <input type="text" name="ram" value="{{ form.ram.value|default:'' }}"
-                               class="input-field" placeholder="e.g., 8GB, 16GB">
-                    </div>
-                    <div>
-                        <label class="form-label">Processor</label>
-                        <input type="text" name="processor" value="{{ form.processor.value|default:'' }}"
-                               class="input-field" placeholder="e.g., Intel i7, Snapdragon 888">
-                    </div>
-                    <div>
-                        <label class="form-label">Condition</label>
-                        <select name="electronics_condition" class="input-field">
-                            <option value="">Select Condition</option>
-                            <option value="new" {% if form.electronics_condition.value == "new" %}selected{% endif %}>New</option>
-                            <option value="second_hand" {% if form.electronics_condition.value == "second_hand" %}selected{% endif %}>Second Hand</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="form-label">Warranty</label>
-                        <div style="display: flex; align-items: center;">
-                            <input type="checkbox" name="has_warranty" id="has_warranty"
-                                   {% if form.has_warranty.value %}checked{% endif %} class="checkbox-input">
-                            <label for="has_warranty" style="margin-left: 8px; color: var(--muted);">Has Warranty</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Jobs Section -->
-            <div class="category-section form-section" data-category-name="Jobs">
-                <div class="form-section-header">
-                    <div class="form-section-icon">
-                        <i class="fas fa-briefcase"></i>
-                    </div>
-                    <h2>Job Details</h2>
-                </div>
-                <div class="grid-2">
-                    <div>
-                        <label class="form-label">Job Type</label>
-                        <select name="job_type" class="input-field">
-                            <option value="">Select Type</option>
-                            <option value="full_time" {% if form.job_type.value == "full_time" %}selected{% endif %}>Full Time</option>
-                            <option value="part_time" {% if form.job_type.value == "part_time" %}selected{% endif %}>Part Time</option>
-                            <option value="contract" {% if form.job_type.value == "contract" %}selected{% endif %}>Contract</option>
-                            <option value="internship" {% if form.job_type.value == "internship" %}selected{% endif %}>Internship</option>
-                            <option value="remote" {% if form.job_type.value == "remote" %}selected{% endif %}>Remote</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="form-label">Salary</label>
-                        <input type="text" name="salary" value="{{ form.salary.value|default:'' }}"
-                               class="input-field" placeholder="e.g., $50,000 or Negotiable">
-                    </div>
-                    <div>
-                        <label class="form-label">Experience Required</label>
-                        <input type="text" name="experience_required" value="{{ form.experience_required.value|default:'' }}"
-                               class="input-field" placeholder="e.g., 3+ years">
-                    </div>
-                    <div>
-                        <label class="form-label">Education Required</label>
-                        <input type="text" name="education_required" value="{{ form.education_required.value|default:'' }}"
-                               class="input-field" placeholder="e.g., Bachelor's Degree">
-                    </div>
-                    <div>
-                        <label class="form-label">Company Name</label>
-                        <input type="text" name="company_name" value="{{ form.company_name.value|default:'' }}"
-                               class="input-field" placeholder="Employer company name">
-                    </div>
-                    <div>
-                        <label class="form-label">Work Location</label>
-                        <input type="text" name="work_location" value="{{ form.work_location.value|default:'' }}"
-                               class="input-field" placeholder="Office location">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Services Section -->
-            <div class="category-section form-section" data-category-name="Services">
-                <div class="form-section-header">
-                    <div class="form-section-icon">
-                        <i class="fas fa-concierge-bell"></i>
-                    </div>
-                    <h2>Service Details</h2>
-                </div>
-                <div class="grid-2">
-                    <div>
-                        <label class="form-label">Service Type</label>
-                        <select name="service_type" class="input-field">
-                            <option value="">Select Type</option>
-                            <option value="cleaning" {% if form.service_type.value == "cleaning" %}selected{% endif %}>Cleaning</option>
-                            <option value="moving" {% if form.service_type.value == "moving" %}selected{% endif %}>Moving & Storage</option>
-                            <option value="repair" {% if form.service_type.value == "repair" %}selected{% endif %}>Repair & Maintenance</option>
-                            <option value="it" {% if form.service_type.value == "it" %}selected{% endif %}>IT Services</option>
-                            <option value="beauty" {% if form.service_type.value == "beauty" %}selected{% endif %}>Beauty & Wellness</option>
-                            <option value="tutoring" {% if form.service_type.value == "tutoring" %}selected{% endif %}>Tutoring & Lessons</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="form-label">Service Area</label>
-                        <input type="text" name="service_area" value="{{ form.service_area.value|default:'' }}"
-                               class="input-field" placeholder="e.g., City-wide or specific areas">
-                    </div>
-                    <div>
-                        <label class="form-label">Availability</label>
-                        <input type="text" name="availability" value="{{ form.availability.value|default:'' }}"
-                               class="input-field" placeholder="e.g., Mon-Fri 9am-5pm">
-                    </div>
-                    <div>
-                        <label class="form-label">Service Duration</label>
-                        <input type="text" name="service_duration" value="{{ form.service_duration.value|default:'' }}"
-                               class="input-field" placeholder="e.g., 2 hours, 1 day">
-                    </div>
-                    <div>
-                        <label class="form-label">Certification</label>
-                        <input type="text" name="certification" value="{{ form.certification.value|default:'' }}"
-                               class="input-field" placeholder="Professional certifications">
-                    </div>
-                    <div>
-                        <label class="form-label">Years of Experience</label>
-                        <input type="number" name="years_experience" value="{{ form.years_experience.value|default:'' }}"
-                               class="input-field" placeholder="Years in business">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Fashion Section -->
-            <div class="category-section form-section" data-category-name="Fashion">
-                <div class="form-section-header">
-                    <div class="form-section-icon">
-                        <i class="fas fa-tshirt"></i>
-                    </div>
-                    <h2>Fashion Details</h2>
-                </div>
-                <div class="grid-3">
-                    <div>
-                        <label class="form-label">Fashion Type</label>
-                        <select name="fashion_type" class="input-field">
-                            <option value="">Select Type</option>
-                            <option value="men" {% if form.fashion_type.value == "men" %}selected{% endif %}>Men's Fashion</option>
-                            <option value="women" {% if form.fashion_type.value == "women" %}selected{% endif %}>Women's Fashion</option>
-                            <option value="kids" {% if form.fashion_type.value == "kids" %}selected{% endif %}>Kids' Fashion</option>
-                            <option value="watches" {% if form.fashion_type.value == "watches" %}selected{% endif %}>Watches</option>
-                            <option value="jewelry" {% if form.fashion_type.value == "jewelry" %}selected{% endif %}>Jewelry</option>
-                            <option value="bags" {% if form.fashion_type.value == "bags" %}selected{% endif %}>Bags & Accessories</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="form-label">Size</label>
-                        <input type="text" name="size" value="{{ form.size.value|default:'' }}"
-                               class="input-field" placeholder="e.g., S, M, L or specific measurements">
-                    </div>
-                    <div>
-                        <label class="form-label">Material</label>
-                        <input type="text" name="material" value="{{ form.material.value|default:'' }}"
-                               class="input-field" placeholder="e.g., Cotton, Leather, Silk">
-                    </div>
-                    <div>
-                        <label class="form-label">Color</label>
-                        <input type="text" name="fashion_color" value="{{ form.fashion_color.value|default:'' }}"
-                               class="input-field" placeholder="Item color">
-                    </div>
-                  
-                    <div>
-                        <label class="form-label">Condition</label>
-                        <select name="fashion_condition" class="input-field">
-                            <option value="">Select Condition</option>
-                            <option value="new" {% if form.fashion_condition.value == "new" %}selected{% endif %}>New</option>
-                            <option value="used" {% if form.fashion_condition.value == "used" %}selected{% endif %}>Used</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-     <!-- Image Upload Section -->
-<div class="form-section">
-    <div class="form-section-header">
-        <div class="form-section-icon">
-            <i class="fas fa-images"></i>
-        </div>
-        <h2>Product Gallery</h2>
+<div class="af">
+<div class="af-inner">
+  <div class="af-hero">
+    <div class="af-hero-top">
+      <div class="af-hero-icon"><i class="fas fa-plus-circle"></i></div>
+      <div>
+        <h1>Post a Free Ad</h1>
+        <p>Reach thousands of buyers in your area</p>
+      </div>
     </div>
-    
-    <div style="margin-bottom: 24px;">
-        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px;">
-            <div>
-                <h3 style="font-size: 16px; font-weight: 500; color: #e6eef8;">Upload Your Images</h3>
-                <p style="color: var(--muted); font-size: 14px; margin-top: 4px;">First image will be featured as cover</p>
-            </div>
-            <button type="button" id="addImageBtn" class="gradient-btn" disabled>
-                <i class="fas fa-plus" style="margin-right: 8px;"></i>
-                Add Images
-            </button>
-        </div>
-        
-        <div id="imageInputContainer" class="grid-3">
-            <div class="image-input-group">
-                <input type="file" name="images" accept="image/*" class="file-input input-field">
-            </div>
-        </div>
-        
-        <div style="margin-top: 24px;">
-            <h3 style="font-size: 16px; font-weight: 500; color: #e6eef8; margin-bottom: 16px;">Image Previews</h3>
-            <div id="previewContainer" class="grid-3">
-                <div class="preview-card">
-                    <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--muted); margin-bottom: 12px;"></i>
-                    <p style="color: var(--muted); font-size: 14px;">Upload Preview</p>
-                </div>
-            </div>
-        </div>
+    <div class="af-hero-badge"><i class="fas fa-bolt"></i> Free · No credit card needed</div>
+  </div>
+  <div class="af-steps">
+    <div class="af-step active" id="step1-ind">
+      <div class="af-step-dot">1</div>
+      <div class="af-step-lbl">Details</div>
     </div>
+    <div class="af-step-line"></div>
+    <div class="af-step" id="step2-ind">
+      <div class="af-step-dot">2</div>
+      <div class="af-step-lbl">Category</div>
+    </div>
+    <div class="af-step-line"></div>
+    <div class="af-step" id="step3-ind">
+      <div class="af-step-dot">3</div>
+      <div class="af-step-lbl">Photos</div>
+    </div>
+    <div class="af-step-line"></div>
+    <div class="af-step" id="step4-ind">
+      <div class="af-step-dot">4</div>
+      <div class="af-step-lbl">Submit</div>
+    </div>
+  </div>
+
+  <form id="afForm" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="advertiser" value="{{ request.user.id }}">
+    <input type="hidden" name="status" value="pending">
+    <input type="hidden" name="is_featured" value="true">
+    <input type="hidden" name="category" id="categoryHidden">
+
+    <!-- alerts -->
+    {% if messages %}
+    {% for message in messages %}
+    <div class="af-alert {% if message.tags == 'error' %}error{% else %}success{% endif %}">
+      <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% else %}check-circle{% endif %}"></i>
+      {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if form.errors %}
+    <div class="af-alert error">
+      <strong>Please fix the following:</strong>
+      <ul class="af-error-list">
+        {% for field in form %}{% for error in field.errors %}
+          <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+        {% endfor %}{% endfor %}
+        {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <!-- CARD 1: Category -->
+    <div class="af-card">
+      <div class="af-card-head">
+        <div class="af-card-ico ico-green"><i class="fas fa-th-large"></i></div>
+        <div><h2>Choose Category</h2><p>Select what you're listing</p></div>
+      </div>
+      <div class="af-card-body">
+        <div class="af-cat-grid" id="catGrid">
+          {% for c in categories %}
+          <label class="af-cat-opt" data-cat="{{ c.name }}" data-id="{{ c.id }}">
+            <input type="radio" name="_cat_ui" value="{{ c.id }}"
+                   {% if form.category.value == c.id|stringformat:"s" %}checked{% endif %}>
+            {% if c.icon == 'building' %}<i class="fas fa-building" style="color:#60a5fa"></i>
+            {% elif c.icon == 'land' %}<i class="fas fa-map-marked-alt" style="color:#4ade80"></i>
+            {% elif c.icon == 'electronics' %}<i class="fas fa-laptop" style="color:#c084fc"></i>
+            {% elif c.icon == 'fashion' %}<i class="fas fa-tshirt" style="color:#f472b6"></i>
+            {% elif c.icon == 'car' %}<i class="fas fa-car" style="color:#fb923c"></i>
+            {% elif c.icon == 'wrench' %}<i class="fas fa-wrench" style="color:#fbbf24"></i>
+            {% elif c.icon == 'briefcase' %}<i class="fas fa-briefcase" style="color:#818cf8"></i>
+            {% elif c.icon == 'scissors' %}<i class="fas fa-cut" style="color:#f87171"></i>
+            {% elif c.icon == 'paint-brush' %}<i class="fas fa-paint-brush" style="color:#2dd4bf"></i>
+            {% else %}<i class="fas fa-tag" style="color:#94a3b8"></i>{% endif %}
+            <span>{{ c.name }}</span>
+          </label>
+          {% endfor %}
+        </div>
+
+        <!-- Ad type tabs -->
+        <div style="margin-top:4px">
+          <div class="af-label" style="margin-bottom:8px">Ad Type <span class="req">*</span></div>
+          <div class="af-type-tabs" id="adTypeTabs">
+            <label class="af-type-tab" data-val="sell">
+              <input type="radio" name="ad_type" value="sell" {% if form.ad_type.value == "sell" %}checked{% endif %}>
+              <i class="fas fa-tag"></i> For Sale
+            </label>
+            <label class="af-type-tab" data-val="rent">
+              <input type="radio" name="ad_type" value="rent" {% if form.ad_type.value == "rent" %}checked{% endif %}>
+              <i class="fas fa-key"></i> For Rent
+            </label>
+            <label class="af-type-tab" data-val="exchange">
+              <input type="radio" name="ad_type" value="exchange" {% if form.ad_type.value == "exchange" %}checked{% endif %}>
+              <i class="fas fa-exchange-alt"></i> Exchange
+            </label>
+            <label class="af-type-tab" data-val="service">
+              <input type="radio" name="ad_type" value="service" {% if form.ad_type.value == "service" %}checked{% endif %}>
+              <i class="fas fa-concierge-bell"></i> Service
+            </label>
+            <label class="af-type-tab" data-val="job">
+              <input type="radio" name="ad_type" value="job" {% if form.ad_type.value == "job" %}checked{% endif %}>
+              <i class="fas fa-briefcase"></i> Job
+            </label>
+            <label class="af-type-tab" data-val="other">
+              <input type="radio" name="ad_type" value="other" {% if form.ad_type.value == "other" %}checked{% endif %}>
+              <i class="fas fa-ellipsis-h"></i> Other
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 2: Basic Info -->
+    <div class="af-card">
+      <div class="af-card-head">
+        <div class="af-card-ico ico-blue"><i class="fas fa-info-circle"></i></div>
+        <div><h2>Basic Information</h2><p>Tell buyers about your listing</p></div>
+      </div>
+      <div class="af-card-body">
+        <div class="af-row">
+          <div class="af-field">
+            <label class="af-label">Title <span class="req">*</span></label>
+            <input type="text" name="name" class="af-input" required
+                   value="{{ form.name.value|default:'' }}"
+                   placeholder="e.g., iPhone 15 Pro 256GB">
+            {% if form.name.errors %}<div class="af-error">{{ form.name.errors.0 }}</div>{% endif %}
+          </div>
+          <div class="af-field">
+            <label class="af-label">Price <span class="req">*</span></label>
+            <div class="af-price-wrap">
+              <span class="af-price-sym">$</span>
+              <input type="number" name="price" step="0.01" min="0" class="af-input" required
+                     value="{{ form.price.value|default:'' }}" placeholder="0.00">
+            </div>
+            {% if form.price.errors %}<div class="af-error">{{ form.price.errors.0 }}</div>{% endif %}
+          </div>
+        </div>
+        <div class="af-row cols-1" style="margin-bottom:14px">
+          <div class="af-field">
+            <label class="af-label">Description <span class="req">*</span></label>
+            <textarea name="description" class="af-textarea" required
+                      placeholder="Describe your item in detail — condition, features, reason for selling…">{{ form.description.value|default:'' }}</textarea>
+            {% if form.description.errors %}<div class="af-error">{{ form.description.errors.0 }}</div>{% endif %}
+          </div>
+        </div>
+        <div class="af-row cols-1">
+          <div class="af-field">
+            <label class="af-label">Location <span class="req">*</span></label>
+            <input type="text" name="location" class="af-input" required
+                   value="{{ form.location.value|default:'' }}"
+                   placeholder="City, Country">
+            {% if form.location.errors %}<div class="af-error">{{ form.location.errors.0 }}</div>{% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 3: Vehicles (dynamic) -->
+    <div class="af-card cat-section" data-category-name="Vehicles" id="sec-Vehicles">
+      <div class="af-card-head">
+        <div class="af-card-ico ico-orange"><i class="fas fa-car"></i></div>
+        <div><h2>Vehicle Details</h2><p>Specific info about your vehicle</p></div>
+      </div>
+      <div class="af-card-body">
+        <div class="af-row cols-3">
+          <div class="af-field">
+            <label class="af-label">Vehicle Type</label>
+            <select name="vehicle_type" class="af-select">
+              <option value="">Select type</option>
+              <option value="car" {% if form.vehicle_type.value == "car" %}selected{% endif %}>Car</option>
+              <option value="motorcycle" {% if form.vehicle_type.value == "motorcycle" %}selected{% endif %}>Motorcycle</option>
+              <option value="bus" {% if form.vehicle_type.value == "bus" %}selected{% endif %}>Bus</option>
+              <option value="truck" {% if form.vehicle_type.value == "truck" %}selected{% endif %}>Truck</option>
+            </select>
+          </div>
+          <div class="af-field">
+            <label class="af-label">Year</label>
+            <input type="number" name="year" class="af-input" min="1900" max="2025"
+                   value="{{ form.year.value|default:'' }}" placeholder="e.g. 2020">
+          </div>
+          <div class="af-field">
+            <label class="af-label">Color</label>
+            <input type="text" name="color" class="af-input"
+                   value="{{ form.color.value|default:'' }}" placeholder="e.g. White">
+          </div>
+          <div class="af-field">
+            <label class="af-label">Motor Type</label>
+            <input type="text" name="motortype" class="af-input"
+                   value="{{ form.motortype.value|default:'' }}" placeholder="Diesel / Petrol / Electric">
+          </div>
+          <div class="af-field">
+            <label class="af-label">Transmission</label>
+            <select name="geartype" class="af-select">
+              <option value="">Select</option>
+              <option value="Automatic" {% if form.geartype.value == "Automatic" %}selected{% endif %}>Automatic</option>
+              <option value="Manual" {% if form.geartype.value == "Manual" %}selected{% endif %}>Manual</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 4: Property (dynamic) -->
+    <div class="af-card cat-section" data-category-name="Property" id="sec-Property">
+      <div class="af-card-head">
+        <div class="af-card-ico ico-blue"><i class="fas fa-home"></i></div>
+        <div><h2>Property Details</h2><p>Rooms, size and features</p></div>
+      </div>
+      <div class="af-card-body">
+        <div class="af-row cols-3">
+          <div class="af-field">
+            <label class="af-label">Property Type</label>
+            <select name="property_type" class="af-select">
+              <option value="">Select</option>
+              <option value="apartment" {% if form.property_type.value == "apartment" %}selected{% endif %}>Apartment</option>
+              <option value="house" {% if form.property_type.value == "house" %}selected{% endif %}>House</option>
+              <option value="villa" {% if form.property_type.value == "villa" %}selected{% endif %}>Villa</option>
+              <option value="commercial" {% if form.property_type.value == "commercial" %}selected{% endif %}>Commercial</option>
+            </select>
+          </div>
+          <div class="af-field">
+            <label class="af-label">Rooms</label>
+            <input type="number" name="num_rooms" class="af-input" min="0"
+                   value="{{ form.num_rooms.value|default:'' }}" placeholder="0">
+          </div>
+          <div class="af-field">
+            <label class="af-label">Bathrooms</label>
+            <input type="number" name="num_baths" class="af-input" min="0"
+                   value="{{ form.num_baths.value|default:'' }}" placeholder="0">
+          </div>
+          <div class="af-field">
+            <label class="af-label">Area (m²)</label>
+            <input type="number" name="area_size" class="af-input" min="0"
+                   value="{{ form.area_size.value|default:'' }}" placeholder="0">
+          </div>
+          <div class="af-field">
+            <label class="af-label">Furnishing</label>
+            <select name="furnishing_type" class="af-select">
+              <option value="">Select</option>
+              <option value="fully_furnished" {% if form.furnishing_type.value == "fully_furnished" %}selected{% endif %}>Fully Furnished</option>
+              <option value="semi_furnished" {% if form.furnishing_type.value == "semi_furnished" %}selected{% endif %}>Semi Furnished</option>
+              <option value="unfurnished" {% if form.furnishing_type.value == "unfurnished" %}selected{% endif %}>Unfurnished</option>
+            </select>
+          </div>
+        </div>
+        <div class="af-field" style="margin-top:4px">
+          <label class="af-label" style="margin-bottom:8px">Amenities</label>
+          <div class="af-checks">
+            <label class="af-check">
+              <input type="checkbox" name="has_parking" {% if form.has_parking.value %}checked{% endif %}>
+              <i class="fas fa-car"></i> Parking
+            </label>
+            <label class="af-check">
+              <input type="checkbox" name="has_pool" {% if form.has_pool.value %}checked{% endif %}>
+              <i class="fas fa-swimming-pool"></i> Pool
+            </label>
+            <label class="af-check">
+              <input type="checkbox" name="has_water" {% if form.has_water.value %}checked{% endif %}>
+              <i class="fas fa-faucet"></i> Water
+            </label>
+            <label class="af-check">
+              <input type="checkbox" name="has_electricity" {% if form.has_electricity.value %}checked{% endif %}>
+              <i class="fas fa-bolt"></i> Electricity
+            </label>
+            <label class="af-check">
+              <input type="checkbox" name="has_garden" {% if form.has_garden.value %}checked{% endif %}>
+              <i class="fas fa-tree"></i> Garden
+            </label>
+            <label class="af-check">
+              <input type="checkbox" name="has_security" {% if form.has_security.value %}checked{% endif %}>
+              <i class="fas fa-shield-alt"></i> Security
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 5: Lands (dynamic) -->
+    <div class="af-card cat-section" data-category-name="Lands" id="sec-Lands">
+      <div class="af-card-head">
+        <div class="af-card-ico ico-green"><i class="fas fa-map-marked-alt"></i></div>
+        <div><h2>Land Details</h2></div>
+      </div>
+      <div class="af-card-body">
+        <div class="af-row">
+          <div class="af-field">
+            <label class="af-label">Land Type</label>
+            <select name="land_type" class="af-select">
+              <option value="">Select</option>
+              <option value="residential">Residential</option>
+              <option value="agricultural">Agricultural</option>
+              <option value="commercial">Commercial</option>
+              <option value="industrial">Industrial</option>
+            </select>
+          </div>
+          <div class="af-field">
+            <label class="af-label">Land Area</label>
+            <input type="text" name="land_area" class="af-input"
+                   value="{{ form.land_area.value|default:'' }}" placeholder="e.g. 5 acres">
+          </div>
+          <div class="af-field">
+            <label class="af-label">Zoning Type</label>
+            <select name="zoning_type" class="af-select">
+              <option value="">Select</option>
+              <option value="residential">Residential</option>
+              <option value="commercial">Commercial</option>
+              <option value="agricultural">Agricultural</option>
+              <option value="mixed">Mixed Use</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 6: Electronics (dynamic) -->
+    <div class="af-card cat-section" data-category-name="Electronics" id="sec-Electronics">
+      <div class="af-card-head">
+        <div class="af-card-ico ico-purple"><i class="fas fa-laptop"></i></div>
+        <div><h2>Electronics Details</h2></div>
+      </div>
+      <div class="af-card-body">
+        <div class="af-row cols-3">
+          <div class="af-field">
+            <label class="af-label">Type</label>
+            <select name="electronics_type" class="af-select">
+              <option value="">Select</option>
+              <option value="phone">Mobile Phone</option>
+              <option value="laptop">Laptop</option>
+              <option value="tablet">Tablet</option>
+              <option value="camera">Camera</option>
+              <option value="tv">TV</option>
+              <option value="audio">Audio</option>
+            </select>
+          </div>
+          <div class="af-field">
+            <label class="af-label">Condition</label>
+            <select name="electronics_condition" class="af-select">
+              <option value="">Select</option>
+              <option value="new">New</option>
+              <option value="second_hand">Second Hand</option>
+            </select>
+          </div>
+          <div class="af-field">
+            <label class="af-label">Operating System</label>
+            <select name="operating_system" class="af-select">
+              <option value="">Select</option>
+              <option value="android">Android</option>
+              <option value="ios">iOS</option>
+              <option value="windows">Windows</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="af-field">
+            <label class="af-label">Storage</label>
+            <input type="text" name="storage_capacity" class="af-input" placeholder="e.g. 256GB">
+          </div>
+          <div class="af-field">
+            <label class="af-label">RAM</label>
+            <input type="text" name="ram" class="af-input" placeholder="e.g. 8GB">
+          </div>
+          <div class="af-field">
+            <label class="af-label">Processor</label>
+            <input type="text" name="processor" class="af-input" placeholder="e.g. Snapdragon 8">
+          </div>
+        </div>
+        <div class="af-checks" style="margin-top:4px">
+          <label class="af-check">
+            <input type="checkbox" name="has_warranty">
+            <i class="fas fa-shield-alt"></i> Has Warranty
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 7: Jobs (dynamic) -->
+    <div class="af-card cat-section" data-category-name="Jobs" id="sec-Jobs">
+      <div class="af-card-head">
+        <div class="af-card-ico ico-indigo"><i class="fas fa-briefcase"></i></div>
+        <div><h2>Job Details</h2></div>
+      </div>
+      <div class="af-card-body">
+        <div class="af-row cols-3">
+          <div class="af-field">
+            <label class="af-label">Job Type</label>
+            <select name="job_type" class="af-select">
+              <option value="">Select</option>
+              <option value="full_time">Full Time</option>
+              <option value="part_time">Part Time</option>
+              <option value="contract">Contract</option>
+              <option value="internship">Internship</option>
+              <option value="remote">Remote</option>
+            </select>
+          </div>
+          <div class="af-field">
+            <label class="af-label">Salary</label>
+            <input type="text" name="salary" class="af-input" placeholder="e.g. $50,000 or Negotiable">
+          </div>
+          <div class="af-field">
+            <label class="af-label">Company</label>
+            <input type="text" name="company_name" class="af-input" placeholder="Company name">
+          </div>
+          <div class="af-field">
+            <label class="af-label">Experience</label>
+            <input type="text" name="experience_required" class="af-input" placeholder="e.g. 3+ years">
+          </div>
+          <div class="af-field">
+            <label class="af-label">Education</label>
+            <input type="text" name="education_required" class="af-input" placeholder="e.g. Bachelor's">
+          </div>
+          <div class="af-field">
+            <label class="af-label">Work Location</label>
+            <input type="text" name="work_location" class="af-input" placeholder="Office address">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 8: Services (dynamic) -->
+    <div class="af-card cat-section" data-category-name="Services" id="sec-Services">
+      <div class="af-card-head">
+        <div class="af-card-ico ico-teal"><i class="fas fa-concierge-bell"></i></div>
+        <div><h2>Service Details</h2></div>
+      </div>
+      <div class="af-card-body">
+        <div class="af-row cols-3">
+          <div class="af-field">
+            <label class="af-label">Service Type</label>
+            <select name="service_type" class="af-select">
+              <option value="">Select</option>
+              <option value="cleaning">Cleaning</option>
+              <option value="moving">Moving & Storage</option>
+              <option value="repair">Repair & Maintenance</option>
+              <option value="it">IT Services</option>
+              <option value="beauty">Beauty & Wellness</option>
+              <option value="tutoring">Tutoring</option>
+            </select>
+          </div>
+          <div class="af-field">
+            <label class="af-label">Service Area</label>
+            <input type="text" name="service_area" class="af-input" placeholder="City-wide or specific area">
+          </div>
+          <div class="af-field">
+            <label class="af-label">Availability</label>
+            <input type="text" name="availability" class="af-input" placeholder="Mon–Fri 9am–5pm">
+          </div>
+          <div class="af-field">
+            <label class="af-label">Duration</label>
+            <input type="text" name="service_duration" class="af-input" placeholder="e.g. 2 hours">
+          </div>
+          <div class="af-field">
+            <label class="af-label">Certification</label>
+            <input type="text" name="certification" class="af-input" placeholder="Professional certs">
+          </div>
+          <div class="af-field">
+            <label class="af-label">Years Experience</label>
+            <input type="number" name="years_experience" class="af-input" placeholder="Years">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 9: Fashion (dynamic) -->
+    <div class="af-card cat-section" data-category-name="Fashion" id="sec-Fashion">
+      <div class="af-card-head">
+        <div class="af-card-ico ico-pink"><i class="fas fa-tshirt"></i></div>
+        <div><h2>Fashion Details</h2></div>
+      </div>
+      <div class="af-card-body">
+        <div class="af-row cols-3">
+          <div class="af-field">
+            <label class="af-label">Type</label>
+            <select name="fashion_type" class="af-select">
+              <option value="">Select</option>
+              <option value="men">Men's</option>
+              <option value="women">Women's</option>
+              <option value="kids">Kids'</option>
+              <option value="watches">Watches</option>
+              <option value="jewelry">Jewelry</option>
+              <option value="bags">Bags & Accessories</option>
+            </select>
+          </div>
+          <div class="af-field">
+            <label class="af-label">Size</label>
+            <input type="text" name="size" class="af-input" placeholder="S / M / L / XL">
+          </div>
+          <div class="af-field">
+            <label class="af-label">Material</label>
+            <input type="text" name="material" class="af-input" placeholder="Cotton, Leather…">
+          </div>
+          <div class="af-field">
+            <label class="af-label">Color</label>
+            <input type="text" name="fashion_color" class="af-input" placeholder="Item color">
+          </div>
+          <div class="af-field">
+            <label class="af-label">Condition</label>
+            <select name="fashion_condition" class="af-select">
+              <option value="">Select</option>
+              <option value="new">New</option>
+              <option value="used">Used</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 10: Photos -->
+    <div class="af-card">
+      <div class="af-card-head">
+        <div class="af-card-ico ico-amber"><i class="fas fa-images"></i></div>
+        <div><h2>Photos</h2><p>First image will be the cover</p></div>
+      </div>
+      <div class="af-card-body">
+        <div class="af-upload-zone" id="afDropZone">
+          <input type="file" name="images" id="afFileInput" accept="image/*" multiple>
+          <div class="af-upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+          <h4>Drag & drop images or click to browse</h4>
+          <p>JPG, PNG, WEBP · Max 5MB each · Up to 8 images</p>
+        </div>
+        <div class="af-preview-grid" id="afPreviewGrid" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- CARD 11: Review process -->
+    <div class="af-card">
+      <div class="af-card-head">
+        <div class="af-card-ico ico-indigo"><i class="fas fa-info-circle"></i></div>
+        <div><h2>What happens next?</h2></div>
+      </div>
+      <div class="af-card-body">
+        <div class="af-status-row">
+          <div class="af-status yellow">
+            <div class="af-status-ico"><i class="fas fa-clock"></i></div>
+            <div class="af-status-text">
+              <h4>Pending review</h4>
+              <p>Our team will review your ad within 24 hours</p>
+            </div>
+          </div>
+          <div class="af-status green">
+            <div class="af-status-ico"><i class="fas fa-check-circle"></i></div>
+            <div class="af-status-text">
+              <h4>Approved & live</h4>
+              <p>Your ad is published and visible to all buyers</p>
+            </div>
+          </div>
+          <div class="af-status red">
+            <div class="af-status-ico"><i class="fas fa-times-circle"></i></div>
+            <div class="af-status-text">
+              <h4>If rejected</h4>
+              <p>We'll notify you with reasons so you can resubmit</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="af-submit-wrap">
+      <button type="submit" class="af-submit-btn">
+        <i class="fas fa-paper-plane"></i> Submit for Review
+      </button>
+      <div class="af-submit-note">
+        <span><i class="fas fa-lock" style="color:var(--accent)"></i> Secure</span>
+        <span><i class="fas fa-clock" style="color:var(--accent)"></i> 24h review</span>
+        <span><i class="fas fa-eye" style="color:var(--accent)"></i> 30-day visibility</span>
+      </div>
+    </div>
+
+  </form>
+</div>
 </div>
 
-            <!-- Review Process Information -->
-            <div class="form-section">
-                <div class="form-section-header">
-                    <div class="form-section-icon">
-                        <i class="fas fa-info-circle"></i>
-                    </div>
-                    <h2>Review Process</h2>
-                </div>
-                
-                <div class="review-process">
-                    <div class="review-status yellow">
-                        <span><i class="fas fa-clock"></i> Pending</span>
-                        <div>
-                            <h4>Ad is awaiting review</h4>
-                            <p>Our team will review your ad within 24 hours</p>
-                        </div>
-                    </div>
-                    <div class="review-status green">
-                        <span><i class="fas fa-check-circle"></i> Approved</span>
-                        <div>
-                            <h4>Ad is live and visible</h4>
-                            <p>Your ad will be published and visible to users</p>
-                        </div>
-                    </div>
-                    <div class="review-status red">
-                        <span><i class="fas fa-exclamation-circle"></i> Rejected</span>
-                        <div>
-                            <h4>Ad didn't meet guidelines</h4>
-                            <p>We'll notify you with reasons and suggestions</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Submit Button -->
-            <div class="submit-section">
-                <button type="submit" class="gradient-btn" style="padding: 16px 40px; font-size: 18px; font-weight: 700;">
-                    <i class="fas fa-paper-plane" style="margin-right: 12px;"></i>
-                    Submit for Review
-                </button>
-                <p>
-                    <i class="fas fa-lock"></i> Secure submission · 24/7 support · 30-day visibility
-                </p>
-            </div>
-        </form>
-        
-        <!-- Features Section -->
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-card-icon">
-                    <i class="fas fa-eye" style="font-size: 20px; color: white;"></i>
-                </div>
-                <h3>Maximum Visibility</h3>
-                <p>Get 7x more views than regular listings with our featured placement.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-card-icon">
-                    <i class="fas fa-bolt" style="font-size: 20px; color: white;"></i>
-                </div>
-                <h3>Fast Approval</h3>
-                <p>Get your ad approved and live in under 24 hours with priority processing.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-card-icon">
-                    <i class="fas fa-headset" style="font-size: 20px; color: white;"></i>
-                </div>
-                <h3>Premium Support</h3>
-                <p>Dedicated support team to help you with your featured listing.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Success Modal -->
-    <div id="successModal" class="success-modal" 
-         {% if show_success %}data-show-success="true"{% endif %}
-         style="display: none;">
-        <div class="success-modal-content">
-            <!-- Confetti -->
-            <div class="confetti primary-500" style="top: 10%; left: 10%; animation-delay: 0s;"></div>
-            <div class="confetti amber-400" style="top: 5%; left: 30%; animation-delay: 0.5s;"></div>
-            <div class="confetti green-400" style="top: 15%; left: 70%; animation-delay: 1s;"></div>
-            <div class="confetti pink-400" style="top: 20%; left: 50%; animation-delay: 1.5s;"></div>
-            <div class="confetti purple-400" style="top: 5%; left: 80%; animation-delay: 2s;"></div>
-            
-            <div style="text-align: center; position: relative; z-index: 10;">
-                <div class="success-icon">
-                    <i class="fas fa-check" style="font-size: 40px; color: white;"></i>
-                </div>
-                <h3>Ad Submitted Successfully!</h3>
-                <p>Your ad is now in review. We'll notify you once it's approved.</p>
-                <a href="{% url 'index' %}" class="gradient-btn">Return to Dashboard</a>
-            </div>
-        </div>
-    </div>
+<!-- success modal -->
+<div class="af-modal-bg" id="afSuccessModal"
+     {% if show_success %}style="display:flex"{% endif %}>
+  <div class="af-modal">
+    <div class="af-modal-icon"><i class="fas fa-check"></i></div>
+    <h3>Ad Submitted!</h3>
+    <p>Your listing is now under review. We'll notify you once it's approved and live.</p>
+    <a href="{% url 'index' %}" class="af-modal-btn"><i class="fas fa-home"></i> Go to Homepage</a>
+  </div>
 </div>
+
+<script>
+(function(){
+  // ── category visual selection ──
+  var catOpts = document.querySelectorAll('.af-cat-opt');
+  var catHidden = document.getElementById('categoryHidden');
+
+  function selectCat(el) {
+    catOpts.forEach(function(o){ o.classList.remove('selected'); });
+    el.classList.add('selected');
+    var catName = el.dataset.cat;
+    var catId   = el.dataset.id;
+    catHidden.value = catId;
+    showCatSection(catName);
+  }
+
+  catOpts.forEach(function(opt){
+    opt.addEventListener('click', function(){ selectCat(opt); });
+    // restore on page load if pre-selected
+    var radio = opt.querySelector('input[type=radio]');
+    if (radio && radio.checked) selectCat(opt);
+  });
+
+  function showCatSection(name) {
+    document.querySelectorAll('.cat-section').forEach(function(s){
+      s.classList.remove('visible');
+    });
+    var sec = document.getElementById('sec-' + name);
+    if (sec) sec.classList.add('visible');
+  }
+
+  // ── ad type tab selection ──
+  document.querySelectorAll('.af-type-tab').forEach(function(tab){
+    var radio = tab.querySelector('input[type=radio]');
+    function syncTab(){
+      document.querySelectorAll('.af-type-tab').forEach(function(t){ t.classList.remove('selected'); });
+      tab.classList.add('selected');
+    }
+    tab.addEventListener('click', syncTab);
+    if (radio && radio.checked) syncTab();
+  });
+
+  // ── image upload & preview ──
+  var fileInput  = document.getElementById('afFileInput');
+  var previewGrid = document.getElementById('afPreviewGrid');
+  var dropZone   = document.getElementById('afDropZone');
+  var allFiles   = [];
+
+  function renderPreviews() {
+    previewGrid.innerHTML = '';
+    if (allFiles.length === 0) { previewGrid.style.display = 'none'; return; }
+    previewGrid.style.display = 'grid';
+    allFiles.forEach(function(file, idx){
+      var item = document.createElement('div');
+      item.className = 'af-preview-item';
+      var img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      item.appendChild(img);
+      if (idx === 0) {
+        var badge = document.createElement('div');
+        badge.className = 'af-cover-badge';
+        badge.textContent = 'Cover';
+        item.appendChild(badge);
+      }
+      var del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'af-preview-del';
+      del.innerHTML = '<i class="fas fa-times"></i>';
+      del.addEventListener('click', function(){
+        allFiles.splice(idx, 1);
+        renderPreviews();
+        syncFileInput();
+      });
+      item.appendChild(del);
+      previewGrid.appendChild(item);
+    });
+  }
+
+  function syncFileInput() {
+    var dt = new DataTransfer();
+    allFiles.forEach(function(f){ dt.items.add(f); });
+    fileInput.files = dt.files;
+  }
+
+  fileInput.addEventListener('change', function(){
+    Array.from(fileInput.files).forEach(function(f){
+      if (allFiles.length < 8) allFiles.push(f);
+    });
+    renderPreviews();
+    syncFileInput();
+  });
+
+  // drag & drop
+  dropZone.addEventListener('dragover', function(e){
+    e.preventDefault();
+    dropZone.style.borderColor = 'rgba(34,197,94,.6)';
+  });
+  dropZone.addEventListener('dragleave', function(){
+    dropZone.style.borderColor = '';
+  });
+  dropZone.addEventListener('drop', function(e){
+    e.preventDefault();
+    dropZone.style.borderColor = '';
+    Array.from(e.dataTransfer.files).forEach(function(f){
+      if (f.type.startsWith('image/') && allFiles.length < 8) allFiles.push(f);
+    });
+    renderPreviews();
+    syncFileInput();
+  });
+
+  // ── progress indicator (scroll-based) ──
+  var form = document.getElementById('afForm');
+  function updateSteps() {
+    var cards = form.querySelectorAll('.af-card');
+    var total = cards.length;
+    var filled = 0;
+    // simple check: if category selected
+    if (catHidden.value) filled++;
+    // basic info
+    var nameVal = form.querySelector('input[name=name]');
+    if (nameVal && nameVal.value.trim()) filled++;
+    // photos
+    if (allFiles.length > 0) filled++;
+
+    var steps = [
+      document.getElementById('step1-ind'),
+      document.getElementById('step2-ind'),
+      document.getElementById('step3-ind'),
+      document.getElementById('step4-ind'),
+    ];
+    steps.forEach(function(s){ s.classList.remove('active','done'); });
+    if (filled === 0) steps[0].classList.add('active');
+    else if (filled === 1) { steps[0].classList.add('done'); steps[1].classList.add('active'); }
+    else if (filled === 2) { steps[0].classList.add('done'); steps[1].classList.add('done'); steps[2].classList.add('active'); }
+    else { steps[0].classList.add('done'); steps[1].classList.add('done'); steps[2].classList.add('done'); steps[3].classList.add('active'); }
+  }
+  form.addEventListener('input', updateSteps);
+  updateSteps();
+
+  // ── close success modal on bg click ──
+  var modal = document.getElementById('afSuccessModal');
+  modal.addEventListener('click', function(e){
+    if (e.target === modal) modal.style.display = 'none';
+  });
+})();
+</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -1380,13 +794,13 @@ document.addEventListener('DOMContentLoaded', function() {
         form.addEventListener('submit', function(e) {
             const categoryValue = categorySelect ? categorySelect.value : null;
             console.log('Form submit - checking category value:', categoryValue);
-            
+
             if (!categoryValue || categoryValue === '') {
                 e.preventDefault();
                 alert('Please select a category for your ad.');
                 return false;
             }
-            
+
             console.log('Category validation passed, value is:', categoryValue);
             return true;
         });
@@ -1401,10 +815,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function handleImageUpload(input) {
         const file = input.files[0]; // Only take the first file
-        
+
         if (file) {
             const reader = new FileReader();
-            
+
             reader.onload = (e) => {
                 const preview = document.createElement('div');
                 preview.className = 'preview-card';
@@ -1424,7 +838,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </button>
                     </div>
                 `;
-                
+
                 // Remove button functionality
                 preview.querySelector('.remove-btn').addEventListener('click', () => {
                     preview.remove();
@@ -1439,7 +853,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         `;
                     }
                 });
-                
+
                 // Feature button functionality
                 const featureBtn = preview.querySelector('.feature-btn');
                 featureBtn.addEventListener('click', () => {
@@ -1454,7 +868,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     starIcon.classList.remove('far');
                     starIcon.classList.add('fas');
                 });
-                
+
                 // If this is the first image, set it as featured
                 if (previewContainer.querySelectorAll('.preview-card').length === 1) {
                     const firstStar = previewContainer.querySelector('.feature-btn i');
@@ -1464,11 +878,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         firstStar.classList.add('fas');
                     }
                 }
-                
+
                 if (previewContainer.querySelector('[style*="border: 2px dashed"]')) {
                     previewContainer.innerHTML = '';
                 }
-                
+
                 previewContainer.appendChild(preview);
                 addImageBtn.disabled = false; // Enable Add Images button after successful upload
             };
@@ -1509,7 +923,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to validate input and prevent invalid characters
     function restrictInput(inputElement, regex, errorElement, errorMessage) {
         if (!inputElement || !errorElement) return;
-        
+
         inputElement.addEventListener('input', function () {
             // Prevent slashes
             if (inputElement.value.includes('/')) {
@@ -1528,7 +942,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to validate year specifically
     function restrictYearInput(inputElement, errorElement) {
         if (!inputElement || !errorElement) return;
-        
+
         inputElement.addEventListener('input', function () {
             const year = parseInt(inputElement.value);
             if (inputElement.value && (isNaN(year) || year < 1900 || year > new Date().getFullYear())) {
@@ -1570,13 +984,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function createConfetti() {
         const container = document.querySelector('.success-modal-content');
         if (!container) return;
-        
+
         const colors = ['primary-500', 'amber-400', 'green-400', 'pink-400', 'purple-400'];
-        
+
         // Clear existing confetti
         const existingConfetti = container.querySelectorAll('.confetti');
         existingConfetti.forEach(confetti => confetti.remove());
-        
+
         // Create new confetti
         for (let i = 0; i < 20; i++) {
             const confetti = document.createElement('div');
@@ -1606,7 +1020,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // =============================================
     // ADDITIONAL FORM ENHANCEMENTS
     // =============================================
-    
+
     // Toggle button styling for condition radios
     const conditionRadios = document.querySelectorAll('input[name="condition"]');
     conditionRadios.forEach(radio => {
@@ -1624,7 +1038,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.nextElementSibling.style.borderColor = 'transparent';
             }
         });
-        
+
         if (radio.checked && radio.nextElementSibling && radio.nextElementSibling.tagName === 'DIV') {
             radio.nextElementSibling.style.background = 'linear-gradient(135deg, var(--accent), #0d9488)';
             radio.nextElementSibling.style.color = 'white';
