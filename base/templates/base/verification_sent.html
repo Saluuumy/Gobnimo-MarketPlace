@@ -8,153 +8,94 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg: #0b1220;
-            --panel: #111b2b;
+            --sidebar-bg: #0f1720;
+            --panel: #0b1220;
             --muted: #9ca3af;
-            --accent: #4ade80;
-            --accent-dark: #22c55e;
-            --border: rgba(255, 255, 255, 0.07);
+            --chip: #1f2937;
+            --accent: #06b6d4;
+            --tile-bg: #2b3440;
         }
-        * {
-            box-sizing: border-box;
-        }
+
         body {
-            background: var(--bg);
-            color: #e6eef8;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-        .panel {
             background: var(--panel);
-            border: 1px solid var(--border);
+            color: #e6eef8;
         }
+
         .gradient-btn {
-            background: linear-gradient(135deg, rgb(167, 139, 250) 0%, var(--accent-dark) 100%);
-            color: #06210f;
+            background: linear-gradient(135deg, var(--accent) 0%, #0d9488 100%);
             transition: all 0.3s ease;
         }
+        
         .gradient-btn:hover {
-            background: linear-gradient(135deg, #5eead4 0%, rgb(167, 139, 250) 100%);
+            background: linear-gradient(135deg, #0891b2 0%, #0f766e 100%);
             transform: translateY(-1px);
-            box-shadow: 0 4px 18px rgba(74, 222, 128, 0.35);
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
         }
-        .gradient-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
+
+        .bg-white {
+            background: var(--tile-bg) !important;
+            border-color: rgba(255, 255, 255, 0.05) !important;
         }
-        .accent-text {
-            color: #fff;
+        
+        .text-gray-800 {
+            color: #e6eef8 !important;
         }
-        .muted-text {
-            color: var(--muted);
+        
+        .text-gray-600 {
+            color: var(--muted) !important;
         }
-        .icon-circle {
-            background: rgba(74, 222, 128, 0.1);
+        
+        .border-gray-200 {
+            border-color: rgba(255, 255, 255, 0.05) !important;
         }
-        .resend-link {
-            background: none;
-            border: none;
-            color: var(--accent);
-            font-weight: 600;
-            cursor: pointer;
-            padding: 0;
+        
+        .shadow-lg {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
         }
-        .resend-link:hover {
-            text-decoration: underline;
+
+        .text-purple-600 {
+            color: var(--accent) !important;
         }
-        .resend-link:disabled {
-            color: var(--muted);
-            cursor: not-allowed;
-            text-decoration: none;
-        }
-        .alert {
-            border-radius: 0.5rem;
-            padding: 0.65rem 1rem;
-            font-size: 0.875rem;
-            margin-bottom: 1rem;
-            text-align: left;
-        }
-        .alert.success {
-            background: rgba(74, 222, 128, 0.12);
-            color: var(--accent);
-            border: 1px solid rgba(74, 222, 128, 0.25);
-        }
-        .alert.error {
-            background: rgba(248, 113, 113, 0.12);
-            color: #f87171;
-            border: 1px solid rgba(248, 113, 113, 0.25);
+
+        .text-gray-400 {
+            color: var(--muted) !important;
         }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen">
-    <div class="w-full max-w-md p-8 rounded-2xl shadow-lg panel">
-        <!-- Logo/Header -->
+    <div class="w-full max-w-md p-8 rounded-2xl shadow-lg border">
+        <!-- Logo/Header with your gradient colors -->
         <div class="text-center mb-8">
             <a href="/" class="flex items-center justify-center">
-                <span class="text-3xl font-bold accent-text">
+                <span class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-500">
                     Gobonimo Marketplace
                 </span>
             </a>
         </div>
 
-        <!-- Django messages -->
-        {% if messages %}
-            {% for message in messages %}
-            <div class="alert {% if message.tags == 'error' %}error{% else %}success{% endif %}">
-                {{ message }}
-            </div>
-            {% endfor %}
-        {% endif %}
-
         <!-- Main content -->
         <div class="text-center">
-            <div class="mx-auto h-20 w-20 rounded-full flex items-center justify-center mb-6 icon-circle">
-                <i class="fas fa-envelope text-3xl accent-text"></i>
+            <div class="mx-auto h-20 w-20 rounded-full flex items-center justify-center mb-6" style="background: rgba(6, 182, 212, 0.1);">
+                <i class="fas fa-envelope text-3xl" style="color: var(--accent);"></i>
             </div>
+            
             <h2 class="text-2xl font-bold mt-4 mb-4">Verification Email Sent</h2>
-            <p class="mb-6 muted-text">
-                We've sent a confirmation link to your email address.
+            <p class="mb-6">
+                We've sent a confirmation link to your email address. 
                 Please check your inbox (including spam/junk folder) to activate your account.
             </p>
+            
             <div class="mt-8">
-                <a href="{% url 'index' %}" class="gradient-btn font-bold py-3 px-6 rounded-lg inline-block">
+                <a href="{% url 'index' %}" class="gradient-btn text-white font-bold py-3 px-6 rounded-lg inline-block">
                     <i class="fas fa-home mr-2"></i> Back to Home
                 </a>
             </div>
-
-            <p class="text-sm mt-8 muted-text">
-                Didn't receive the email?
-                <form method="POST" action="" id="resendForm" style="display:inline">
-                    {% csrf_token %}
-                    <input type="hidden" name="email" value="{{ email|default:'' }}">
-                    <button type="submit" class="resend-link" id="resendBtn">Resend</button>
-                </form>
+            
+            <p class="text-sm mt-8">
+                Didn't receive the email? 
+                <a href="#" class="font-semibold hover:underline" style="color: var(--accent);">Resend</a>
             </p>
         </div>
     </div>
-
-    <script>
-        // Disable the resend button for 60s after a click to match the
-        // server-side cooldown and avoid double-submits.
-        const form = document.getElementById('resendForm');
-        const btn = document.getElementById('resendBtn');
-        if (form && btn) {
-            form.addEventListener('submit', () => {
-                btn.disabled = true;
-                let seconds = 60;
-                btn.textContent = `Resend (${seconds}s)`;
-                const interval = setInterval(() => {
-                    seconds -= 1;
-                    if (seconds <= 0) {
-                        clearInterval(interval);
-                        btn.disabled = false;
-                        btn.textContent = 'Resend';
-                    } else {
-                        btn.textContent = `Resend (${seconds}s)`;
-                    }
-                }, 1000);
-            });
-        }
-    </script>
 </body>
 </html>
