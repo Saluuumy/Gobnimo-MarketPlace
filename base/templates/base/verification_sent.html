@@ -124,7 +124,7 @@
 
             <p class="text-sm mt-8 muted-text">
                 Didn't receive the email?
-                <form method="POST" action="{% url 'resend_verification' %}" id="resendForm" style="display:inline">
+                <form method="POST" action="" id="resendForm" style="display:inline">
                     {% csrf_token %}
                     <input type="hidden" name="email" value="{{ email|default:'' }}">
                     <button type="submit" class="resend-link" id="resendBtn">Resend</button>
