@@ -1,7 +1,6 @@
 from pathlib import Path
 import environ
 import dj_database_url
-import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,7 +20,12 @@ DEBUG = env.bool("DEBUG", default=False)
 
 ALLOWED_HOSTS = env.list(
     "ALLOWED_HOSTS",
-    default=["localhost", "127.0.0.1"],
+    default=[
+        "localhost",
+        "127.0.0.1",
+        "waaheen-d8bzabe3fehygpgg.westeurope-01.azurewebsites.net",
+        ".azurewebsites.net",  # covers all Azure internal health check IPs
+    ],
 )
 
 CSRF_TRUSTED_ORIGINS = env.list(
@@ -29,6 +33,7 @@ CSRF_TRUSTED_ORIGINS = env.list(
     default=[
         "http://localhost:8000",
         "http://127.0.0.1:8000",
+        "https://waaheen-d8bzabe3fehygpgg.westeurope-01.azurewebsites.net",
     ],
 )
 
@@ -41,17 +46,15 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "whitenoise.runserver_nostatic",  # MUST be before staticfiles
     "django.contrib.staticfiles",
     "django.contrib.sites",
-
-    "whitenoise.runserver_nostatic",
-
     "base.apps.BaseConfig",
-
+    # ALLAUTH
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-
+    # STORAGE
     "storages",
 ]
 
@@ -139,23 +142,45 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
 # =========================
-# AZURE STORAGE (SAFE FOR CI/CD)
+# MEDIA FILES (Azure Blob in production, local in dev)
 # =========================
-
-AZURE_ACCOUNT_NAME = env("AZURE_ACCOUNT_NAME", default="")
-AZURE_ACCOUNT_KEY = env("AZURE_ACCOUNT_KEY", default="")
-AZURE_CONTAINER = env("AZURE_CONTAINER", default="media")
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 AZURE_STORAGE_CONNECTION_STRING = env("AZURE_STORAGE_CONNECTION_STRING", default="")
 
-# ✅ SAFE CONDITION (prevents collectstatic crash)
-if AZURE_ACCOUNT_NAME and AZURE_ACCOUNT_KEY:
-    DEFAULT_FILE_STORAGE = "storages.backends.azure_storage.AzureStorage"
+if AZURE_STORAGE_CONNECTION_STRING:
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.azure_storage.AzureStorage",
+            "OPTIONS": {
+                "connection_string": AZURE_STORAGE_CONNECTION_STRING,
+                "azure_container": env("AZURE_CONTAINER", default="media"),
+                "overwrite_files": True,
+                "custom_domain": "salmadjangostorage.blob.core.windows.net",
+            },
+        },
+        # FIX: Use simple WhiteNoiseStorage (not Manifest) to avoid
+        # "Missing staticfiles manifest entry" crash if collectstatic
+        # hasn't run yet or a file is referenced that wasn't collected.
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        },
+    }
 else:
-    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+            "OPTIONS": {
+                "location": str(MEDIA_ROOT),
+                "base_url": MEDIA_URL,
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        },
+    }
 
 # =========================
 # DEFAULT AUTO FIELD
@@ -163,7 +188,7 @@ else:
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # =========================
-# SECURITY (AZURE DEPLOYMENT)
+# SECURITY (PRODUCTION / AZURE)
 # =========================
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
@@ -181,9 +206,12 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"
-ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_LOGIN_METHODS = {"username", "email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
+ACCOUNT_EMAIL_SUBJECT_PREFIX = "[Adver Platform] "
 
 LOGIN_REDIRECT_URL = "/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
@@ -192,21 +220,18 @@ ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 # EMAIL (SENDGRID)
 # =========================
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-
 EMAIL_HOST = "smtp.sendgrid.net"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-
 EMAIL_HOST_USER = "apikey"
-EMAIL_HOST_PASSWORD = env("SENDGRID_API_KEY")
-
+EMAIL_HOST_PASSWORD = env("SENDGRID_API_KEY", default="")
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="salmamacash@gmail.com")
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 # =========================
 # PASSWORD RESET
 # =========================
-PASSWORD_RESET_TIMEOUT = 172800
+PASSWORD_RESET_TIMEOUT = 172800  # 48 hours
 
 # =========================
 # LOGGING
@@ -214,13 +239,42 @@ PASSWORD_RESET_TIMEOUT = 172800
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {message}",
+            "style": "{",
+        },
+    },
     "handlers": {
-        "console": {"class": "logging.StreamHandler"},
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
     },
     "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
         "django.core.mail": {
             "handlers": ["console"],
             "level": "DEBUG",
+            "propagate": False,
+        },
+        "storages": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
         },
     },
 }
