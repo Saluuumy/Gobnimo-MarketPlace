@@ -20,12 +20,7 @@ DEBUG = env.bool("DEBUG", default=False)
 
 ALLOWED_HOSTS = env.list(
     "ALLOWED_HOSTS",
-    default=[
-        "localhost",
-        "127.0.0.1",
-        "waaheen-d8bzabe3fehygpgg.westeurope-01.azurewebsites.net",
-        "169.254.129.2",  # Azure internal health check IP
-    ],
+    default=["localhost", "127.0.0.1"],
 )
 
 CSRF_TRUSTED_ORIGINS = env.list(
@@ -33,7 +28,6 @@ CSRF_TRUSTED_ORIGINS = env.list(
     default=[
         "http://localhost:8000",
         "http://127.0.0.1:8000",
-        "https://waaheen-d8bzabe3fehygpgg.westeurope-01.azurewebsites.net",
     ],
 )
 
@@ -46,16 +40,21 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "whitenoise.runserver_nostatic",  # MUST be before staticfiles
     "django.contrib.staticfiles",
     "django.contrib.sites",
+
+    "whitenoise.runserver_nostatic",
+
     "base.apps.BaseConfig",
+
     # ALLAUTH
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    # STORAGE
-    "storages",
+
+    # CLOUDINARY
+    "cloudinary_storage",
+    "cloudinary",
 ]
 
 AUTH_USER_MODEL = "base.User"
@@ -72,6 +71,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+
+    # REQUIRED FOR ALLAUTH
     "allauth.account.middleware.AccountMiddleware",
 ]
 
@@ -142,44 +143,7 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# =========================
-# MEDIA FILES (Azure Blob in production, local in dev)
-# =========================
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-
-AZURE_STORAGE_CONNECTION_STRING = env("AZURE_STORAGE_CONNECTION_STRING", default="")
-
-if AZURE_STORAGE_CONNECTION_STRING:
-    STORAGES = {
-        "default": {
-            "BACKEND": "storages.backends.azure_storage.AzureStorage",
-            "OPTIONS": {
-                "connection_string": AZURE_STORAGE_CONNECTION_STRING,
-                "azure_container": env("AZURE_CONTAINER", default="media"),
-                "overwrite_files": True,
-            },
-        },
-        # FIX: Use simple WhiteNoiseStorage (not Manifest) to avoid
-        # "Missing staticfiles manifest entry" crash if collectstatic
-        # hasn't run yet or a file is referenced that wasn't collected.
-        "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
-        },
-    }
-else:
-    STORAGES = {
-        "default": {
-            "BACKEND": "django.core.files.storage.FileSystemStorage",
-            "OPTIONS": {
-                "location": str(MEDIA_ROOT),
-                "base_url": MEDIA_URL,
-            },
-        },
-        "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
-        },
-    }
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # =========================
 # DEFAULT AUTO FIELD
@@ -187,7 +151,7 @@ else:
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # =========================
-# SECURITY (PRODUCTION / AZURE)
+# SECURITY (AZURE)
 # =========================
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
@@ -205,9 +169,12 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-ACCOUNT_LOGIN_METHODS = {"username", "email"}
-ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+ACCOUNT_EMAIL_REQUIRED = True
+
+# change to "mandatory" if you want forced verification
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
 ACCOUNT_EMAIL_SUBJECT_PREFIX = "[Adver Platform] "
@@ -216,65 +183,50 @@ LOGIN_REDIRECT_URL = "/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 
 # =========================
-# EMAIL (SENDGRID)
+# EMAIL (SENDGRID FIXED)
 # =========================
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
 EMAIL_HOST = "smtp.sendgrid.net"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+
 EMAIL_HOST_USER = "apikey"
-EMAIL_HOST_PASSWORD = env("SENDGRID_API_KEY", default="")
+EMAIL_HOST_PASSWORD = env("SENDGRID_API_KEY")
+
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="salmahoussein33@gmail.com")
+SENDGRID_API_KEY = env("SENDGRID_API_KEY", default="")
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+# =========================
+# CLOUDINARY
+# =========================
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": env("CLOUDINARY_CLOUD_NAME", default=""),
+    "API_KEY": env("CLOUDINARY_API_KEY", default=""),
+    "API_SECRET": env("CLOUDINARY_API_SECRET", default=""),
+}
+
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 # =========================
 # PASSWORD RESET
 # =========================
-PASSWORD_RESET_TIMEOUT = 172800  # 48 hours
-
+PASSWORD_RESET_TIMEOUT = 172800
 
 # =========================
-# LOGGING
+# LOGGING (EMAIL DEBUG)
 # =========================
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "formatters": {
-        "verbose": {
-            "format": "{levelname} {asctime} {module} {message}",
-            "style": "{",
-        },
-    },
     "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "verbose",
-        },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": "WARNING",
+        "console": {"class": "logging.StreamHandler"},
     },
     "loggers": {
-        "django": {
-            "handlers": ["console"],
-            "level": "INFO",
-            "propagate": False,
-        },
-        "django.request": {
-            "handlers": ["console"],
-            "level": "ERROR",
-            "propagate": False,
-        },
         "django.core.mail": {
             "handlers": ["console"],
             "level": "DEBUG",
-            "propagate": False,
-        },
-        "storages": {
-            "handlers": ["console"],
-            "level": "WARNING",
-            "propagate": False,
         },
     },
 }
