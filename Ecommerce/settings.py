@@ -225,7 +225,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "apikey"
 EMAIL_HOST_PASSWORD = env("SENDGRID_API_KEY", default="")
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="salmamacash@gmail.com")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="salmahoussein33@gmail.com")
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 # =========================
