@@ -53,6 +53,7 @@ from sendgrid import SendGridAPIClient
 
 logger = logging.getLogger(__name__)
 
+ 
 def send_email_in_thread(subject, text_content, html_content, from_email, recipient_email, user_id):
     """
     Send email via SendGrid Web API (HTTPS port 443).
@@ -61,25 +62,25 @@ def send_email_in_thread(subject, text_content, html_content, from_email, recipi
     try:
         if not settings.SENDGRID_API_KEY:
             raise ValueError("SENDGRID_API_KEY is not set")
-
+ 
         logger.debug(f"Attempting to send email to {recipient_email} (ID: {user_id})")
-
+ 
         message = Mail(
             from_email=from_email,
-            to_emails=recipient_email,
+            to=recipient_email,
             subject=subject,
             plain_text_content=text_content,
             html_content=html_content,
         )
-
+ 
         sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
         response = sg.send(message)
-
+ 
         if response.status_code not in [200, 202]:
             raise Exception(f"SendGrid API returned {response.status_code}: {response.body}")
-
+ 
         logger.info(f"Email sent successfully to {recipient_email} (ID: {user_id})")
-
+ 
     except Exception as e:
         logger.error(
             f"Failed to send email to {recipient_email}: {str(e)}\n"
@@ -148,7 +149,7 @@ def signup(request):
                         user.id,
                     )
                 )
-                email_thread.daemon = True  # Thread won't block server shutdown
+                email_thread.daemon = True
                 email_thread.start()
  
                 logger.info(f"New user registered: {user.email} (ID: {user.id})")
@@ -194,14 +195,12 @@ def verify_email(request, uidb64, token):
         return render(request, 'base/verification_success.html')
  
     return render(request, 'base/verification_failed.html')
+ 
 def test_email(request):
     try:
-        from sendgrid import SendGridAPIClient
-        from sendgrid.helpers.mail import Mail
-
         message = Mail(
             from_email=settings.DEFAULT_FROM_EMAIL,
-            to_emails=settings.DEFAULT_FROM_EMAIL,
+            to=settings.DEFAULT_FROM_EMAIL,
             subject="Test from Gobonimo",
             plain_text_content="This is a test email via SendGrid API.",
         )
