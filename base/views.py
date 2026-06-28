@@ -53,99 +53,87 @@ import traceback
 
 logger = logging.getLogger(__name__)
 
-def send_email_in_thread(subject, text_content, html_content, from_email, recipient_email, user_id, debug=False):
+ 
+ 
+def send_email_in_thread(subject, text_content, html_content, from_email, recipient_email, user_id):
     """
-    Helper function to send email using SendGrid API in a separate thread.
+    Send a verification email via SendGrid SMTP using Django's mail backend.
+    Runs in a background thread so it doesn't block the signup response.
     """
     try:
-        if not settings.SENDGRID_API_KEY:
-            raise ValueError("SENDGRID_API_KEY is not set")
         if not from_email:
-            raise ValueError("DEFAULT_FROM_EMAIL is not set")
-
+            raise ValueError("DEFAULT_FROM_EMAIL is not set in settings")
+ 
         logger.debug(f"Attempting to send email to {recipient_email} (ID: {user_id})")
-
-        message = Mail(
-            from_email=from_email,
-            to_emails=recipient_email,
+ 
+        email = EmailMultiAlternatives(
             subject=subject,
-            plain_text_content=text_content,
-            html_content=html_content
+            body=text_content,
+            from_email=from_email,
+            to=[recipient_email],
         )
-
-        sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
-        response = sg.send(message)
-        if response.status_code != 202:
-            raise Exception(f"SendGrid returned status code {response.status_code}: {response.body}")
-
+        email.attach_alternative(html_content, "text/html")
+        email.send(fail_silently=False)
+ 
         logger.info(f"Verification email sent successfully to {recipient_email} (ID: {user_id})")
+ 
     except Exception as e:
-        logger.error(f"Failed to send verification email to {recipient_email}: {str(e)}\n{traceback.format_exc()}")
-        if debug:
-            try:
-                backend = EmailBackend()
-                email = EmailMultiAlternatives(
-                    subject,
-                    text_content,
-                    from_email,
-                    [recipient_email],
-                    alternatives=[(html_content, 'text/html')]
-                )
-                backend.send_messages([email])
-                logger.info(f"Console backend used for verification email to {recipient_email}")
-            except Exception as e:
-                logger.error(f"Console backend failed for {recipient_email}: {str(e)}\n{traceback.format_exc()}")
-
+        logger.error(
+            f"Failed to send verification email to {recipient_email}: {str(e)}\n"
+            f"{traceback.format_exc()}"
+        )
+ 
+ 
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST, request.FILES)
-        
+ 
         if form.is_valid():
             try:
                 user = form.save(commit=False)
                 user.username = form.cleaned_data['email']
                 user.is_active = False
                 user.email_verified = False
-                
+ 
                 # Check if email is already registered
                 if User.objects.filter(email=user.email).exists():
                     logger.warning(f"Email already exists: {user.email}")
                     messages.error(request, "This email is already registered. Please use a different email or log in.")
                     return render(request, 'base/signup.html', {'form': form})
-
+ 
                 user.save()
-
+ 
                 # Generate verification token and URL
                 token = default_token_generator.make_token(user)
                 uid = urlsafe_base64_encode(force_bytes(user.pk))
                 verification_url = request.build_absolute_uri(
                     reverse('verify_email', kwargs={'uidb64': uid, 'token': token})
                 )
-
-                # Render HTML email content
+ 
+                # Render email content from template
                 try:
                     html_content = render_to_string('base/verification_email.html', {
                         'verification_url': verification_url,
                         'user': user,
                     })
-                    text_content = strip_tags(html_content)
                     if not html_content:
                         raise ValueError("Rendered HTML content is empty")
+                    text_content = strip_tags(html_content)
+ 
                 except TemplateDoesNotExist as e:
-                    logger.error(f"Template error: {str(e)}\n{traceback.format_exc()}")
-                    user.delete()  # Clean up the user if template rendering fails
-                    messages.error(request, "Error preparing the verification email. Please try again or contact support.")
+                    logger.error(f"Template not found: {str(e)}\n{traceback.format_exc()}")
+                    user.delete()
+                    messages.error(request, "Error preparing the verification email. Please contact support.")
                     return render(request, 'base/signup.html', {'form': form})
+ 
                 except Exception as e:
                     logger.error(f"Template rendering error: {str(e)}\n{traceback.format_exc()}")
                     user.delete()
                     messages.error(request, "Error preparing the email content. Please try again.")
                     return render(request, 'base/signup.html', {'form': form})
-
-                # Log email sending attempt
+ 
+                # Send email in a background thread
                 logger.debug(f"Starting email thread for {user.email} (ID: {user.id})")
-
-                # Send email in a separate thread
                 email_thread = threading.Thread(
                     target=send_email_in_thread,
                     args=(
@@ -155,50 +143,53 @@ def signup(request):
                         settings.DEFAULT_FROM_EMAIL,
                         user.email,
                         user.id,
-                        settings.DEBUG
                     )
                 )
+                email_thread.daemon = True  # Thread won't block server shutdown
                 email_thread.start()
-
-                # Log successful registration
+ 
                 logger.info(f"New user registered: {user.email} (ID: {user.id})")
-                
-                # Add success message
-                messages.success(request, f"Verification email sent to {user.email}. Please check your inbox and spam/junk folder.")
+                messages.success(
+                    request,
+                    f"Verification email sent to {user.email}. Please check your inbox and spam/junk folder."
+                )
                 return render(request, 'base/verification_sent.html')
-                
+ 
             except IntegrityError as e:
-                logger.error(f"Database error during user registration: {str(e)}\n{traceback.format_exc()}")
+                logger.error(f"Database error during registration: {str(e)}\n{traceback.format_exc()}")
                 messages.error(request, "This email or username is already in use. Please try a different one.")
                 return render(request, 'base/signup.html', {'form': form})
+ 
             except Exception as e:
-                logger.error(f"Unexpected error during user registration: {str(e)}\n{traceback.format_exc()}")
-                messages.error(request, 
-                    f"An unexpected error occurred during registration: {str(e)}. "
-                    "Please try again or contact support if the problem continues."
+                logger.error(f"Unexpected error during registration: {str(e)}\n{traceback.format_exc()}")
+                messages.error(
+                    request,
+                    "An unexpected error occurred during registration. Please try again or contact support."
                 )
                 return render(request, 'base/signup.html', {'form': form})
-                
+ 
         else:
-            # Let the form handle its own error messages
             logger.warning(f"Form validation failed: {form.errors}")
-            
+ 
     else:
         form = SignupForm()
-    
+ 
     return render(request, 'base/signup.html', {'form': form})
-
+ 
+ 
 def verify_email(request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
         user = User.objects.get(pk=uid)
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
+ 
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
         user.email_verified = True
         user.save()
         return render(request, 'base/verification_success.html')
+ 
     return render(request, 'base/verification_failed.html')
 
 
