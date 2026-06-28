@@ -181,27 +181,23 @@ LOGIN_REDIRECT_URL = "/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 
 # =========================
-# EMAIL — SendGrid via SMTP
+# EMAIL — SendGrid Web API
 # --------------------------
-# Uses Django's built-in SMTP backend (no SDK needed).
-# Your view should use EmailMultiAlternatives, NOT SendGridAPIClient.
+# Azure blocks outbound SMTP port 587, so we use the SendGrid
+# Python SDK directly over HTTPS (port 443) instead.
 #
 # Required .env variables:
 #   SENDGRID_API_KEY=SG.xxxxxxxxxxxx
-#   DEFAULT_FROM_EMAIL=noreply@yourdomain.com   ← must be verified in SendGrid
+#   DEFAULT_FROM_EMAIL=salmahoussein@outlook.com  <- must be verified in SendGrid
+#
+# In views.py use SendGridAPIClient, NOT EmailMultiAlternatives.
 # =========================
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-
-EMAIL_HOST = "smtp.sendgrid.net"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "apikey"                        # SendGrid requires the literal string "apikey"
-EMAIL_HOST_PASSWORD = env("SENDGRID_API_KEY")     # Your actual SG.xxx key goes here
-
-# IMPORTANT: this address must be verified as a Single Sender (or Domain) in SendGrid.
-# Do NOT use a Gmail/Yahoo/Hotmail address — it will fail DMARC and get dropped.
+SENDGRID_API_KEY = env("SENDGRID_API_KEY")
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+# Used locally only (python manage.py runserver) — prints emails to console
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # =========================
 # CLOUDINARY
@@ -245,7 +241,7 @@ LOGGING = {
             "level": "DEBUG",
             "propagate": False,
         },
-        # Your app's views/signals (change "base" to your actual app label if different)
+        # Your app's views/signals
         "base": {
             "handlers": ["console"],
             "level": "DEBUG",
