@@ -194,6 +194,7 @@ def verify_email(request, uidb64, token):
 
 def test_email(request):
     try:
+        from sendgrid.helpers.mail import Mail, Email, To, Content
         message = Mail(
             from_email=Email(settings.DEFAULT_FROM_EMAIL),
             to_emails=To(settings.DEFAULT_FROM_EMAIL),
@@ -204,7 +205,10 @@ def test_email(request):
         response = sg.send(message)
         return HttpResponse(f"✅ Sent! Status: {response.status_code}")
     except Exception as e:
-        return HttpResponse(f"❌ Failed: {str(e)}")
+        # Show full error detail
+        error_body = getattr(e, 'body', 'no body')
+        error_status = getattr(e, 'status_code', 'no status')
+        return HttpResponse(f"❌ Failed: {str(e)}<br>Status: {error_status}<br>Body: {error_body}")
 
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'base/auth/custom_reset.html'
