@@ -2,8 +2,467 @@
 {% load static %}
 {% block content %}
 
+<style>
+  /* ── tokens ── */
+  :root {
+    --bg:       #0b1220;
+    --panel:    #0f1a2e;
+    --border:   rgba(255,255,255,0.08);
+    --chip:     #1a2540;
+    --accent:   #06b6d4;
+    --accent2:  #0d9488;
+    --muted:    #8b9ab5;
+    --text:     #e6eef8;
+    --err:      #f43f5e;
+    --ok:       #10b981;
+    --radius:   12px;
+  }
+
+  /* ── page layout ── */
+  .rg-page {
+    min-height: 100vh;
+    background: var(--bg);
+    display: flex;
+    align-items: stretch;
+  }
+
+  .rg-wrap {
+    display: flex;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ── left panel ── */
+  .rg-left {
+    width: 380px;
+    flex-shrink: 0;
+    background: linear-gradient(160deg, #0d1f3c 0%, #091526 100%);
+    border-right: 1px solid var(--border);
+    padding: 56px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .rg-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 48px;
+  }
+
+  .rg-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 15px;
+    color: #fff;
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+  }
+
+  .rg-brand-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.1;
+  }
+
+  .rg-brand-sub {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 1px;
+  }
+
+  .rg-tagline h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+    margin: 0 0 12px;
+  }
+
+  .rg-tagline h2 em {
+    font-style: normal;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .rg-tagline p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 0 0 36px;
+  }
+
+  .rg-perks {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .rg-perk {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .rg-perk-ico {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(6,182,212,0.1);
+    border: 1px solid rgba(6,182,212,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .rg-perk-txt {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .rg-login-link {
+    margin-top: 48px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .rg-login-link a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .rg-login-link a:hover { text-decoration: underline; }
+
+  /* ── right panel (form) ── */
+  .rg-right {
+    flex: 1;
+    padding: 48px 48px 56px;
+    overflow-y: auto;
+  }
+
+  .rg-form-head {
+    margin-bottom: 28px;
+  }
+
+  .rg-form-head h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 4px;
+  }
+
+  .rg-form-head p {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* ── alerts ── */
+  .rg-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .rg-alert.err {
+    background: rgba(244,63,94,0.1);
+    border: 1px solid rgba(244,63,94,0.25);
+    color: #fca5a5;
+  }
+
+  .rg-alert.ok {
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.25);
+    color: #6ee7b7;
+  }
+
+  /* ── section divider ── */
+  .rg-divider {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin: 24px 0 18px;
+  }
+
+  .rg-divider:first-of-type { margin-top: 0; }
+
+  /* ── avatar ── */
+  .rg-avatar-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 4px;
+  }
+
+  .rg-ava-circle {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--chip);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 26px;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: border-color .2s;
+  }
+
+  .rg-ava-circle.has-img { border-color: var(--accent); }
+  .rg-ava-circle img { width: 100%; height: 100%; object-fit: cover; }
+
+  .rg-ava-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: var(--chip);
+    border: 1px dashed rgba(255,255,255,0.2);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+  }
+
+  .rg-ava-label:hover {
+    border-color: var(--accent);
+    background: rgba(6,182,212,0.06);
+  }
+
+  .rg-ava-note {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 5px;
+  }
+
+  .rg-ava-remove {
+    font-size: 12px;
+    color: var(--err);
+    cursor: pointer;
+    margin-top: 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .rg-ava-remove:hover { text-decoration: underline; }
+
+  /* ── form grid ── */
+  .rg-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .rg-field { margin-bottom: 16px; }
+
+  .rg-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .rg-label .req { color: var(--accent); }
+
+  .rg-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .rg-input-wrap .ico {
+    position: absolute;
+    left: 12px;
+    color: var(--muted);
+    font-size: 13px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .rg-input-wrap .ico-top {
+    position: absolute;
+    left: 12px;
+    top: 14px;
+    color: var(--muted);
+    font-size: 13px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .rg-input {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px 0 36px;
+    background: var(--chip);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 14px;
+    transition: border-color .2s, box-shadow .2s;
+    box-sizing: border-box;
+  }
+
+  .rg-input::placeholder { color: var(--muted); }
+
+  .rg-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(6,182,212,0.15);
+  }
+
+  .rg-input.err {
+    border-color: var(--err);
+    box-shadow: 0 0 0 3px rgba(244,63,94,0.15);
+  }
+
+  .rg-textarea {
+    width: 100%;
+    padding: 11px 12px 11px 36px;
+    background: var(--chip);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 14px;
+    resize: vertical;
+    min-height: 88px;
+    transition: border-color .2s, box-shadow .2s;
+    box-sizing: border-box;
+    font-family: inherit;
+  }
+
+  .rg-textarea::placeholder { color: var(--muted); }
+
+  .rg-textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(6,182,212,0.15);
+  }
+
+  .rg-textarea.err {
+    border-color: var(--err);
+    box-shadow: 0 0 0 3px rgba(244,63,94,0.15);
+  }
+
+  /* password eye toggle */
+  .rg-eye {
+    position: absolute;
+    right: 11px;
+    color: var(--muted);
+    font-size: 14px;
+    cursor: pointer;
+    z-index: 1;
+    transition: color .15s;
+  }
+
+  .rg-eye:hover { color: var(--text); }
+
+  /* ── inline error ── */
+  .rg-err {
+    font-size: 12px;
+    color: var(--err);
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* ── terms ── */
+  .rg-terms {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 20px 0 24px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .rg-terms input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    accent-color: var(--accent);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .rg-terms a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .rg-terms a:hover { text-decoration: underline; }
+
+  /* ── submit ── */
+  .rg-submit {
+    width: 100%;
+    height: 48px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    border: none;
+    border-radius: var(--radius);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: opacity .2s, transform .15s, box-shadow .2s;
+  }
+
+  .rg-submit:hover {
+    opacity: .92;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(6,182,212,0.3);
+  }
+
+  .rg-submit:active { transform: translateY(0); }
+
+  /* ── responsive ── */
+  @media (max-width: 768px) {
+    .rg-left { display: none; }
+    .rg-right { padding: 28px 20px 40px; }
+    .rg-row { grid-template-columns: 1fr; gap: 0; }
+    #rgMobileLogin { display: block !important; }
+  }
+</style>
+
 <div class="rg-page">
 <div class="rg-wrap">
+
+  <!-- ── left panel ── -->
   <div class="rg-left">
     <div>
       <div class="rg-brand">
@@ -48,7 +507,7 @@
       <p>Fill in your details to get started</p>
     </div>
 
-    <!-- alerts -->
+    <!-- Django messages -->
     {% if messages %}
       {% for message in messages %}
       <div class="rg-alert {% if message.tags == 'error' %}err{% else %}ok{% endif %}">
@@ -58,6 +517,7 @@
       {% endfor %}
     {% endif %}
 
+    <!-- Non-field errors -->
     {% if form.non_field_errors %}
     <div class="rg-alert err">
       <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
@@ -79,7 +539,7 @@
             <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i> Upload photo
           </label>
           <input type="file" name="avatar" id="id_avatar" accept="image/*" style="display:none">
-          <div class="rg-ava-note">JPG, PNG or WebP · max 5MB · optional</div>
+          <div class="rg-ava-note">JPG, PNG or WebP · max 5 MB · optional</div>
           <div class="rg-ava-remove" id="rgAvaRemove" onclick="removeAvatar()" style="display:none">
             <i class="fas fa-times" aria-hidden="true"></i> Remove
           </div>
@@ -96,7 +556,8 @@
         <label class="rg-label" for="id_email">Email address <span class="req">*</span></label>
         <div class="rg-input-wrap">
           <i class="fas fa-envelope ico" aria-hidden="true"></i>
-          <input type="email" name="email" id="id_email" class="rg-input {% if form.email.errors %}err{% endif %}"
+          <input type="email" name="email" id="id_email"
+                 class="rg-input {% if form.email.errors %}err{% endif %}"
                  required placeholder="you@email.com"
                  value="{{ form.email.value|default:'' }}">
         </div>
@@ -107,7 +568,8 @@
         <label class="rg-label" for="id_full_name">Full name</label>
         <div class="rg-input-wrap">
           <i class="fas fa-user ico" aria-hidden="true"></i>
-          <input type="text" name="full_name" id="id_full_name" class="rg-input {% if form.full_name.errors %}err{% endif %}"
+          <input type="text" name="full_name" id="id_full_name"
+                 class="rg-input {% if form.full_name.errors %}err{% endif %}"
                  placeholder="Your full name"
                  value="{{ form.full_name.value|default:'' }}">
         </div>
@@ -123,8 +585,9 @@
             <i class="fas fa-lock ico" aria-hidden="true"></i>
             <input type="password" name="password1" id="id_password1"
                    class="rg-input {% if form.password1.errors %}err{% endif %}"
-                   required placeholder="Min 8 chars" style="padding-right:34px">
-            <i class="fas fa-eye-slash rg-eye" id="eye1" onclick="togglePw('id_password1','eye1')" aria-label="Show password"></i>
+                   required placeholder="Min 8 chars" style="padding-right:36px">
+            <i class="fas fa-eye-slash rg-eye" id="eye1"
+               onclick="togglePw('id_password1','eye1')" aria-label="Show password"></i>
           </div>
           {% if form.password1.errors %}<div class="rg-err"><i class="fas fa-exclamation-circle"></i> {{ form.password1.errors.0 }}</div>{% endif %}
         </div>
@@ -134,14 +597,15 @@
             <i class="fas fa-lock ico" aria-hidden="true"></i>
             <input type="password" name="password2" id="id_password2"
                    class="rg-input {% if form.password2.errors %}err{% endif %}"
-                   required placeholder="Repeat password" style="padding-right:34px">
-            <i class="fas fa-eye-slash rg-eye" id="eye2" onclick="togglePw('id_password2','eye2')" aria-label="Show confirm password"></i>
+                   required placeholder="Repeat password" style="padding-right:36px">
+            <i class="fas fa-eye-slash rg-eye" id="eye2"
+               onclick="togglePw('id_password2','eye2')" aria-label="Show confirm password"></i>
           </div>
           {% if form.password2.errors %}<div class="rg-err"><i class="fas fa-exclamation-circle"></i> {{ form.password2.errors.0 }}</div>{% endif %}
         </div>
       </div>
 
-      <!-- extra info -->
+      <!-- optional info -->
       <div class="rg-divider">Optional info</div>
       <div class="rg-row">
         <div class="rg-field">
@@ -188,7 +652,7 @@
         </label>
       </div>
       {% if form.terms.errors %}
-        <div class="rg-err" style="margin-top:-10px;margin-bottom:12px">
+        <div class="rg-err" style="margin-top:-14px;margin-bottom:16px">
           <i class="fas fa-exclamation-circle"></i> {{ form.terms.errors.0 }}
         </div>
       {% endif %}
@@ -198,7 +662,6 @@
       </button>
     </form>
 
-    <!-- mobile login link -->
     <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:16px;display:none" id="rgMobileLogin">
       Already have an account? <a href="{% url 'login' %}" style="color:var(--accent);text-decoration:none;font-weight:500">Log in</a>
     </p>
@@ -208,43 +671,78 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+/* password toggle */
+function togglePw(inputId, eyeId) {
+  const input = document.getElementById(inputId);
+  const eye   = document.getElementById(eyeId);
+  if (input.type === 'password') {
+    input.type = 'text';
+    eye.classList.replace('fa-eye-slash', 'fa-eye');
+  } else {
+    input.type = 'password';
+    eye.classList.replace('fa-eye', 'fa-eye-slash');
+  }
+}
 
+/* avatar preview */
+document.addEventListener('DOMContentLoaded', function () {
   const fileInput = document.getElementById('id_avatar');
-  const circle = document.getElementById('rgAvaCircle');
+  const circle    = document.getElementById('rgAvaCircle');
   const removeBtn = document.getElementById('rgAvaRemove');
 
   if (fileInput && circle) {
-
     fileInput.addEventListener('change', function () {
-
       const file = this.files && this.files[0];
       if (!file) return;
 
-      const reader = new FileReader();
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size exceeds 5 MB. Please choose a smaller image.');
+        this.value = '';
+        return;
+      }
 
+      const validTypes = ['image/jpeg','image/jpg','image/png','image/gif','image/webp'];
+      if (!validTypes.includes(file.type)) {
+        alert('Please select a valid image (JPG, PNG, GIF, or WebP).');
+        this.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
       reader.onload = function (e) {
         circle.innerHTML = '<img src="' + e.target.result + '" alt="Preview">';
         circle.classList.add('has-img');
-
-        if (removeBtn) removeBtn.style.display = 'block';
+        if (removeBtn) removeBtn.style.display = 'inline-flex';
       };
-
       reader.readAsDataURL(file);
     });
   }
 
   window.removeAvatar = function () {
     if (fileInput) fileInput.value = '';
-
     if (circle) {
       circle.innerHTML = '<i class="fas fa-user" aria-hidden="true"></i>';
       circle.classList.remove('has-img');
     }
-
     if (removeBtn) removeBtn.style.display = 'none';
   };
 
+  /* client-side password match check */
+  document.getElementById('rgForm').addEventListener('submit', function (e) {
+    const p1    = document.getElementById('id_password1').value;
+    const p2    = document.getElementById('id_password2').value;
+    const terms = document.getElementById('id_terms').checked;
+
+    if (p1 !== p2) {
+      e.preventDefault();
+      alert('Passwords do not match.');
+      return;
+    }
+    if (!terms) {
+      e.preventDefault();
+      alert('Please agree to the Terms and Privacy Policy.');
+    }
+  });
 });
 </script>
 
