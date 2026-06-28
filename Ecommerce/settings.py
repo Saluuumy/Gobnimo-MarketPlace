@@ -193,7 +193,7 @@ ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 # In views.py use SendGridAPIClient, NOT EmailMultiAlternatives.
 # =========================
 SENDGRID_API_KEY = env("SENDGRID_API_KEY")
-DEFAULT_FROM_EMAIL = env("salmahoussein@outlook.com")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 # Used locally only (python manage.py runserver) — prints emails to console
