@@ -192,7 +192,18 @@ def verify_email(request, uidb64, token):
  
     return render(request, 'base/verification_failed.html')
 
-
+def test_email(request):
+    try:
+        email = EmailMultiAlternatives(
+            subject="Test from Gobonimo",
+            body="This is a test email.",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[settings.DEFAULT_FROM_EMAIL],  # sends to yourself
+        )
+        email.send(fail_silently=False)
+        return HttpResponse("✅ Email sent successfully!")
+    except Exception as e:
+        return HttpResponse(f"❌ Failed: {str(e)}")
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'base/auth/custom_reset.html'
     
