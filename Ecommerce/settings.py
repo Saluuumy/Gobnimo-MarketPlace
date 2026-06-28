@@ -160,6 +160,7 @@ if AZURE_STORAGE_CONNECTION_STRING:
                 "overwrite_files": True,
                 "custom_domain": "salmadjangostorage.blob.core.windows.net",
             },
+            
         },
         # FIX: Use simple WhiteNoiseStorage (not Manifest) to avoid
         # "Missing staticfiles manifest entry" crash if collectstatic
