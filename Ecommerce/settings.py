@@ -1,9 +1,6 @@
 from pathlib import Path
 import environ
 import dj_database_url
-from dotenv import load_dotenv
-load_dotenv()  
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,7 +20,7 @@ DEBUG = env.bool("DEBUG", default=False)
 
 ALLOWED_HOSTS = env.list(
     "ALLOWED_HOSTS",
-    default=["localhost", "127.0.0.1"],
+    default=["localhost", "127.0.0.1" ,"waaheen-d8bzabe3fehygpgg.westeurope-01.azurewebsites.net"],
 )
 
 CSRF_TRUSTED_ORIGINS = env.list(
@@ -31,6 +28,7 @@ CSRF_TRUSTED_ORIGINS = env.list(
     default=[
         "http://localhost:8000",
         "http://127.0.0.1:8000",
+        "https://waaheen-d8bzabe3fehygpgg.westeurope-01.azurewebsites.net"
     ],
 )
 
@@ -154,7 +152,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # =========================
-# SECURITY (AZURE)
+# SECURITY (AZURE / PROXY)
 # =========================
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
@@ -174,31 +172,35 @@ AUTHENTICATION_BACKENDS = [
 
 ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 ACCOUNT_EMAIL_REQUIRED = True
-
-# change to "mandatory" if you want forced verification
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
-ACCOUNT_EMAIL_SUBJECT_PREFIX = "[Adver Platform] "
+ACCOUNT_EMAIL_SUBJECT_PREFIX = "[Gobonimo] "
 
 LOGIN_REDIRECT_URL = "/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 
 # =========================
-# EMAIL (SENDGRID FIXED)
+# EMAIL — SendGrid via SMTP
+# --------------------------
+# Uses Django's built-in SMTP backend (no SDK needed).
+# Your view should use EmailMultiAlternatives, NOT SendGridAPIClient.
+#
+# Required .env variables:
+#   SENDGRID_API_KEY=SG.xxxxxxxxxxxx
+#   DEFAULT_FROM_EMAIL=noreply@yourdomain.com   ← must be verified in SendGrid
 # =========================
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 EMAIL_HOST = "smtp.sendgrid.net"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "apikey"                        # SendGrid requires the literal string "apikey"
+EMAIL_HOST_PASSWORD = env("SENDGRID_API_KEY")     # Your actual SG.xxx key goes here
 
-EMAIL_HOST_USER = "apikey"
-EMAIL_HOST_PASSWORD = env("SENDGRID_API_KEY")
-
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="salmahoussein33@gmail.com")
-SENDGRID_API_KEY = env("SENDGRID_API_KEY", default="")
+# IMPORTANT: this address must be verified as a Single Sender (or Domain) in SendGrid.
+# Do NOT use a Gmail/Yahoo/Hotmail address — it will fail DMARC and get dropped.
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 # =========================
@@ -215,21 +217,39 @@ DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 # =========================
 # PASSWORD RESET
 # =========================
-PASSWORD_RESET_TIMEOUT = 172800
+PASSWORD_RESET_TIMEOUT = 172800  # 48 hours
 
 # =========================
-# LOGGING (EMAIL DEBUG)
+# LOGGING
+# Captures both Django mail internals and your app's own logger.
 # =========================
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "[{levelname}] {asctime} {name}: {message}",
+            "style": "{",
+        },
+    },
     "handlers": {
-        "console": {"class": "logging.StreamHandler"},
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
     },
     "loggers": {
+        # Django's internal mail machinery
         "django.core.mail": {
             "handlers": ["console"],
             "level": "DEBUG",
+            "propagate": False,
+        },
+        # Your app's views/signals (change "base" to your actual app label if different)
+        "base": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
         },
     },
 }
