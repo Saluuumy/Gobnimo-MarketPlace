@@ -24,7 +24,7 @@ ALLOWED_HOSTS = env.list(
         "localhost",
         "127.0.0.1",
         "waaheen-d8bzabe3fehygpgg.westeurope-01.azurewebsites.net",
-        ".azurewebsites.net",  # covers all Azure internal health check IPs
+        "169.254.129.2",  # Azure internal health check IP
     ],
 )
 
@@ -158,7 +158,6 @@ if AZURE_STORAGE_CONNECTION_STRING:
                 "connection_string": AZURE_STORAGE_CONNECTION_STRING,
                 "azure_container": env("AZURE_CONTAINER", default="media"),
                 "overwrite_files": True,
-                "custom_domain": "salmadjangostorage.blob.core.windows.net",
             },
         },
         # FIX: Use simple WhiteNoiseStorage (not Manifest) to avoid
@@ -232,6 +231,7 @@ SERVER_EMAIL = DEFAULT_FROM_EMAIL
 # PASSWORD RESET
 # =========================
 PASSWORD_RESET_TIMEOUT = 172800  # 48 hours
+
 
 # =========================
 # LOGGING
