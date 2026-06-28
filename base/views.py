@@ -47,40 +47,36 @@ from django.db import IntegrityError
 from django.core.mail.message import EmailMultiAlternatives
 import threading
 import traceback
-from sendgrid.helpers.mail import Mail
+from sendgrid.helpers.mail import Mail, Email, To, Content
+
 from sendgrid import SendGridAPIClient
 
 
 logger = logging.getLogger(__name__)
 
- 
 def send_email_in_thread(subject, text_content, html_content, from_email, recipient_email, user_id):
-    """
-    Send email via SendGrid Web API (HTTPS port 443).
-    Azure blocks SMTP port 587, so we use the API instead.
-    """
     try:
         if not settings.SENDGRID_API_KEY:
             raise ValueError("SENDGRID_API_KEY is not set")
- 
+
         logger.debug(f"Attempting to send email to {recipient_email} (ID: {user_id})")
- 
+
         message = Mail(
-            from_email=from_email,
-            to=recipient_email,
+            from_email=Email(from_email),
+            to_emails=To(recipient_email),
             subject=subject,
-            plain_text_content=text_content,
-            html_content=html_content,
+            plain_text_content=Content("text/plain", text_content),
+            html_content=Content("text/html", html_content),
         )
- 
+
         sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
         response = sg.send(message)
- 
+
         if response.status_code not in [200, 202]:
             raise Exception(f"SendGrid API returned {response.status_code}: {response.body}")
- 
+
         logger.info(f"Email sent successfully to {recipient_email} (ID: {user_id})")
- 
+
     except Exception as e:
         logger.error(
             f"Failed to send email to {recipient_email}: {str(e)}\n"
@@ -195,20 +191,21 @@ def verify_email(request, uidb64, token):
         return render(request, 'base/verification_success.html')
  
     return render(request, 'base/verification_failed.html')
- 
+
 def test_email(request):
     try:
         message = Mail(
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=settings.DEFAULT_FROM_EMAIL,
+            from_email=Email(settings.DEFAULT_FROM_EMAIL),
+            to_emails=To(settings.DEFAULT_FROM_EMAIL),
             subject="Test from Gobonimo",
-            plain_text_content="This is a test email via SendGrid API.",
+            plain_text_content=Content("text/plain", "This is a test email via SendGrid API."),
         )
         sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
         response = sg.send(message)
         return HttpResponse(f"✅ Sent! Status: {response.status_code}")
     except Exception as e:
         return HttpResponse(f"❌ Failed: {str(e)}")
+
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'base/auth/custom_reset.html'
     
