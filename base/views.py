@@ -87,29 +87,29 @@ def send_email_in_thread(subject, text_content, html_content, from_email, recipi
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST, request.FILES)
- 
+
         if form.is_valid():
             try:
                 user = form.save(commit=False)
                 user.username = form.cleaned_data['email']
                 user.is_active = False
                 user.email_verified = False
- 
+
                 # Check if email is already registered
                 if User.objects.filter(email=user.email).exists():
                     logger.warning(f"Email already exists: {user.email}")
                     messages.error(request, "This email is already registered. Please use a different email or log in.")
                     return render(request, 'base/signup.html', {'form': form})
- 
+
                 user.save()
- 
+
                 # Generate verification token and URL
                 token = default_token_generator.make_token(user)
                 uid = urlsafe_base64_encode(force_bytes(user.pk))
                 verification_url = request.build_absolute_uri(
                     reverse('verify_email', kwargs={'uidb64': uid, 'token': token})
                 )
- 
+
                 # Render email content from template
                 try:
                     html_content = render_to_string('base/verification_email.html', {
@@ -119,19 +119,19 @@ def signup(request):
                     if not html_content:
                         raise ValueError("Rendered HTML content is empty")
                     text_content = strip_tags(html_content)
- 
+
                 except TemplateDoesNotExist as e:
                     logger.error(f"Template not found: {str(e)}\n{traceback.format_exc()}")
                     user.delete()
                     messages.error(request, "Error preparing the verification email. Please contact support.")
                     return render(request, 'base/signup.html', {'form': form})
- 
+
                 except Exception as e:
                     logger.error(f"Template rendering error: {str(e)}\n{traceback.format_exc()}")
                     user.delete()
-                    messages.error(request, "Error preparing the email content. Please try again.")
+                    messages.error(request, f"DEBUG template error: {str(e)}")
                     return render(request, 'base/signup.html', {'form': form})
- 
+
                 # Send email in a background thread
                 logger.debug(f"Starting email thread for {user.email} (ID: {user.id})")
                 email_thread = threading.Thread(
@@ -147,34 +147,36 @@ def signup(request):
                 )
                 email_thread.daemon = True
                 email_thread.start()
- 
+
                 logger.info(f"New user registered: {user.email} (ID: {user.id})")
                 messages.success(
                     request,
                     f"Verification email sent to {user.email}. Please check your inbox and spam/junk folder."
                 )
-                return render(request, 'base/verification_sent.html')
- 
+                # Use redirect instead of render to avoid template-not-found crash
+                return redirect('verification_sent')
+
             except IntegrityError as e:
                 logger.error(f"Database error during registration: {str(e)}\n{traceback.format_exc()}")
                 messages.error(request, "This email or username is already in use. Please try a different one.")
                 return render(request, 'base/signup.html', {'form': form})
- 
+
             except Exception as e:
                 logger.error(f"Unexpected error during registration: {str(e)}\n{traceback.format_exc()}")
-                messages.error(
-                    request,
-                    "An unexpected error occurred during registration. Please try again or contact support."
-                )
+                messages.error(request, f"DEBUG: {str(e)}")  # ← shows real error temporarily
                 return render(request, 'base/signup.html', {'form': form})
- 
+
         else:
             logger.warning(f"Form validation failed: {form.errors}")
- 
+
     else:
         form = SignupForm()
- 
+
     return render(request, 'base/signup.html', {'form': form})
+
+
+def verification_sent(request):
+    return render(request, 'base/verification_sent.html')
  
  
 def verify_email(request, uidb64, token):
