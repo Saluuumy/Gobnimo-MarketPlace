@@ -35,7 +35,7 @@ path('password-reset/',
         extra_context={'site_name': 'Gobonimo-Mart'}
     ),
     name='password_reset'),
-
+path('resend-verification/', views.resend_verification, name='resend_verification'),
 path('password-reset/done/',
     auth_views.PasswordResetDoneView.as_view(
         template_name='base/password_reset_done.html',
@@ -68,11 +68,11 @@ path('dashboard/', views.dashboard, name='dashboard'),
 path('search/', views.search_ads, name='search_ads'),
 path('categories/<int:category_id>/', views.product_list, name='product_list'),
 
+# Notifications
 path('notifications/', views.notification_center, name='notification_center'),
 path('notifications/delete/<int:pk>/', views.delete_notification, name='delete_notification'),
 path('notifications/mark-all-read/', views.mark_all_read, name='mark_all_read'),
-# urls.py — add temporarily
-path('test-email/', views.test_email, name='test_email'),
+
 # Favorites
 
 path('toggle_favorite/<int:ad_id>/', views.toggle_favorite, name='toggle_favorite'),

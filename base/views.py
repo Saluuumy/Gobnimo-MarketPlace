@@ -8,6 +8,7 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django_ratelimit.decorators import ratelimit
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.conf import settings
+from django.core.cache import cache
 from django.http import JsonResponse
 from django.utils.encoding import force_bytes
 from .forms import RatingForm
@@ -45,45 +46,96 @@ import re
 from django.template import TemplateDoesNotExist
 from django.db import IntegrityError
 from django.core.mail.message import EmailMultiAlternatives
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 import threading
 import traceback
-from sendgrid.helpers.mail import Mail, Email, To, Content
-
-from sendgrid import SendGridAPIClient
 
 
 logger = logging.getLogger(__name__)
 
-def send_email_in_thread(subject, text_content, html_content, from_email, recipient_email, user_id):
+logger = logging.getLogger(__name__)
+
+
+def send_email_in_thread(subject, text_content, html_content, from_email, recipient_email, user_id, debug=False):
+    """
+    Helper function to send email using SendGrid API in a separate thread.
+    """
     try:
         if not settings.SENDGRID_API_KEY:
             raise ValueError("SENDGRID_API_KEY is not set")
+        if not from_email:
+            raise ValueError("DEFAULT_FROM_EMAIL is not set")
 
         logger.debug(f"Attempting to send email to {recipient_email} (ID: {user_id})")
 
         message = Mail(
-            from_email=Email(from_email),
-            to_emails=To(recipient_email),
+            from_email=from_email,
+            to_emails=recipient_email,
             subject=subject,
-            plain_text_content=Content("text/plain", text_content),
-            html_content=Content("text/html", html_content),
+            plain_text_content=text_content,
+            html_content=html_content
         )
 
         sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
         response = sg.send(message)
+        if response.status_code != 202:
+            raise Exception(f"SendGrid returned status code {response.status_code}: {response.body}")
 
-        if response.status_code not in [200, 202]:
-            raise Exception(f"SendGrid API returned {response.status_code}: {response.body}")
-
-        logger.info(f"Email sent successfully to {recipient_email} (ID: {user_id})")
-
+        logger.info(f"Verification email sent successfully to {recipient_email} (ID: {user_id})")
     except Exception as e:
-        logger.error(
-            f"Failed to send email to {recipient_email}: {str(e)}\n"
-            f"{traceback.format_exc()}"
+        logger.error(f"Failed to send verification email to {recipient_email}: {str(e)}\n{traceback.format_exc()}")
+        if debug:
+            try:
+                backend = EmailBackend()
+                email = EmailMultiAlternatives(
+                    subject,
+                    text_content,
+                    from_email,
+                    [recipient_email],
+                    alternatives=[(html_content, 'text/html')]
+                )
+                backend.send_messages([email])
+                logger.info(f"Console backend used for verification email to {recipient_email}")
+            except Exception as e:
+                logger.error(f"Console backend failed for {recipient_email}: {str(e)}\n{traceback.format_exc()}")
+
+
+def _build_and_send_verification_email(request, user):
+    """
+    Shared helper: builds the verification link + email content and fires
+    the send-in-thread. Used by both signup() and resend_verification().
+    Returns (html_content, text_content) or raises on template failure.
+    """
+    token = default_token_generator.make_token(user)
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    verification_url = request.build_absolute_uri(
+        reverse('verify_email', kwargs={'uidb64': uid, 'token': token})
+    )
+
+    html_content = render_to_string('base/verification_email.html', {
+        'verification_url': verification_url,
+        'user': user,
+    })
+    text_content = strip_tags(html_content)
+    if not html_content:
+        raise ValueError("Rendered HTML content is empty")
+
+    email_thread = threading.Thread(
+        target=send_email_in_thread,
+        args=(
+            'Verify Your Email - Gobonimo Marketplace',
+            text_content,
+            html_content,
+            settings.DEFAULT_FROM_EMAIL,
+            user.email,
+            user.id,
+            settings.DEBUG
         )
- 
- 
+    )
+    email_thread.start()
+
+
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST, request.FILES)
@@ -103,70 +155,42 @@ def signup(request):
 
                 user.save()
 
-                # Generate verification token and URL
-                token = default_token_generator.make_token(user)
-                uid = urlsafe_base64_encode(force_bytes(user.pk))
-                verification_url = request.build_absolute_uri(
-                    reverse('verify_email', kwargs={'uidb64': uid, 'token': token})
-                )
-
-                # Render email content from template
+                # Render + send verification email
                 try:
-                    html_content = render_to_string('base/verification_email.html', {
-                        'verification_url': verification_url,
-                        'user': user,
-                    })
-                    if not html_content:
-                        raise ValueError("Rendered HTML content is empty")
-                    text_content = strip_tags(html_content)
-
+                    _build_and_send_verification_email(request, user)
                 except TemplateDoesNotExist as e:
-                    logger.error(f"Template not found: {str(e)}\n{traceback.format_exc()}")
-                    user.delete()
-                    messages.error(request, "Error preparing the verification email. Please contact support.")
+                    logger.error(f"Template error: {str(e)}\n{traceback.format_exc()}")
+                    user.delete()  # Clean up the user if template rendering fails
+                    messages.error(request, "Error preparing the verification email. Please try again or contact support.")
                     return render(request, 'base/signup.html', {'form': form})
-
                 except Exception as e:
                     logger.error(f"Template rendering error: {str(e)}\n{traceback.format_exc()}")
                     user.delete()
-                    messages.error(request, f"DEBUG template error: {str(e)}")
+                    messages.error(request, "Error preparing the email content. Please try again.")
                     return render(request, 'base/signup.html', {'form': form})
 
-                # Send email in a background thread
-                logger.debug(f"Starting email thread for {user.email} (ID: {user.id})")
-                email_thread = threading.Thread(
-                    target=send_email_in_thread,
-                    args=(
-                        'Verify Your Email - Gobonimo Marketplace',
-                        text_content,
-                        html_content,
-                        settings.DEFAULT_FROM_EMAIL,
-                        user.email,
-                        user.id,
-                    )
-                )
-                email_thread.daemon = True
-                email_thread.start()
-
+                # Log successful registration
                 logger.info(f"New user registered: {user.email} (ID: {user.id})")
-                messages.success(
-                    request,
-                    f"Verification email sent to {user.email}. Please check your inbox and spam/junk folder."
-                )
-                # Use redirect instead of render to avoid template-not-found crash
-                return redirect('verification_sent')
+
+                # Add success message
+                messages.success(request, f"Verification email sent to {user.email}. Please check your inbox and spam/junk folder.")
+                # Pass email through so the "Resend" button on this page knows who to resend to
+                return render(request, 'base/verification_sent.html', {'email': user.email})
 
             except IntegrityError as e:
-                logger.error(f"Database error during registration: {str(e)}\n{traceback.format_exc()}")
+                logger.error(f"Database error during user registration: {str(e)}\n{traceback.format_exc()}")
                 messages.error(request, "This email or username is already in use. Please try a different one.")
                 return render(request, 'base/signup.html', {'form': form})
-
             except Exception as e:
-                logger.error(f"Unexpected error during registration: {str(e)}\n{traceback.format_exc()}")
-                messages.error(request, f"DEBUG: {str(e)}")  # ← shows real error temporarily
+                logger.error(f"Unexpected error during user registration: {str(e)}\n{traceback.format_exc()}")
+                messages.error(request,
+                    f"An unexpected error occurred during registration: {str(e)}. "
+                    "Please try again or contact support if the problem continues."
+                )
                 return render(request, 'base/signup.html', {'form': form})
 
         else:
+            # Let the form handle its own error messages
             logger.warning(f"Form validation failed: {form.errors}")
 
     else:
@@ -175,42 +199,63 @@ def signup(request):
     return render(request, 'base/signup.html', {'form': form})
 
 
-def verification_sent(request):
-    return render(request, 'base/verification_sent.html')
- 
- 
+def resend_verification(request):
+    """
+    Resends the verification email for an inactive, unverified account.
+    Triggered by the 'Resend' button on verification_sent.html.
+    """
+    if request.method != 'POST':
+        return redirect('index')
+
+    email = (request.POST.get('email') or '').strip().lower()
+
+    if not email:
+        messages.error(request, "Please provide an email address to resend the verification link.")
+        return render(request, 'base/verification_sent.html', {'email': email})
+
+    # Simple cooldown to stop button-mashing / abuse (1 resend per 60s per email)
+    cooldown_key = f"resend_verification_{email}"
+    if cache.get(cooldown_key):
+        messages.error(request, "Please wait a minute before requesting another verification email.")
+        return render(request, 'base/verification_sent.html', {'email': email})
+
+    try:
+        user = User.objects.get(email__iexact=email)
+    except User.DoesNotExist:
+        # Don't reveal whether the email exists in the system
+        messages.success(request, f"If an account exists for {email}, a verification email has been sent.")
+        return render(request, 'base/verification_sent.html', {'email': email})
+
+    if user.is_active and user.email_verified:
+        messages.success(request, "This account is already verified — you can log in.")
+        return render(request, 'base/verification_sent.html', {'email': email})
+
+    try:
+        _build_and_send_verification_email(request, user)
+    except Exception as e:
+        logger.error(f"Failed to resend verification email to {email}: {str(e)}\n{traceback.format_exc()}")
+        messages.error(request, "Something went wrong resending the email. Please try again shortly.")
+        return render(request, 'base/verification_sent.html', {'email': email})
+
+    cache.set(cooldown_key, True, timeout=60)
+    logger.info(f"Verification email resent to {email} (ID: {user.id})")
+    messages.success(request, f"Verification email resent to {email}. Please check your inbox and spam/junk folder.")
+    return render(request, 'base/verification_sent.html', {'email': email})
+
+
 def verify_email(request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
         user = User.objects.get(pk=uid)
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
- 
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
         user.email_verified = True
         user.save()
         return render(request, 'base/verification_success.html')
- 
     return render(request, 'base/verification_failed.html')
 
-def test_email(request):
-    try:
-        from sendgrid.helpers.mail import Mail, Email, To, Content
-        message = Mail(
-            from_email=Email(settings.DEFAULT_FROM_EMAIL),
-            to_emails=To(settings.DEFAULT_FROM_EMAIL),
-            subject="Test from Gobonimo",
-            plain_text_content=Content("text/plain", "This is a test email via SendGrid API."),
-        )
-        sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
-        response = sg.send(message)
-        return HttpResponse(f"✅ Sent! Status: {response.status_code}")
-    except Exception as e:
-        # Show full error detail
-        error_body = getattr(e, 'body', 'no body')
-        error_status = getattr(e, 'status_code', 'no status')
-        return HttpResponse(f"❌ Failed: {str(e)}<br>Status: {error_status}<br>Body: {error_body}")
 
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'base/auth/custom_reset.html'
@@ -1048,6 +1093,7 @@ def reply_to_comment(request, comment_id):
     return redirect('product_detail', ad_id=comment.ad.id)
 
 @login_required
+@login_required
 def dashboard(request):
     user = request.user
     categories = Category.objects.all()
@@ -1066,11 +1112,12 @@ def dashboard(request):
 
     context = {
         'user': user,
+        'categories': categories,
         'ads': ads,
         'form': form,
     }
-    return render(request, 'base/dashboard.html', {
-    'categories': categories})
+
+    return render(request, 'base/dashboard.html', context)
 @login_required
 def delete_ad(request, ad_id):
     ad = get_object_or_404(Ad, id=ad_id, advertiser=request.user)
