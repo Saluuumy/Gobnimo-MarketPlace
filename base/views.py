@@ -173,7 +173,6 @@ def signup(request):
                 logger.info(f"New user registered: {user.email} (ID: {user.id})")
 
                 # Add success message
-                messages.success(request, f"Verification email sent to {user.email}. Please check your inbox and spam/junk folder.")
                 # Pass email through so the "Resend" button on this page knows who to resend to
                 return render(request, 'base/verification_sent.html', {'email': user.email})
 

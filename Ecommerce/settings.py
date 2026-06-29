@@ -144,11 +144,46 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# =========================
+# MEDIA FILES (Azure Blob in production, local in dev)
+# =========================
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
-# =========================
-# DEFAULT AUTO FIELD
-# =========================
+AZURE_STORAGE_CONNECTION_STRING = env("AZURE_STORAGE_CONNECTION_STRING", default="")
+
+if AZURE_STORAGE_CONNECTION_STRING:
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.azure_storage.AzureStorage",
+            "OPTIONS": {
+                "connection_string": AZURE_STORAGE_CONNECTION_STRING,
+                "azure_container": env("AZURE_CONTAINER", default="media"),
+                "overwrite_files": True,
+                "custom_domain": "salmadjangostorage.blob.core.windows.net",
+            },
+        },
+        # FIX: Use simple WhiteNoiseStorage (not Manifest) to avoid
+        # "Missing staticfiles manifest entry" crash if collectstatic
+        # hasn't run yet or a file is referenced that wasn't collected.
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        },
+    }
+else:
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+            "OPTIONS": {
+                "location": str(MEDIA_ROOT),
+                "base_url": MEDIA_URL,
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        },
+    }
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # =========================
