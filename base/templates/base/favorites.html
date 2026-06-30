@@ -3,11 +3,10 @@
 
 {% block content %}
 <body style="background-color:#ecececba">
-  
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" style="background-color: #fff;">
 
-
+  <!-- HEADER (already in main.html) -->
 
   {% if favorites %}
   <div class="mb-5">
@@ -38,8 +37,8 @@
           <!-- Product Info -->
           <div class="p-4">
             <a href="{% url 'product_detail' product.id %}" class="block">
-              <h3 class="text-sm font-medium text-slate-800 hover:text-[#101172] line-clamp-2 leading-tight">{{ product.name }}</h3>
-              <p class="text-[#101172] font-semibold mt-1.5 text-base">${{ product.price }}</p>
+              <h3 class="text-sm font-medium text-slate-800 hover:text-[#f97316] line-clamp-2 leading-tight">{{ product.name }}</h3>
+              <p class="text-[#f97316] font-semibold mt-1.5 text-base">${{ product.price }}</p>
               <div class="flex items-center text-xs text-slate-500 mt-2 space-x-2">
                 <span class="flex items-center">
                   <i class="fas fa-map-marker-alt mr-1 text-[0.7rem] text-slate-400"></i>
@@ -68,7 +67,7 @@
     <p class="text-slate-500 text-sm max-w-md mx-auto mb-6">
       Items you save will appear here. Start browsing to find things you love!
     </p>
-    <a href="{% url 'index' %}" class="inline-block px-5 py-2.5 bg-[#101172] hover:bg-[#0e0e5e] text-white text-sm font-medium rounded-lg shadow-sm transition-all">
+    <a href="{% url 'index' %}" class="inline-block px-5 py-2.5 bg-[#f97316] hover:bg-[#ea580c] text-white text-sm font-medium rounded-lg shadow-sm transition-all">
       Browse Marketplace
     </a>
   </div>
