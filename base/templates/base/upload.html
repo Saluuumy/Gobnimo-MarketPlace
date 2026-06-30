@@ -8,8 +8,8 @@
     <div class="af-hero-top">
       <div class="af-hero-icon"><i class="fas fa-plus-circle"></i></div>
       <div>
-        <h1>Post a Free Ad</h1>
-        <p>Reach thousands of buyers in your area</p>
+<p class="af-hero-title" style="color:#000 !important; font-size: 19px;">Post a Free Ad</p>  
+      <p>Reach thousands of buyers in your area</p>
       </div>
     </div>
     <div class="af-hero-badge"><i class="fas fa-bolt"></i> Free · No credit card needed</div>
@@ -574,9 +574,9 @@
         <i class="fas fa-paper-plane"></i> Submit for Review
       </button>
       <div class="af-submit-note">
-        <span><i class="fas fa-lock" style="color:var(--accent)"></i> Secure</span>
-        <span><i class="fas fa-clock" style="color:var(--accent)"></i> 24h review</span>
-        <span><i class="fas fa-eye" style="color:var(--accent)"></i> 30-day visibility</span>
+        <span><i class="fas fa-lock" style="color:var(--af-primary)"></i> Secure</span>
+        <span><i class="fas fa-clock" style="color:var(--af-primary)"></i> 24h review</span>
+        <span><i class="fas fa-eye" style="color:var(--af-primary)"></i> 30-day visibility</span>
       </div>
     </div>
 
@@ -595,58 +595,67 @@
   </div>
 </div>
 
+
+
 <script>
-(function(){
-  // ── category visual selection ──
+(function() {
+  // ── Category selection: radio buttons ──
   var catOpts = document.querySelectorAll('.af-cat-opt');
   var catHidden = document.getElementById('categoryHidden');
 
   function selectCat(el) {
-    catOpts.forEach(function(o){ o.classList.remove('selected'); });
+    // Update visual selection
+    catOpts.forEach(function(o) { o.classList.remove('selected'); });
     el.classList.add('selected');
     var catName = el.dataset.cat;
-    var catId   = el.dataset.id;
+    var catId = el.dataset.id;
     catHidden.value = catId;
     showCatSection(catName);
+    updateSteps();
   }
 
-  catOpts.forEach(function(opt){
-    opt.addEventListener('click', function(){ selectCat(opt); });
-    // restore on page load if pre-selected
-    var radio = opt.querySelector('input[type=radio]');
-    if (radio && radio.checked) selectCat(opt);
-  });
-
   function showCatSection(name) {
-    document.querySelectorAll('.cat-section').forEach(function(s){
+    // Hide all category sections
+    document.querySelectorAll('.cat-section').forEach(function(s) {
       s.classList.remove('visible');
     });
+    // Show the matching one (if any)
     var sec = document.getElementById('sec-' + name);
     if (sec) sec.classList.add('visible');
   }
 
-  // ── ad type tab selection ──
-  document.querySelectorAll('.af-type-tab').forEach(function(tab){
+  // Attach click events to each category option
+  catOpts.forEach(function(opt) {
+    opt.addEventListener('click', function() { selectCat(opt); });
+    // If a radio is pre-checked (e.g., after form error), select it
+    var radio = opt.querySelector('input[type=radio]');
+    if (radio && radio.checked) {
+      selectCat(opt);
+    }
+  });
+
+  // ── Ad type tabs ──
+  document.querySelectorAll('.af-type-tab').forEach(function(tab) {
     var radio = tab.querySelector('input[type=radio]');
-    function syncTab(){
-      document.querySelectorAll('.af-type-tab').forEach(function(t){ t.classList.remove('selected'); });
+    function syncTab() {
+      document.querySelectorAll('.af-type-tab').forEach(function(t) { t.classList.remove('selected'); });
       tab.classList.add('selected');
     }
     tab.addEventListener('click', syncTab);
     if (radio && radio.checked) syncTab();
   });
 
-  // ── image upload & preview ──
-  var fileInput  = document.getElementById('afFileInput');
+  // ── Image upload & preview ──
+  var fileInput = document.getElementById('afFileInput');
   var previewGrid = document.getElementById('afPreviewGrid');
-  var dropZone   = document.getElementById('afDropZone');
-  var allFiles   = [];
+  var dropZone = document.getElementById('afDropZone');
+  var allFiles = [];
 
   function renderPreviews() {
     previewGrid.innerHTML = '';
     if (allFiles.length === 0) { previewGrid.style.display = 'none'; return; }
     previewGrid.style.display = 'grid';
-    allFiles.forEach(function(file, idx){
+    allFiles.forEach(function(file, idx) {
       var item = document.createElement('div');
       item.className = 'af-preview-item';
       var img = document.createElement('img');
@@ -662,10 +671,11 @@
       del.type = 'button';
       del.className = 'af-preview-del';
       del.innerHTML = '<i class="fas fa-times"></i>';
-      del.addEventListener('click', function(){
+      del.addEventListener('click', function() {
         allFiles.splice(idx, 1);
         renderPreviews();
         syncFileInput();
+        updateSteps();
       });
       item.appendChild(del);
       previewGrid.appendChild(item);
@@ -674,48 +684,49 @@
 
   function syncFileInput() {
     var dt = new DataTransfer();
-    allFiles.forEach(function(f){ dt.items.add(f); });
+    allFiles.forEach(function(f) { dt.items.add(f); });
     fileInput.files = dt.files;
   }
 
-  fileInput.addEventListener('change', function(){
-    Array.from(fileInput.files).forEach(function(f){
+  fileInput.addEventListener('change', function() {
+    Array.from(fileInput.files).forEach(function(f) {
       if (allFiles.length < 8) allFiles.push(f);
     });
     renderPreviews();
     syncFileInput();
+    updateSteps();
   });
 
-  // drag & drop
-  dropZone.addEventListener('dragover', function(e){
+  // Drag & drop
+  dropZone.addEventListener('dragover', function(e) {
     e.preventDefault();
-    dropZone.style.borderColor = 'rgba(34,197,94,.6)';
+    dropZone.style.borderColor = 'var(--af-primary)';
   });
-  dropZone.addEventListener('dragleave', function(){
+  dropZone.addEventListener('dragleave', function() {
     dropZone.style.borderColor = '';
   });
-  dropZone.addEventListener('drop', function(e){
+  dropZone.addEventListener('drop', function(e) {
     e.preventDefault();
     dropZone.style.borderColor = '';
-    Array.from(e.dataTransfer.files).forEach(function(f){
+    Array.from(e.dataTransfer.files).forEach(function(f) {
       if (f.type.startsWith('image/') && allFiles.length < 8) allFiles.push(f);
     });
     renderPreviews();
     syncFileInput();
+    updateSteps();
   });
 
-  // ── progress indicator (scroll-based) ──
+  // ── Progress steps (auto‑update) ──
   var form = document.getElementById('afForm');
+
   function updateSteps() {
-    var cards = form.querySelectorAll('.af-card');
-    var total = cards.length;
     var filled = 0;
-    // simple check: if category selected
+    // Step 1: category selected
     if (catHidden.value) filled++;
-    // basic info
+    // Step 2: basic info (name filled)
     var nameVal = form.querySelector('input[name=name]');
     if (nameVal && nameVal.value.trim()) filled++;
-    // photos
+    // Step 3: at least one photo
     if (allFiles.length > 0) filled++;
 
     var steps = [
@@ -724,341 +735,28 @@
       document.getElementById('step3-ind'),
       document.getElementById('step4-ind'),
     ];
-    steps.forEach(function(s){ s.classList.remove('active','done'); });
+    steps.forEach(function(s) { s.classList.remove('active', 'done'); });
     if (filled === 0) steps[0].classList.add('active');
     else if (filled === 1) { steps[0].classList.add('done'); steps[1].classList.add('active'); }
     else if (filled === 2) { steps[0].classList.add('done'); steps[1].classList.add('done'); steps[2].classList.add('active'); }
     else { steps[0].classList.add('done'); steps[1].classList.add('done'); steps[2].classList.add('done'); steps[3].classList.add('active'); }
   }
+
+  // Listen to input changes to update steps
   form.addEventListener('input', updateSteps);
+  // Also update on category selection (already calling updateSteps inside selectCat)
+  // Ensure initial update after page load
   updateSteps();
 
-  // ── close success modal on bg click ──
+  // ── Success modal close on backdrop click ──
   var modal = document.getElementById('afSuccessModal');
-  modal.addEventListener('click', function(e){
-    if (e.target === modal) modal.style.display = 'none';
-  });
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) modal.style.display = 'none';
+    });
+  }
+
 })();
 </script>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Category selection logic
-    const categorySelect = document.getElementById('categorySelect');
-    const categorySections = document.querySelectorAll('.category-section');
-
-    console.log('Category select element:', categorySelect);
-    console.log('Category sections found:', categorySections.length);
-
-    function hideAllCategorySections() {
-        categorySections.forEach(section => {
-            section.style.display = 'none';
-        });
-    }
-
-    function showCategorySection(categoryName) {
-        hideAllCategorySections();
-        const section = document.querySelector(`.category-section[data-category-name="${categoryName}"]`);
-        if (section) {
-            section.style.display = 'block';
-            console.log('Showing category section for:', categoryName);
-        } else {
-            console.log('No category section found for:', categoryName);
-        }
-    }
-
-    // Event listener for select change
-    if (categorySelect) {
-        categorySelect.addEventListener('change', function() {
-            const selectedOption = categorySelect.options[categorySelect.selectedIndex];
-            const categoryName = selectedOption.text;
-            showCategorySection(categoryName);
-        });
-    }
-
-    // Initialize category if pre-selected
-    const initialCategoryId = categorySelect ? categorySelect.value : null;
-    console.log('Initial category ID:', initialCategoryId);
-
-    if (initialCategoryId && initialCategoryId !== '') {
-        const selectedOption = categorySelect.options[categorySelect.selectedIndex];
-        const categoryName = selectedOption.text;
-        showCategorySection(categoryName);
-    } else {
-        hideAllCategorySections();
-    }
-
-    // Form validation (optional, since 'required' attribute is on select)
-    const form = document.getElementById('productForm');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            const categoryValue = categorySelect ? categorySelect.value : null;
-            console.log('Form submit - checking category value:', categoryValue);
-
-            if (!categoryValue || categoryValue === '') {
-                e.preventDefault();
-                alert('Please select a category for your ad.');
-                return false;
-            }
-
-            console.log('Category validation passed, value is:', categoryValue);
-            return true;
-        });
-    }
-
-    // =============================================
-    // IMAGE UPLOAD FUNCTIONALITY
-    // =============================================
-    const addImageBtn = document.getElementById('addImageBtn');
-    const imageInputContainer = document.getElementById('imageInputContainer');
-    const previewContainer = document.getElementById('previewContainer');
-
-    function handleImageUpload(input) {
-        const file = input.files[0]; // Only take the first file
-
-        if (file) {
-            const reader = new FileReader();
-
-            reader.onload = (e) => {
-                const preview = document.createElement('div');
-                preview.className = 'preview-card';
-                preview.style.border = '1px solid rgba(255,255,255,0.1)';
-                preview.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
-                preview.innerHTML = `
-                    <img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">
-                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent); padding: 12px;">
-                        <span style="color: white; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${file.name}</span>
-                    </div>
-                    <div style="position: absolute; top: 8px; right: 8px; display: flex;">
-                        <button type="button" class="feature-btn" style="background: rgba(31, 41, 55, 0.8); padding: 6px; border-radius: 50%; transition: background 0.3s ease; border: none; cursor: pointer;">
-                            <i class="far fa-star" style="font-size: 12px; color: white;"></i>
-                        </button>
-                        <button type="button" class="remove-btn" style="background: rgba(31, 41, 55, 0.8); padding: 6px; border-radius: 50%; transition: background 0.3s ease; margin-left: 8px; border: none; cursor: pointer;">
-                            <i class="fas fa-times" style="font-size: 12px; color: white;"></i>
-                        </button>
-                    </div>
-                `;
-
-                // Remove button functionality
-                preview.querySelector('.remove-btn').addEventListener('click', () => {
-                    preview.remove();
-                    input.value = ''; // Clear the file input
-                    addImageBtn.disabled = true; // Disable Add Images button
-                    if (previewContainer.children.length === 0) {
-                        previewContainer.innerHTML = `
-                            <div class="preview-card">
-                                <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--muted); margin-bottom: 12px;"></i>
-                                <p style="color: var(--muted); font-size: 14px;">Upload Preview</p>
-                            </div>
-                        `;
-                    }
-                });
-
-                // Feature button functionality
-                const featureBtn = preview.querySelector('.feature-btn');
-                featureBtn.addEventListener('click', () => {
-                    const allFeatureButtons = previewContainer.querySelectorAll('.feature-btn i');
-                    allFeatureButtons.forEach(btn => {
-                        btn.style.color = 'white';
-                        btn.classList.remove('fas');
-                        btn.classList.add('far');
-                    });
-                    const starIcon = featureBtn.querySelector('i');
-                    starIcon.style.color = '#f59e0b';
-                    starIcon.classList.remove('far');
-                    starIcon.classList.add('fas');
-                });
-
-                // If this is the first image, set it as featured
-                if (previewContainer.querySelectorAll('.preview-card').length === 1) {
-                    const firstStar = previewContainer.querySelector('.feature-btn i');
-                    if (firstStar) {
-                        firstStar.style.color = '#f59e0b';
-                        firstStar.classList.remove('far');
-                        firstStar.classList.add('fas');
-                    }
-                }
-
-                if (previewContainer.querySelector('[style*="border: 2px dashed"]')) {
-                    previewContainer.innerHTML = '';
-                }
-
-                previewContainer.appendChild(preview);
-                addImageBtn.disabled = false; // Enable Add Images button after successful upload
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function addNewImageInput() {
-        const inputGroup = document.createElement('div');
-        inputGroup.className = 'image-input-group';
-        inputGroup.style.marginBottom = '12px';
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.name = 'images';
-        input.classList.add('file-input', 'input-field');
-        input.addEventListener('change', (e) => handleImageUpload(e.target));
-        inputGroup.appendChild(input);
-        imageInputContainer.appendChild(inputGroup);
-        addImageBtn.disabled = true; // Disable Add Images button until new input has an image
-    }
-
-    // Add event listeners to existing file inputs
-    document.querySelectorAll('#imageInputContainer input[type="file"]').forEach(input => {
-        input.addEventListener('change', (e) => handleImageUpload(e.target));
-    });
-
-    // Add Images button click handler
-    if (addImageBtn) {
-        addImageBtn.addEventListener('click', () => {
-            addNewImageInput();
-        });
-    }
-
-    // =============================================
-    // FORM VALIDATION FOR INPUT FIELDS
-    // =============================================
-    // Function to validate input and prevent invalid characters
-    function restrictInput(inputElement, regex, errorElement, errorMessage) {
-        if (!inputElement || !errorElement) return;
-
-        inputElement.addEventListener('input', function () {
-            // Prevent slashes
-            if (inputElement.value.includes('/')) {
-                inputElement.value = inputElement.value.replace('/', '');
-                errorElement.style.display = 'block';
-                errorElement.textContent = 'Slashes (/) are not allowed.';
-            } else if (inputElement.value && !regex.test(inputElement.value)) {
-                errorElement.style.display = 'block';
-                errorElement.textContent = errorMessage;
-            } else {
-                errorElement.style.display = 'none';
-            }
-        });
-    }
-
-    // Function to validate year specifically
-    function restrictYearInput(inputElement, errorElement) {
-        if (!inputElement || !errorElement) return;
-
-        inputElement.addEventListener('input', function () {
-            const year = parseInt(inputElement.value);
-            if (inputElement.value && (isNaN(year) || year < 1900 || year > new Date().getFullYear())) {
-                errorElement.style.display = 'block';
-                errorElement.textContent = `Invalid year. Use a number between 1900 and ${new Date().getFullYear()}.`;
-            } else {
-                errorElement.style.display = 'none';
-            }
-        });
-    }
-
-    // Apply validation to relevant fields
-    const priceInput = document.querySelector('input[name="price"]');
-    if (priceInput) {
-        const priceError = priceInput.parentElement ? priceInput.parentElement.nextElementSibling : null;
-        if (priceError && priceError.classList.contains('error-message')) {
-            restrictInput(
-                priceInput,
-                /^\d+(\.\d{1,2})?$/,
-                priceError,
-                'Invalid price format. Use numbers only (e.g., 99.99).'
-            );
-        }
-    }
-
-    // Add similar validation for other fields as needed...
-
-    // =============================================
-    // SUCCESS MODAL FUNCTIONALITY
-    // =============================================
-    const successModal = document.getElementById('successModal');
-
-    // Check if we should show success modal based on Django context
-    if (successModal && successModal.dataset.showSuccess === 'true') {
-        successModal.style.display = 'flex';
-        createConfetti();
-    }
-
-    function createConfetti() {
-        const container = document.querySelector('.success-modal-content');
-        if (!container) return;
-
-        const colors = ['primary-500', 'amber-400', 'green-400', 'pink-400', 'purple-400'];
-
-        // Clear existing confetti
-        const existingConfetti = container.querySelectorAll('.confetti');
-        existingConfetti.forEach(confetti => confetti.remove());
-
-        // Create new confetti
-        for (let i = 0; i < 20; i++) {
-            const confetti = document.createElement('div');
-            confetti.className = `confetti ${colors[Math.floor(Math.random() * colors.length)]}`;
-            confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.top = Math.random() * -50 + 'px';
-            confetti.style.animationDelay = Math.random() * 5 + 's';
-            container.appendChild(confetti);
-        }
-    }
-
-    function closeSuccessModal() {
-        if (successModal) {
-            successModal.style.display = 'none';
-        }
-    }
-
-    // Close modal when clicking outside content
-    if (successModal) {
-        successModal.addEventListener('click', function(e) {
-            if (e.target === successModal) {
-                closeSuccessModal();
-            }
-        });
-    }
-
-    // =============================================
-    // ADDITIONAL FORM ENHANCEMENTS
-    // =============================================
-
-    // Toggle button styling for condition radios
-    const conditionRadios = document.querySelectorAll('input[name="condition"]');
-    conditionRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            conditionRadios.forEach(r => {
-                if (r.nextElementSibling && r.nextElementSibling.tagName === 'DIV') {
-                    r.nextElementSibling.style.background = '';
-                    r.nextElementSibling.style.color = '';
-                    r.nextElementSibling.style.borderColor = '';
-                }
-            });
-            if (this.nextElementSibling && this.nextElementSibling.tagName === 'DIV') {
-                this.nextElementSibling.style.background = 'linear-gradient(135deg, var(--accent), #0d9488)';
-                this.nextElementSibling.style.color = 'white';
-                this.nextElementSibling.style.borderColor = 'transparent';
-            }
-        });
-
-        if (radio.checked && radio.nextElementSibling && radio.nextElementSibling.tagName === 'DIV') {
-            radio.nextElementSibling.style.background = 'linear-gradient(135deg, var(--accent), #0d9488)';
-            radio.nextElementSibling.style.color = 'white';
-            radio.nextElementSibling.style.borderColor = 'transparent';
-        }
-    });
-
-    // Date input enhancements
-    const dateInputs = document.querySelectorAll('input[type="date"]');
-    dateInputs.forEach(input => {
-        // Set minimum date to today if not already set
-        if (!input.getAttribute('min')) {
-            const today = new Date().toISOString().split('T')[0];
-            input.setAttribute('min', today);
-        }
-    });
-
-    console.log('Image upload functionality initialized successfully');
-});
-</script>
-</body>
-</html>
 {% endblock %}

@@ -2,341 +2,1045 @@
 {% load static %}
 
 {% block content %}
-<div id="overlay" class="overlay fixed inset-0 bg-black bg-opacity-50 z-40"></div>
 
-<!-- Refactored Index Template: Sponsored / Featured carousel + Category scrollers -->
 <style>
-  /* Theme helpers */
-  :root{
-    --gap: 1rem;
-    --card-w-desktop: 16rem; /* 256px */
+  /* ── RESET & BASE ─────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:           #f8f9fb;
+    --surface:      #ffffff;
+    --border:       #e4e7ec;
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
+    --text-muted:   #9ca3af;
+    --accent:       #2563eb;
+    --accent-light: #eff6ff;
+    --accent-hover: #1d4ed8;
+    --featured:     #f59e0b;
+    --radius-sm:    6px;
+    --radius-md:    10px;
+    --radius-lg:    16px;
+    --shadow-sm:    0 1px 3px rgba(0,0,0,.08);
+    --shadow-md:    0 4px 16px rgba(0,0,0,.10);
+    --shadow-lg:    0 8px 32px rgba(0,0,0,.13);
+    --transition:   0.18s ease;
   }
 
-  /* Accessible focus ring */
-  :focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 4px rgba(124,58,237,0.16);
-    border-radius: .5rem;
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
   }
 
-  /* Carousel / Track styles */
-  .carousel-wrapper { 
-    overflow: hidden; 
-    position: relative; 
+  /* ── TOP NAV ──────────────────────────────────────────── */
+  .top-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
   }
-  
-  .carousel-track { 
-    display: flex; 
-    gap: var(--gap); 
-    align-items: stretch; 
-  }
-  
-  .carousel-group { 
-    display: flex; 
-    gap: var(--gap); 
+
+  .nav-brand {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: -0.4px;
     flex-shrink: 0;
   }
 
-  /* Infinite scrolling animation */
-  @keyframes scroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(calc(-100% - var(--gap))); }
-  }
-  
-  .carousel-track.animate {
-    animation: scroll 30s linear infinite;
-  }
-  
-  .carousel-wrapper:hover .carousel-track {
-    animation-play-state: paused;
+  .nav-brand span { color: var(--text-primary); }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
   }
 
-  /* Desktop product card sizing */
-  .desktop-card { flex: 0 0 var(--card-w-desktop); }
-
-  /* Mobile horizontal lists: touch-friendly */
-  .product-container {
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-  }
-  .product-container > .product-card {
-    scroll-snap-align: start;
-  }
-
-  /* Reduced motion respect */
-  @media (prefers-reduced-motion: reduce) {
-    .carousel-track { animation: none !important; }
+  .btn-login {
+    padding: 7px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color var(--transition), color var(--transition);
   }
 
-  /* Small utility tweaks */
-  .badge-pill { padding: .125rem .5rem; font-size: .7rem; border-radius: .375rem; }
-  .card-image { height: 9rem; object-fit: cover; width: 100%; }
-</style>
+  .btn-login:hover { border-color: var(--accent); color: var(--accent); }
 
-<section class="bg-purple-50 py-6">
-  <div class="max-w-6xl mx-auto px-4">
-    <div class="bg-gradient-to-r from-purple-600/90 to-pink-500/90 rounded-3xl shadow-lg p-6 md:p-8 relative z-10">
+  .btn-post {
+    padding: 7px 18px;
+    border: 1.5px solid var(--accent);
+    border-radius: var(--radius-sm);
+    background: var(--accent);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background var(--transition);
+  }
 
-      <!-- Header -->
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center">
-          <span class="premium-badge bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-full w-9 h-9 flex items-center justify-center mr-3 shadow" aria-hidden="true">
-            <i class="fas fa-crown text-sm" style="position: relative;
-  top: 10px;"></i>
-          </span>
-          <h2 class="font-bold text-white text-lg md:text-xl">Sponsored Products</h2>
-        </div>
+  .btn-post:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
 
-        <div>
-          <a href="{% url 'menu' %}?is_paid=true"
-             class="advertise-btn inline-flex items-center gap-2 ml-2 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-gray-900 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold shadow transition-all duration-300"
-             role="button" aria-label="Advertise here">
-            <i class="fas fa-bullhorn"></i>
-            <span>Halkan ku xayeysi</span>
-          </a>
-        </div>
-      </div>
+  /* ── HERO ─────────────────────────────────────────────── */
+  .hero {
+    background:#101172;
+    color: #fff;
+    padding: 28px 24px 24px;
+    text-align: center;
+  }
 
-      <!-- Desktop Carousel -->
-      <div class="hidden md:block">
-        <div class="carousel-wrapper">
-          <div class="carousel-track carousel-group animate" aria-hidden="false">
-            {% comment %} Single group of featured cards {% endcomment %}
-            {% for product in featured_products|slice:":8" %}
-              <article class="relative bg-white rounded-xl shadow-md overflow-hidden border border-purple-200 flex-shrink-0 desktop-card product-card" role="article" aria-label="{{ product.name }}">
-                <div class="absolute top-3 left-3 badge-pill bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold drop-shadow">FEATURED</div>
-                <a href="{% url 'product_detail' product.id %}" aria-label="Open {{ product.name }}">
-                  {% if product.images.first %}
-                    <img src="{{ product.images.first.image.url }}" srcset="{{ product.images.first.image.url }} 1x, {{ product.images.first.image.url }} 2x" loading="lazy" alt="{{ product.name }} - {{ product.location }} - ${{ product.price }}" class="card-image">
-                  {% else %}
-                    <div class="bg-gray-100 w-full h-36 flex items-center justify-center border-dashed border-2 border-gray-200">
-                      <i class="fas fa-image text-gray-400 text-3xl" aria-hidden="true"></i>
-                    </div>
-                  {% endif %}
-                </a>
-                <div class="p-3">
-                  <h3 class="font-semibold text-sm truncate">{{ product.name|truncatechars:40 }}</h3>
-                  <p class="text-xs text-gray-500 mt-1">{{ product.location|default:"" }} &middot; {{ product.created_at|timesince }} ago</p>
-                  <div class="mt-2 flex items-center justify-between">
-                    <div class="text-base font-bold text-purple-700">${{ product.price }}</div>
-                    <a href="{% url 'product_detail' product.id %}" class="inline-block px-2.5 py-1.5 rounded-md bg-gradient-to-r from-purple-600 to-pink-500 text-white text-xs font-medium">View</a>
-                  </div>
-                </div>
-              </article>
-            {% endfor %}
-            
-            {% comment %} Duplicate for seamless looping {% endcomment %}
-            {% for product in featured_products|slice:":8" %}
-              <article class="relative bg-white rounded-xl shadow-md overflow-hidden border border-purple-200 flex-shrink-0 desktop-card product-card" role="article" aria-label="{{ product.name }} (duplicate)">
-                <div class="absolute top-3 left-3 badge-pill bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold drop-shadow">FEATURED</div>
-                <a href="{% url 'product_detail' product.id %}" aria-label="Open {{ product.name }}">
-                  {% if product.images.first %}
-                    <img src="{{ product.images.first.image.url }}" srcset="{{ product.images.first.image.url }} 1x, {{ product.images.first.image.url }} 2x" loading="lazy" alt="{{ product.name }} - {{ product.location }} - ${{ product.price }}" class="card-image">
-                  {% else %}
-                    <div class="bg-gray-100 w-full h-36 flex items-center justify-center border-dashed border-2 border-gray-200">
-                      <i class="fas fa-image text-gray-400 text-3xl" aria-hidden="true"></i>
-                    </div>
-                  {% endif %}
-                </a>
-                <div class="p-3">
-                  <h3 class="font-semibold text-sm truncate">{{ product.name|truncatechars:40 }}</h3>
-                  <p class="text-xs text-gray-500 mt-1">{{ product.location|default:"" }} &middot; {{ product.created_at|timesince }} ago</p>
-                  <div class="mt-2 flex items-center justify-between">
-                    <div class="text-base font-bold text-purple-700">${{ product.price }}</div>
-                    <a href="{% url 'product_detail' product.id %}" class="inline-block px-2.5 py-1.5 rounded-md bg-gradient-to-r from-purple-600 to-pink-500 text-white text-xs font-medium">View</a>
-                  </div>
-                </div>
-              </article>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 8px;
+  }
 
-      <!-- Mobile: horizontal scroll with scroll-snap -->
-      <div class="ad-container flex overflow-x-auto pb-4 -mx-2 px-2 md:hidden product-container" aria-label="Sponsored products">
-        {% for product in featured_products|slice:":8" %}
-          <div class="flex-shrink-0 w-52 bg-white rounded-xl shadow-md border border-purple-200 mx-2 overflow-hidden hover:shadow-lg transition product-card" role="article" aria-label="{{ product.name }}">
-            <div class="relative">
-              <a href="{% url 'product_detail' product.id %}" aria-label="Open {{ product.name }}">
-                {% if product.images.first %}
-                  <img src="{{ product.images.first.image.url }}" srcset="{{ product.images.first.image.url }} 1x, {{ product.images.first.image.url }} 2x" loading="lazy" alt="{{ product.name }}" class="w-full h-32 object-cover">
-                {% else %}
-                  <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-32 flex items-center justify-center">
-                    <i class="fas fa-image text-gray-400 text-3xl" aria-hidden="true"></i>
-                  </div>
-                {% endif %}
-                <span class="absolute top-2 right-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white text-[10px] px-2 py-0.5 rounded">Sponsored</span>
-              </a>
-            </div>
-            <div class="p-3">
-              <h3 class="font-semibold text-sm truncate text-purple-800">{{ product.name }}</h3>
-              <div class="flex items-center mt-2 text-xs">
-                <span class="font-bold text-pink-500">${{ product.price }}</span>
-                <span class="ml-auto text-gray-500">
-                  <i class="fas fa-eye mr-1" aria-hidden="true"></i>{{ product.views }}
-                </span>
-              </div>
-            </div>
-          </div>
-        {% endfor %}
-      </div>
+  .hero-eyebrow span {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #60a5fa;
+  }
 
-    </div>
-  </div>
-</section>
+  .hero h1 {
+    font-size: clamp(22px, 4vw, 36px);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.6px;
+    margin-bottom: 6px;
+  }
 
-<section class="categories-section py-6 -mt-4 px-4 bg-gradient-to-b from-purple-50 to-white relative z-0">
-  <div class="container mx-auto max-w-6xl">
-    <div class="text-center mb-5">
-      <h2 class="text-xl font-bold text-gray-900 mb-1">Ku baar qayb ahaan</h2>
-      <p class="text-gray-600 text-sm max-w-2xl mx-auto">Gobonimo-Marketo</p>
-    </div>
+  .hero h1 em { font-style: normal; color: #93c5fd; }
 
-    {% for category in categories %}
-      {% if category.approved_ads %}
-      <div class="mb-5">
-        <div class="flex justify-between items-center mb-3">
-          <h3 class="text-lg font-bold text-gray-900">{{ category.name }}</h3>
-          <div class="flex space-x-1">
-            <button class="scroll-btn prev-btn p-1.5 rounded-full shadow-sm bg-white text-purple-800 hover:bg-purple-100 border border-gray-200" data-category="{{ category.id }}" aria-label="Previous {{ category.name }}">
-              <i class="fas fa-chevron-left text-xs" aria-hidden="true"></i>
-            </button>
-            <button class="scroll-btn next-btn p-1.5 rounded-full shadow-sm bg-white text-purple-800 hover:bg-purple-100 border border-gray-200" data-category="{{ category.id }}" aria-label="Next {{ category.name }}">
-              <i class="fas fa-chevron-right text-xs" aria-hidden="true"></i>
-            </button>
-          </div>
-        </div>
+  .hero-sub {
+    font-size: 14px;
+    color: rgba(255,255,255,.7);
+    max-width: 480px;
+    margin: 0 auto 20px;
+  }
 
-        <div class="relative -mt-1">
-          <div class="product-container flex overflow-x-auto pb-3 space-x-3" data-category="{{ category.id }}" aria-label="{{ category.name }} products">
-            {% for product in category.approved_ads %}
-            <div class="bg-white rounded-lg shadow overflow-hidden border border-gray-200 hover:shadow-md transition flex-shrink-0 w-56 product-card" role="article" aria-label="{{ product.name }}">
-              <div class="relative">
-                {% if product.images.first %}
-                <a href="{% url 'product_detail' product.id %}">
-                  <img src="{{ product.images.first.image.url }}" srcset="{{ product.images.first.image.url }} 1x, {{ product.images.first.image.url }} 2x" loading="lazy" alt="{{ product.name }}" class="w-full h-40 object-cover">
-                </a>
-                {% else %}
-                <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-40 flex items-center justify-center">
-                  <i class="fas fa-image text-gray-400 text-3xl" aria-hidden="true"></i>
-                </div>
-                {% endif %}
+  /* ── SMART SEARCH ─────────────────────────────────────── */
+  .smart-search-wrap {
+    position: relative;
+    max-width: 680px;
+    margin: 0 auto 20px;
+  }
 
-                {% if product.is_featured %}
-                <span class="absolute top-1 left-1 bg-pink-500 text-white text-xs font-bold px-1.5 py-0.5 rounded">Featured</span>
-                {% endif %}
+  .smart-search-box {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 50px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.22);
+    overflow: visible;
+    padding: 6px 6px 6px 20px;
+    gap: 8px;
+  }
 
-                <span class="absolute top-1 right-1 bg-black bg-opacity-70 text-white text-xs font-bold px-1.5 py-0.5 rounded">${{ product.price }}</span>
-              </div>
+  .smart-search-icon {
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
 
-              <div class="p-3">
-                <h3 class="font-bold text-sm mb-1 truncate">{{ product.name }}</h3>
-                <div class="flex items-center text-gray-600 text-xs mb-1">
-                  <i class="fas fa-map-marker-alt mr-1 text-xs" aria-hidden="true"></i>
-                  <span class="truncate">{{ product.location }}</span>
-                </div>
-                <div class="flex items-center text-gray-600 text-xs">
-                  <i class="far fa-clock mr-1 text-xs" aria-hidden="true"></i>
-                  <span>{{ product.created_at|timesince }} ago</span>
-                </div>
-                <div class="flex justify-between items-center mt-2">
-                  <span class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">{{ product.category.name }}</span>
-                  <a href="{% url 'product_detail' product.id %}" class="text-pink-600 hover:text-pink-800 font-medium text-xs">Eeg faahfaahinta</a>
-                </div>
-              </div>
-            </div>
-            {% empty %}
-            <p class="text-gray-600 text-xs italic py-2">No approved ads in this category.</p>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
-      {% endif %}
-    {% endfor %}
+  .smart-search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    color: var(--text-primary);
+    background: transparent;
+    padding: 6px 0;
+    min-width: 0;
+  }
 
-  </div>
-</section>
+  .smart-search-input::placeholder { color: var(--text-muted); }
 
-{% include 'footer.html' %}
+  .smart-search-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
 
-<script>
+  .smart-search-loc {
+    border: none;
+    outline: none;
+    font-size: 14px;
+    color: var(--text-secondary);
+    background: transparent;
+    padding: 6px 8px;
+    width: 140px;
+    flex-shrink: 0;
+  }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const q = (sel, ctx = document) => ctx.querySelector(sel);
-  const qa = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+  .smart-search-loc::placeholder { color: var(--text-muted); }
 
-  // --- Auto-scroll for mobile sponsor strip ---
-  const adContainer = q('.ad-container');
-  if (adContainer) {
-    let running = false;
-    let rafId = null;
-    const speed = 0.35; // px per frame
-    let pos = adContainer.scrollLeft;
+  .smart-search-btn {
+    flex-shrink: 0;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 40px;
+    padding: 10px 22px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background var(--transition);
+  }
 
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!prefersReduced && adContainer.scrollWidth > adContainer.clientWidth) {
-      function step() {
-        const max = adContainer.scrollWidth - adContainer.clientWidth;
-        pos = pos + speed;
-        if (pos >= max) pos = 0;
-        adContainer.scrollLeft = pos;
-        rafId = requestAnimationFrame(step);
-      }
-      function start() {
-        if (running) return;
-        running = true;
-        rafId = requestAnimationFrame(step);
-      }
-      function stop() {
-        running = false;
-        if (rafId) cancelAnimationFrame(rafId);
-      }
+  .smart-search-btn:hover { background: var(--accent-hover); }
 
-      // start
-      start();
-      ['mouseenter', 'focusin', 'touchstart'].forEach(e => adContainer.addEventListener(e, stop, { passive: true }));
-      ['mouseleave', 'focusout', 'touchend'].forEach(e => adContainer.addEventListener(e, start, { passive: true }));
+  /* Auto-suggest dropdown */
+  .smart-suggest {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    z-index: 200;
+    overflow: hidden;
+    display: none;
+  }
+
+  .smart-suggest.open { display: block; }
+
+  .suggest-section-label {
+    padding: 10px 16px 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .suggest-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 16px;
+    cursor: pointer;
+    transition: background var(--transition);
+    color: var(--text-primary);
+    font-size: 14px;
+  }
+
+  .suggest-item:hover { background: var(--accent-light); }
+  .suggest-item svg { flex-shrink: 0; color: var(--text-muted); }
+
+  /* ── HERO STATS ───────────────────────────────────────── */
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .hero-stat-num {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+  }
+
+  .hero-stat-label {
+    font-size: 11px;
+    color: rgba(255,255,255,.6);
+    margin-top: 1px;
+  }
+
+  /* ── CATEGORY PILLS ───────────────────────────────────── */
+  .cat-pills-wrap {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    position: sticky;
+    top: 60px;
+    z-index: 90;
+  }
+
+  .cat-pills-wrap::-webkit-scrollbar { display: none; }
+
+  .cat-pills {
+    display: flex;
+    gap: 4px;
+    padding: 10px 0;
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 14px;
+    border-radius: 40px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    background: transparent;
+    border: 1.5px solid transparent;
+    transition: all var(--transition);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .pill:hover { background: var(--accent-light); color: var(--accent); border-color: #bfdbfe; }
+  .pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* ── LAYOUT: SIDEBAR + MAIN ───────────────────────────── */
+  .marketplace-layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px 24px 48px;
+  }
+
+  /* ── SIDEBAR FILTERS ──────────────────────────────────── */
+  .filter-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    position: sticky;
+    top: 120px;
+    margin-right: 24px;
+  }
+
+  .filter-sidebar h3 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  .filter-section { margin-bottom: 24px; }
+
+  .filter-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  /* Price range */
+  .price-inputs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .price-input {
+    flex: 1;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 6px 10px;
+    font-size: 13px;
+    color: var(--text-primary);
+    outline: none;
+    background: var(--bg);
+    transition: border-color var(--transition);
+    min-width: 0;
+  }
+
+  .price-input:focus { border-color: var(--accent); }
+
+  .price-slider {
+    width: 100%;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  /* Sort */
+  .sort-select {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--text-primary);
+    background: var(--bg);
+    outline: none;
+    cursor: pointer;
+    transition: border-color var(--transition);
+  }
+
+  .sort-select:focus { border-color: var(--accent); }
+
+  /* Location radius */
+  .radius-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .radius-btn {
+    padding: 5px 11px;
+    border: 1.5px solid var(--border);
+    border-radius: 40px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: var(--bg);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+
+  .radius-btn:hover, .radius-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-light);
+  }
+
+  .filter-apply-btn {
+    width: 100%;
+    padding: 10px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: background var(--transition);
+  }
+
+  .filter-apply-btn:hover { background: var(--accent-hover); }
+
+  .filter-reset {
+    width: 100%;
+    padding: 7px;
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+    font-size: 13px;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: color var(--transition);
+  }
+
+  .filter-reset:hover { color: var(--accent); }
+
+  /* ── LISTINGS MAIN ────────────────────────────────────── */
+  .listings-main { flex: 1; min-width: 0; }
+
+  /* filter/count bar */
+  .listings-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .listings-search {
+    flex: 1;
+    min-width: 180px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 14px;
+    font-size: 14px;
+    color: var(--text-primary);
+    background: var(--surface);
+    outline: none;
+    transition: border-color var(--transition);
+  }
+
+  .listings-search:focus { border-color: var(--accent); }
+
+  .listings-count {
+    font-size: 13px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .listings-count strong { color: var(--text-primary); }
+
+  /* ── CATEGORY SECTION ─────────────────────────────────── */
+  .cat-section { margin-bottom: 36px; }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .section-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.2px;
+  }
+
+  .see-all {
+    font-size: 13px;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    opacity: 0.8;
+    transition: opacity var(--transition);
+  }
+
+  .see-all:hover { opacity: 1; }
+
+  /* scroll row */
+  .scroll-row {
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin: 0 -4px;
+    padding: 4px;
+  }
+
+  .scroll-row::-webkit-scrollbar { display: none; }
+
+  .cards-flex {
+    display: flex;
+    gap: 14px;
+    width: max-content;
+  }
+
+  /* ── ASSET CARD ───────────────────────────────────────── */
+  .asset-card {
+    width: 220px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow var(--transition), transform var(--transition);
+    flex-shrink: 0;
+  }
+
+  .asset-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .card-img-link { display: block; text-decoration: none; }
+
+  .card-img {
+    position: relative;
+    width: 100%;
+    height: 148px;
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  .card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  .asset-card:hover .card-img img { transform: scale(1.04); }
+
+  .placeholder-img {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 28px;
+  }
+
+  .badge-featured {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: var(--featured);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 40px;
+    letter-spacing: .3px;
+  }
+
+  .card-body {
+    padding: 12px 13px 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+
+  /* Price — bold row below image */
+  .card-price {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+  }
+
+  .card-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .card-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 2px;
+  }
+
+  .card-tag {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 3px 8px;
+    border-radius: 40px;
+  }
+
+  .card-btn {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    padding: 4px 10px;
+    border: 1.5px solid #bfdbfe;
+    border-radius: var(--radius-sm);
+    transition: background var(--transition), color var(--transition);
+  }
+
+  .card-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* ── EMPTY STATE ──────────────────────────────────────── */
+  .empty-row {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-size: 15px;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-lg);
+  }
+
+  /* ── RESPONSIVE ───────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .filter-sidebar {
+      display: none;
+    }
+
+    .marketplace-layout {
+      padding: 16px;
     }
   }
 
-  // --- Scroll buttons for category lists ---
-  qa('.scroll-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const catId = btn.getAttribute('data-category');
-      if (!catId) return;
-      const container = document.querySelector(`.product-container[data-category="${catId}"]`);
-      if (!container) return;
-      const isPrev = btn.classList.contains('prev-btn');
-      const card = container.querySelector('.product-card');
-      const cardRect = card ? card.getBoundingClientRect() : null;
-      const scrollAmount = cardRect ? Math.round(cardRect.width + 12) : 288;
-      container.scrollBy({ left: isPrev ? -scrollAmount : scrollAmount, behavior: 'smooth' });
-    });
-  });
+  @media (max-width: 640px) {
+    .hero { padding: 20px 16px 18px; }
+    .smart-search-loc, .smart-search-divider { display: none; }
+    .hero-stats { gap: 20px; }
+    .top-nav { padding: 0 14px; }
+    .btn-login { display: none; }
+  }
+</style>
 
-  // --- Advertise CTA fallback ---
-  const advertiseBtn = q('.advertise-btn');
-  if (advertiseBtn) {
-    advertiseBtn.addEventListener('click', (e) => {
-      // Let the link navigate normally. Optional: open a lightweight modal instead.
-      // Example: if you want modal behavior, preventDefault() and show modal.
+
+
+<main class="site-main">
+
+  <!-- ── HERO ─────────────────────────────────────────────── -->
+  <div class="hero">
+    <div class="hero-eyebrow"><span></span> Gobonimo Marketplace</div>
+    <h1>Buy, sell &amp; discover<br><em>everything local</em></h1>
+    <p class="hero-sub">From property and vehicles to electronics and fashion — find the best deals in your city.</p>
+
+    <!-- ── UNIFIED SMART SEARCH ─────────────────────────── -->
+    <div class="smart-search-wrap">
+      <form method="GET" action="{% url 'search_ads' %}" id="searchForm">
+        <div class="smart-search-box">
+          <!-- Search icon -->
+          <svg class="smart-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="5"/><path d="M21 21l-4.35-4.35"/></svg>
+
+          <!-- Combined keyword + category input -->
+          <input
+            class="smart-search-input"
+            type="text"
+            name="q"
+            id="smartQ"
+            placeholder="Category, keyword, item type…"
+            value="{{ request.GET.q|default:'' }}"
+            autocomplete="off"
+          >
+          <input type="hidden" name="category" id="heroCatValue">
+
+          <div class="smart-search-divider"></div>
+
+          <!-- Location -->
+          <input
+            class="smart-search-loc"
+            type="text"
+            name="location"
+            placeholder="📍 City or area"
+            value="{{ request.GET.location|default:'' }}"
+            autocomplete="off"
+          >
+
+          <button type="submit" class="smart-search-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="5"/><path d="M21 21l-4.35-4.35"/></svg>
+            Search
+          </button>
+        </div>
+
+        <!-- Auto-suggest dropdown -->
+        <div class="smart-suggest" id="smartSuggest">
+          <div class="suggest-section-label">Categories</div>
+          {% for category in categories %}
+          <div class="suggest-item" data-cat="{{ category.id }}" data-label="{{ category.name }}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.8"><circle cx="12" cy="12" r="8"/></svg>
+            {{ category.name }}
+          </div>
+          {% endfor %}
+        </div>
+      </form>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num">{{ categories|length }}+</div>
+        <div class="hero-stat-label">Categories</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">{{ featured_products|length }}+</div>
+        <div class="hero-stat-label">Featured Ads</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">100%</div>
+        <div class="hero-stat-label">Free to Browse</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CATEGORY PILLS (single nav, sticky) ──────────────── -->
+  <div class="cat-pills-wrap">
+    <div class="cat-pills">
+      <a href="{% url 'index' %}" class="pill active">All</a>
+      {% for category in categories %}
+      <a href="{% url 'category_detail' category.id %}" class="pill">{{ category.name }}</a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ── MARKETPLACE LAYOUT ────────────────────────────────── -->
+  <div class="marketplace-layout">
+
+    <!-- ── SIDEBAR FILTERS ─────────────────────────────────── -->
+    <aside class="filter-sidebar">
+      <h3>Filters</h3>
+
+      <!-- Sort -->
+      <div class="filter-section">
+        <label class="filter-label" for="sortSelect">Sort by</label>
+        <select class="sort-select" id="sortSelect" name="sort">
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="price_asc">Price: Low → High</option>
+          <option value="price_desc">Price: High → Low</option>
+        </select>
+      </div>
+
+      <!-- Price range -->
+      <div class="filter-section">
+        <label class="filter-label">Price range</label>
+        <div class="price-inputs">
+          <input type="number" class="price-input" id="priceMin" placeholder="Min $" min="0">
+          <input type="number" class="price-input" id="priceMax" placeholder="Max $" min="0">
+        </div>
+        <input type="range" class="price-slider" id="priceSlider" min="0" max="100000" step="100" value="100000">
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Up to $<span id="sliderVal">100,000</span></div>
+      </div>
+
+      <!-- Location radius -->
+      <div class="filter-section">
+        <label class="filter-label">Distance radius</label>
+        <div class="radius-options">
+          <button type="button" class="radius-btn active" data-r="any">Any</button>
+          <button type="button" class="radius-btn" data-r="5">5 km</button>
+          <button type="button" class="radius-btn" data-r="15">15 km</button>
+          <button type="button" class="radius-btn" data-r="50">50 km</button>
+          <button type="button" class="radius-btn" data-r="100">100 km</button>
+        </div>
+      </div>
+
+      <button type="button" class="filter-apply-btn" onclick="applyFilters()">Apply Filters</button>
+      <button type="button" class="filter-reset" onclick="resetFilters()">Reset all</button>
+    </aside>
+
+    <!-- ── LISTINGS MAIN ────────────────────────────────────── -->
+    <div class="listings-main">
+
+      <!-- filter bar -->
+      <div class="listings-bar">
+        <input class="listings-search" id="filterInput" placeholder="Filter by name, location…" autocomplete="off">
+        <div class="listings-count">Showing <strong id="assetCount">0</strong> listings</div>
+      </div>
+
+      <!-- listings by category -->
+      {% for category in categories %}
+        {% if category.approved_ads %}
+        <div class="cat-section" data-category-name="{{ category.name|lower }}">
+
+          <div class="section-head">
+            <span class="section-title">{{ category.name }}</span>
+            <a href="{% url 'category_detail' category.id %}" class="see-all">View all →</a>
+          </div>
+
+          <div class="scroll-row">
+            <div class="cards-flex">
+              {% for product in category.approved_ads %}
+              <article class="asset-card"
+                data-name="{{ product.name|lower }}"
+                data-category="{{ product.category.name|default:''|lower }}"
+                data-location="{{ product.location|default:''|lower }}"
+                data-price="{{ product.price }}">
+
+                <!-- Image -->
+                <a class="card-img-link" href="{% url 'product_detail' product.id %}">
+                  <div class="card-img">
+                    {% if product.images.first %}
+                      <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" loading="lazy" draggable="false">
+                    {% else %}
+                      <div class="placeholder-img"><i class="fas fa-image"></i></div>
+                    {% endif %}
+                    {% if product.is_featured %}<span class="badge-featured">⭐ Featured</span>{% endif %}
+                  </div>
+                </a>
+
+                <div class="card-body">
+                  <!-- Price as bold text row, NOT on image -->
+                  <div class="card-price">${{ product.price }}</div>
+                  <div class="card-name" title="{{ product.name }}">{{ product.name }}</div>
+                  <div class="card-meta">
+                    <span><i class="fas fa-map-marker-alt"></i> {{ product.location|default:"No location" }}</span>
+                    <span><i class="far fa-clock"></i> {{ product.created_at|timesince }} ago</span>
+                  </div>
+                  <div class="card-foot">
+                    <span class="card-tag">{{ product.category.name }}</span>
+                    <a href="{% url 'product_detail' product.id %}" class="card-btn">View →</a>
+                  </div>
+                </div>
+              </article>
+              {% endfor %}
+            </div>
+          </div>
+
+        </div>
+        {% endif %}
+      {% empty %}
+        <div class="empty-row">
+          No listings yet. <a href="{% url 'menu' %}" style="color:var(--accent)">Post the first ad →</a>
+        </div>
+      {% endfor %}
+    </div><!-- /listings-main -->
+
+  </div><!-- /marketplace-layout -->
+
+</main>
+
+<script>
+(function () {
+
+  /* ── COUNT ── */
+  function updateCount() {
+    const visible = document.querySelectorAll('.asset-card:not([style*="display: none"])').length;
+    document.getElementById('assetCount').textContent = visible;
+  }
+  updateCount();
+
+  /* ── LIVE TEXT FILTER ── */
+  const filterInput = document.getElementById('filterInput');
+  if (filterInput) {
+    filterInput.addEventListener('input', function () {
+      const q = this.value.toLowerCase().trim();
+      document.querySelectorAll('.asset-card').forEach(card => {
+        const match = !q
+          || card.dataset.name.includes(q)
+          || card.dataset.category.includes(q)
+          || card.dataset.location.includes(q);
+        card.style.display = match ? '' : 'none';
+      });
+      // hide empty section headers
+      document.querySelectorAll('.cat-section').forEach(sec => {
+        const visible = [...sec.querySelectorAll('.asset-card')].some(c => c.style.display !== 'none');
+        sec.style.display = visible ? '' : 'none';
+      });
+      updateCount();
     });
   }
 
-  // --- Keyboard accessibility for horizontal scrollers (left/right) ---
-  qa('.product-container').forEach(container => {
-    container.setAttribute('tabindex', '0');
-    container.addEventListener('keydown', (ev) => {
-      if (ev.key === 'ArrowRight') {
-        container.scrollBy({ left: 280, behavior: 'smooth' });
-        ev.preventDefault();
-      } else if (ev.key === 'ArrowLeft') {
-        container.scrollBy({ left: -280, behavior: 'smooth' });
-        ev.preventDefault();
+  /* ── SMART SEARCH SUGGEST ── */
+  const smartQ = document.getElementById('smartQ');
+  const suggest = document.getElementById('smartSuggest');
+
+  if (smartQ && suggest) {
+    smartQ.addEventListener('input', function () {
+      const val = this.value.toLowerCase().trim();
+      const items = suggest.querySelectorAll('.suggest-item');
+      let anyVisible = false;
+      items.forEach(item => {
+        const match = !val || item.textContent.toLowerCase().includes(val);
+        item.style.display = match ? '' : 'none';
+        if (match) anyVisible = true;
+      });
+      suggest.classList.toggle('open', val.length > 0 && anyVisible);
+    });
+
+    smartQ.addEventListener('focus', function () {
+      if (this.value.length > 0) suggest.classList.add('open');
+    });
+
+    // clicking a suggestion fills category hidden field & input label
+    suggest.querySelectorAll('.suggest-item').forEach(item => {
+      item.addEventListener('mousedown', function (e) {
+        e.preventDefault();
+        const label = this.dataset.label;
+        const catId = this.dataset.cat;
+        smartQ.value = label;
+        document.getElementById('heroCatValue').value = catId;
+        suggest.classList.remove('open');
+      });
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!smartQ.contains(e.target) && !suggest.contains(e.target)) {
+        suggest.classList.remove('open');
       }
     });
+  }
+
+  /* ── PRICE SLIDER ── */
+  const slider = document.getElementById('priceSlider');
+  const sliderVal = document.getElementById('sliderVal');
+  const priceMax = document.getElementById('priceMax');
+
+  if (slider) {
+    slider.addEventListener('input', function () {
+      const v = parseInt(this.value).toLocaleString();
+      sliderVal.textContent = v;
+      if (priceMax) priceMax.value = this.value;
+    });
+  }
+
+  /* ── RADIUS BUTTONS ── */
+  document.querySelectorAll('.radius-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.radius-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+    });
   });
-});
+
+  /* ── APPLY / RESET FILTERS ── */
+  window.applyFilters = function () {
+    const minPrice = parseFloat(document.getElementById('priceMin').value) || 0;
+    const maxPrice = parseFloat(document.getElementById('priceMax').value) || Infinity;
+    const sortVal = document.getElementById('sortSelect').value;
+
+    // Filter cards by price
+    document.querySelectorAll('.asset-card').forEach(card => {
+      const price = parseFloat(card.dataset.price) || 0;
+      const visible = price >= minPrice && price <= maxPrice;
+      card.style.display = visible ? '' : 'none';
+    });
+
+    // Sort within each row (DOM reorder)
+    document.querySelectorAll('.cards-flex').forEach(flex => {
+      const cards = [...flex.querySelectorAll('.asset-card')];
+      cards.sort((a, b) => {
+        const pa = parseFloat(a.dataset.price) || 0;
+        const pb = parseFloat(b.dataset.price) || 0;
+        const da = a.querySelector('.card-meta span:last-child')?.textContent || '';
+        const db = b.querySelector('.card-meta span:last-child')?.textContent || '';
+        if (sortVal === 'price_asc') return pa - pb;
+        if (sortVal === 'price_desc') return pb - pa;
+        return 0; // newest/oldest rely on server-side order
+      });
+      cards.forEach(c => flex.appendChild(c));
+    });
+
+    document.querySelectorAll('.cat-section').forEach(sec => {
+      const visible = [...sec.querySelectorAll('.asset-card')].some(c => c.style.display !== 'none');
+      sec.style.display = visible ? '' : 'none';
+    });
+
+    updateCount();
+  };
+
+  window.resetFilters = function () {
+    document.getElementById('priceMin').value = '';
+    document.getElementById('priceMax').value = '';
+    if (slider) { slider.value = 100000; sliderVal.textContent = '100,000'; }
+    document.querySelectorAll('.asset-card, .cat-section').forEach(el => el.style.display = '');
+    document.querySelectorAll('.radius-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+    document.getElementById('sortSelect').value = 'newest';
+    updateCount();
+  };
+
+})();
 </script>
 
 {% endblock %}

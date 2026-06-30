@@ -9,7 +9,11 @@ from django_ratelimit.decorators import ratelimit
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.conf import settings
 from django.core.cache import cache
+from django.utils.html import strip_tags
+from django.http import HttpResponse, HttpResponseRedirect
+import threading
 from django.http import JsonResponse
+from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes
 from .forms import RatingForm
 from django.db.models import Avg, Count
@@ -22,6 +26,7 @@ import logging
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Prefetch
+from django.contrib.auth.views import PasswordResetView
 from allauth.socialaccount.models import SocialAccount
 from django.http import HttpResponse
 from django.contrib import messages
@@ -54,7 +59,7 @@ import traceback
 
 logger = logging.getLogger(__name__)
 
-logger = logging.getLogger(__name__)
+
 
 
 def send_email_in_thread(subject, text_content, html_content, from_email, recipient_email, user_id, debug=False):
@@ -257,11 +262,54 @@ def verify_email(request, uidb64, token):
 
 
 class CustomPasswordResetView(PasswordResetView):
-    template_name = 'base/auth/custom_reset.html'
-    
+    template_name = 'base/password_reset.html'
+    success_url = reverse_lazy('password_reset_done')
+    extra_context = {'site_name': 'Gobonimo-Mart'}
+
     def form_valid(self, form):
-        # Add custom logic here
-        return super().form_valid(form)
+        email = form.cleaned_data['email']
+        try:
+            user = User.objects.get(email__iexact=email, is_active=True)
+        except User.DoesNotExist:
+            # Don't reveal if email exists — just proceed silently
+            return super().form_valid(form)
+
+        # Generate token and reset link
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        reset_url = self.request.build_absolute_uri(
+            reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+        )
+
+        # Render email content (using your existing templates)
+        from django.template.loader import render_to_string
+        from django.utils.html import strip_tags
+
+        html_content = render_to_string('base/password_reset_email.html', {
+            'reset_url': reset_url,
+            'user': user,
+            'site_name': 'Gobonimo-Mart',
+        })
+        text_content = strip_tags(html_content)
+
+        # Send email in background thread (as you already do)
+        email_thread = threading.Thread(
+            target=send_email_in_thread,
+            args=(
+                'Reset Your Password - Gobonimo Marketplace',
+                text_content,
+                html_content,
+                settings.DEFAULT_FROM_EMAIL,
+                user.email,
+                user.id,
+                settings.DEBUG
+            )
+        )
+        email_thread.start()
+
+        # Redirect to success page (without calling parent's form_valid which would send another email)
+        return HttpResponseRedirect(self.get_success_url())
+
 @require_http_methods(["GET", "POST"])
 def login_view(request):
     if request.method == 'POST':
